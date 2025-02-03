@@ -14,7 +14,18 @@ const AuthButtons = () => {
         </div>
       ) : (
         <p>
-          <a href="/signin">Sign In</a> or <a href="/register">Register</a>
+          <a href="/signin">Sign In</a> or
+          <p>
+            Don't have an account? Register...
+            <br />
+            <a href="/trainer-reg">Trainer</a>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <a href="/client-reg">Client</a>
+          </p>
         </p>
       )}
     </div>

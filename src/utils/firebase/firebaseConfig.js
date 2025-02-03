@@ -4,6 +4,7 @@ import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   // apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: "AIzaSyBIMdYfUrnEf3J7fXtWYWjcdfqd1t4bb2g",
   authDomain: "trueform-b27c0.firebaseapp.com",
   projectId: "trueform-b27c0",
   storageBucket: "trueform-b27c0.firebasestorage.app",
