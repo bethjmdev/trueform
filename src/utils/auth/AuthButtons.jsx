@@ -13,22 +13,19 @@ const AuthButtons = () => {
           <button onClick={() => signOut(auth)}>Sign Out</button>
         </div>
       ) : (
-        <p>
+        <>
           <a href="/trainer-signin">Sign In as Trainer</a>
           <br />
-          <a href="/client-signin">Sign In as Client</a>or
+          <br />
+          <a href="/client-signin">Sign In as Client</a>
           <p>
-            Don't have an account? Register...
             <br />
-            <a href="/trainer-reg">Trainer</a>
-            <br />
+            <a href="/trainer-reg">Register Trainer</a>
             <br />
             <br />
-            <br />
-            <br />
-            <a href="/client-reg">Client</a>
+            <a href="/client-reg">Register Client</a>
           </p>
-        </p>
+        </>
       )}
     </div>
   );
