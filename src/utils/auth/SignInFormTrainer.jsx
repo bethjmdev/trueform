@@ -100,7 +100,7 @@ const SignInFormTrainer = () => {
       />
       <button onClick={handleSignIn}>Sign In</button>
       <p>
-        Don't have an account? <a href="/register">Register</a>
+        Don't have an account? <a href="/trainer-reg">Register</a>
       </p>
     </div>
   );

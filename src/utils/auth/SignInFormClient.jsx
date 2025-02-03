@@ -100,7 +100,7 @@ const SignInFormClient = () => {
       />
       <button onClick={handleSignIn}>Sign In</button>
       <p>
-        Don't have an account? <a href="/register">Register</a>
+        Don't have an account? <a href="/client-reg">Register</a>
       </p>
     </div>
   );

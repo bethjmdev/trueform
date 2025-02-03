@@ -8,6 +8,8 @@ const SignUpFormTrainer = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [city, setCity] = useState("");
+
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
@@ -54,6 +56,12 @@ const SignUpFormTrainer = () => {
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="City"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
       />
       <button onClick={handleSignUp}>Sign Up</button>
       <p>
