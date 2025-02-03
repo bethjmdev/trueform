@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { auth } from "../firebase/firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-const SignUpFormTrainer = () => {
+const SignInFormClient = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSignUp = async () => {
+  const handleSignIn = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      navigate("/"); // Redirect after successful sign-up
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/"); // Redirect after successful login
     } catch (error) {
-      console.error("Sign Up Error:", error.message);
+      console.error("Sign In Error:", error.message);
     }
   };
 
   return (
-    <div className="Trainer_SignUp">
-      <h2>Register as a Trainer</h2>
+    <div>
+      <h2>Sign In As a Client</h2>
       <input
         type="email"
         placeholder="Email"
@@ -32,12 +32,12 @@ const SignUpFormTrainer = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleSignUp}>Sign Up</button>
+      <button onClick={handleSignIn}>Sign In</button>
       <p>
-        Already have an account? <a href="/signin">Sign in</a>
+        Don't have an account? <a href="/register">Register</a>
       </p>
     </div>
   );
 };
 
-export default SignUpFormTrainer;
+export default SignInFormClient;

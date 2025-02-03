@@ -3,7 +3,7 @@ import { auth } from "../firebase/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-const SignInForm = () => {
+const SignInFormTrainer = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const SignInForm = () => {
 
   return (
     <div>
-      <h2>Sign In</h2>
+      <h2>Sign In as a Trainer</h2>
       <input
         type="email"
         placeholder="Email"
@@ -40,4 +40,4 @@ const SignInForm = () => {
   );
 };
 
-export default SignInForm;
+export default SignInFormTrainer;
