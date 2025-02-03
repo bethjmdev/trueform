@@ -13,7 +13,9 @@ const AuthButtons = () => {
           <button onClick={() => signOut(auth)}>Sign Out</button>
         </div>
       ) : (
-        <p>Please sign in.</p>
+        <p>
+          <a href="/signin">Sign In</a> or <a href="/register">Register</a>
+        </p>
       )}
     </div>
   );

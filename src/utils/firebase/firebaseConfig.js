@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  // apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "trueform-b27c0.firebaseapp.com",
   projectId: "trueform-b27c0",
   storageBucket: "trueform-b27c0.firebasestorage.app",

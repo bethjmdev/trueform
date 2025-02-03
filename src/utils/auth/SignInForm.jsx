@@ -1,29 +1,17 @@
 import { useState } from "react";
 import { auth } from "../firebase/firebaseConfig";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
-const AuthForm = () => {
+const SignInForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleSignUp = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setEmail("");
-      setPassword("");
-    } catch (error) {
-      console.error("Sign Up Error:", error.message);
-    }
-  };
+  const navigate = useNavigate();
 
   const handleSignIn = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      setEmail("");
-      setPassword("");
+      navigate("/"); // Redirect after successful login
     } catch (error) {
       console.error("Sign In Error:", error.message);
     }
@@ -31,7 +19,7 @@ const AuthForm = () => {
 
   return (
     <div>
-      <h2>Firebase Auth</h2>
+      <h2>Sign In</h2>
       <input
         type="email"
         placeholder="Email"
@@ -44,10 +32,12 @@ const AuthForm = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleSignUp}>Sign Up</button>
       <button onClick={handleSignIn}>Sign In</button>
+      <p>
+        Don't have an account? <a href="/register">Register</a>
+      </p>
     </div>
   );
 };
 
-export default AuthForm;
+export default SignInForm;

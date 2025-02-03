@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import SignUpForm from "./components/SignUpForm";
-import SignInForm from "./components/SignInForm";
-import AuthButtons from "./components/AuthButtons";
+import SignUpForm from "./utils/auth/SignUpForm";
+import SignInForm from "./utils/auth/SignInForm";
+import AuthButtons from "./utils/auth/AuthButtons";
 
 const AppRouter = () => {
   return (
