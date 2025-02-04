@@ -10,8 +10,9 @@ import ProtectedRoute from "./utils/auth/ProtectedRoute";
 import AddExercise from "./components/trainerview/exercise/AddExercise";
 import ExerciseDatabase from "./components/trainerview/exercise/ExerciseDatabase";
 import EditExercise from "./components/trainerview/exercise/EditExercise";
-import ViewAllClients from "./components/trainerview/clients/ViewAllClients";
 import Profile from "./components/trainerview/Profile";
+import ViewAllClients from "./components/trainerview/clients/ViewAllClients";
+import ViewIndClient from "./components/trainerview/clients/ViewIndClient";
 
 const AppRouter = () => {
   return (
@@ -30,6 +31,11 @@ const AppRouter = () => {
         <Route
           path="/client-homepage"
           element={<ProtectedRoute element={<ClientHomePage />} />}
+        />
+
+        <Route
+          path="/profile"
+          element={<ProtectedRoute element={<Profile />} />}
         />
 
         {/* 🔥 Trainer-Only Routes */}
@@ -53,8 +59,8 @@ const AppRouter = () => {
         />
 
         <Route
-          path="/profile"
-          element={<ProtectedRoute element={<Profile />} />}
+          path="/client-profile"
+          element={<ProtectedRoute element={<ViewIndClient />} trainerOnly />}
         />
 
         <Route path="/" element={<AuthButtons />} />
