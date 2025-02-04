@@ -1,10 +1,11 @@
-import "./App.css";
+import { AuthProvider } from "./utils/auth/AuthProvider";
+import AppRouter from "./Router";
 
 function App() {
   return (
-    <>
-      <p>hi</p>
-    </>
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
   );
 }
 
