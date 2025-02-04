@@ -172,6 +172,13 @@ const ViewIndWorkout = () => {
               <p>
                 <strong>Weight:</strong> {exercise.weight} lbs
               </p>
+
+              {exercise.cues && (
+                <p>
+                  <strong>Cues:</strong> {exercise.cues}
+                </p>
+              )}
+
               <hr />
             </li>
           ))}
