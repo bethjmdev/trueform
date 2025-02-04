@@ -90,6 +90,7 @@
 // };
 
 // export default ViewIndClient;
+
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../../../utils/firebase/firebaseConfig";
@@ -149,6 +150,14 @@ const ViewIndClient = () => {
       <p>
         <strong>Email:</strong> {client.email}
       </p>
+
+      <button
+        onClick={() =>
+          navigate("/create-workout", { state: { client_uid: client.uid } })
+        }
+      >
+        Add Workout
+      </button>
 
       {loading && <p>Loading workouts...</p>}
 

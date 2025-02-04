@@ -15,6 +15,7 @@ import ViewAllClients from "./components/trainerview/clients/ViewAllClients";
 import ViewIndClient from "./components/trainerview/clients/ViewIndClient";
 import ViewIndWorkout from "./components/trainerview/clients/ViewIndWorkout";
 import EditWorkout from "./components/trainerview/clients/EditWorkout";
+import CreateWorkout from "./components/trainerview/clients/CreateWorkout";
 
 const AppRouter = () => {
   return (
@@ -73,6 +74,11 @@ const AppRouter = () => {
         <Route
           path="/edit-workout"
           element={<ProtectedRoute element={<EditWorkout />} trainerOnly />}
+        />
+
+        <Route
+          path="/create-workout"
+          element={<ProtectedRoute element={<CreateWorkout />} trainerOnly />}
         />
 
         <Route path="/" element={<AuthButtons />} />
