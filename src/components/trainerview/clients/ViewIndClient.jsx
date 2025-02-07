@@ -1,16 +1,23 @@
 // import { useState, useEffect } from "react";
 // import { useLocation, useNavigate } from "react-router-dom";
 // import { db } from "../../../utils/firebase/firebaseConfig";
-// import { collection, query, where, getDocs } from "firebase/firestore";
+// import {
+//   collection,
+//   query,
+//   where,
+//   getDocs,
+//   doc,
+//   deleteDoc,
+// } from "firebase/firestore";
 
 // const ViewIndClient = () => {
 //   const location = useLocation();
 //   const navigate = useNavigate();
-//   const client = location.state?.client; // Get client data from navigate state
+//   const client = location.state?.client; // Client data from navigation
 //   const [workouts, setWorkouts] = useState([]);
 //   const [loading, setLoading] = useState(true);
 
-//   // Redirect if accessed without client data
+//   // 🔥 Redirect if no client data
 //   useEffect(() => {
 //     if (!client) {
 //       console.error("❌ No client data found. Redirecting...");
@@ -18,6 +25,7 @@
 //     }
 //   }, [client, navigate]);
 
+//   // 🔥 Fetch the client's workouts
 //   useEffect(() => {
 //     if (!client) return;
 
@@ -25,7 +33,6 @@
 //       try {
 //         console.log(`📡 Fetching workouts for client UID: ${client.uid}`);
 
-//         // Query CurrentWorkoutDetails where client_uid matches client's UID
 //         const workoutsQuery = query(
 //           collection(db, "CurrentWorkoutDetails"),
 //           where("client_uid", "==", client.uid)
@@ -33,8 +40,8 @@
 //         const querySnapshot = await getDocs(workoutsQuery);
 
 //         const workoutList = querySnapshot.docs.map((doc) => ({
-//           id: doc.id,
-//           ...doc.data(),
+//           id: doc.id, // Doc ID from Firestore
+//           ...doc.data(), // workout_name, exercise_doc_id, notes, trainer_uid, etc.
 //         }));
 
 //         console.log("✅ Workouts found:", workoutList);
@@ -49,7 +56,26 @@
 //     fetchWorkouts();
 //   }, [client]);
 
-//   if (!client) return null; // Prevents rendering if client data is missing
+//   // 🔥 Delete the workout from Firestore (both details & exercises)
+//   const handleDeleteWorkout = async (workoutId, exerciseDocId) => {
+//     try {
+//       // 1. Remove from CurrentWorkoutDetails
+//       await deleteDoc(doc(db, "CurrentWorkoutDetails", workoutId));
+//       // 2. Remove from CurrentWorkoutExercises
+//       await deleteDoc(doc(db, "CurrentWorkoutExercises", exerciseDocId));
+
+//       // 3. Remove from local state
+//       setWorkouts((prevWorkouts) =>
+//         prevWorkouts.filter((w) => w.id !== workoutId)
+//       );
+
+//       console.log("✅ Workout deleted from Firestore:", workoutId);
+//     } catch (error) {
+//       console.error("❌ Error deleting workout:", error);
+//     }
+//   };
+
+//   if (!client) return null;
 
 //   return (
 //     <div>
@@ -68,14 +94,14 @@
 
 //       {loading && <p>Loading workouts...</p>}
 
-//       {workouts.length === 0 && !loading && (
+//       {!loading && workouts.length === 0 && (
 //         <p>No workouts assigned to this client.</p>
 //       )}
 
 //       <ul>
 //         {workouts.map((workout) => (
 //           <li key={workout.id}>
-//             {/* ✅ Clicking workout name navigates to `ViewIndWorkout.jsx` with `exercise_doc_id` */}
+//             {/* ✅ Clicking workout name navigates to `ViewIndWorkout.jsx` */}
 //             <h3
 //               style={{
 //                 cursor: "pointer",
@@ -99,6 +125,17 @@
 //             <p>
 //               <strong>Trainer UID:</strong> {workout.trainer_uid}
 //             </p>
+
+//             {/* 🔥 Delete button */}
+//             <button
+//               onClick={() =>
+//                 handleDeleteWorkout(workout.id, workout.exercise_doc_id)
+//               }
+//               style={{ marginTop: "5px" }}
+//             >
+//               ❌ Delete Workout
+//             </button>
+
 //             <hr />
 //           </li>
 //         ))}
@@ -109,8 +146,6 @@
 
 // export default ViewIndClient;
 
-//
-//
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../../../utils/firebase/firebaseConfig";
@@ -119,18 +154,19 @@ import {
   query,
   where,
   getDocs,
-  doc,
   deleteDoc,
+  doc,
 } from "firebase/firestore";
 
 const ViewIndClient = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const client = location.state?.client; // Client data from navigation
+  const client = location.state?.client; // Get client data from navigate state
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const workoutLimit = 7; // Maximum number of workouts per client
 
-  // 🔥 Redirect if no client data
+  // Redirect if accessed without client data
   useEffect(() => {
     if (!client) {
       console.error("❌ No client data found. Redirecting...");
@@ -138,7 +174,6 @@ const ViewIndClient = () => {
     }
   }, [client, navigate]);
 
-  // 🔥 Fetch the client's workouts
   useEffect(() => {
     if (!client) return;
 
@@ -153,8 +188,8 @@ const ViewIndClient = () => {
         const querySnapshot = await getDocs(workoutsQuery);
 
         const workoutList = querySnapshot.docs.map((doc) => ({
-          id: doc.id, // Doc ID from Firestore
-          ...doc.data(), // workout_name, exercise_doc_id, notes, trainer_uid, etc.
+          id: doc.id,
+          ...doc.data(),
         }));
 
         console.log("✅ Workouts found:", workoutList);
@@ -169,19 +204,24 @@ const ViewIndClient = () => {
     fetchWorkouts();
   }, [client]);
 
-  // 🔥 Delete the workout from Firestore (both details & exercises)
+  const handleAddWorkout = () => {
+    if (workouts.length >= workoutLimit) {
+      alert(
+        `Maximum of ${workoutLimit} workouts reached. Please delete a workout to add another.`
+      );
+      return;
+    }
+    navigate("/create-workout", { state: { client_uid: client.uid } });
+  };
+
   const handleDeleteWorkout = async (workoutId, exerciseDocId) => {
     try {
-      // 1. Remove from CurrentWorkoutDetails
       await deleteDoc(doc(db, "CurrentWorkoutDetails", workoutId));
-      // 2. Remove from CurrentWorkoutExercises
       await deleteDoc(doc(db, "CurrentWorkoutExercises", exerciseDocId));
 
-      // 3. Remove from local state
       setWorkouts((prevWorkouts) =>
         prevWorkouts.filter((w) => w.id !== workoutId)
       );
-
       console.log("✅ Workout deleted from Firestore:", workoutId);
     } catch (error) {
       console.error("❌ Error deleting workout:", error);
@@ -197,13 +237,7 @@ const ViewIndClient = () => {
         <strong>Email:</strong> {client.email}
       </p>
 
-      <button
-        onClick={() =>
-          navigate("/create-workout", { state: { client_uid: client.uid } })
-        }
-      >
-        Add Workout
-      </button>
+      <button onClick={handleAddWorkout}>Add Workout</button>
 
       {loading && <p>Loading workouts...</p>}
 
@@ -214,7 +248,6 @@ const ViewIndClient = () => {
       <ul>
         {workouts.map((workout) => (
           <li key={workout.id}>
-            {/* ✅ Clicking workout name navigates to `ViewIndWorkout.jsx` */}
             <h3
               style={{
                 cursor: "pointer",
@@ -238,17 +271,13 @@ const ViewIndClient = () => {
             <p>
               <strong>Trainer UID:</strong> {workout.trainer_uid}
             </p>
-
-            {/* 🔥 Delete button */}
             <button
               onClick={() =>
                 handleDeleteWorkout(workout.id, workout.exercise_doc_id)
               }
-              style={{ marginTop: "5px" }}
             >
               ❌ Delete Workout
             </button>
-
             <hr />
           </li>
         ))}
