@@ -19,6 +19,7 @@
 //   const [exerciseDatabase, setExerciseDatabase] = useState([]);
 //   const [filteredExercises, setFilteredExercises] = useState([]);
 //   const [selectedCircuitExercise, setSelectedCircuitExercise] = useState(""); // Dropdown selection
+
 //   const [newExercise, setNewExercise] = useState({
 //     name: "",
 //     reps: "",
@@ -298,11 +299,6 @@
 // };
 
 // export default EditWorkout;
-//
-//
-//
-//
-//
 
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -313,6 +309,7 @@ import {
   updateDoc,
   collection,
   getDocs,
+  deleteField,
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
@@ -334,6 +331,8 @@ const EditWorkout = () => {
     cues: "",
     circuit_id: null,
   });
+
+  const [removedExercises, setRemovedExercises] = useState([]); // ✅ Track removed exercises
 
   useEffect(() => {
     if (!exercise_doc_id) {
@@ -411,6 +410,11 @@ const EditWorkout = () => {
         };
       });
 
+      // 🔥 Remove deleted exercises from Firestore
+      removedExercises.forEach((exerciseName) => {
+        updatedData[exerciseName] = deleteField();
+      });
+
       const exerciseRef = doc(db, "CurrentWorkoutExercises", exercise_doc_id);
       await updateDoc(exerciseRef, updatedData);
 
@@ -425,6 +429,12 @@ const EditWorkout = () => {
     const updatedExercises = [...exercises];
     updatedExercises[index][field] = value;
     setExercises(updatedExercises);
+  };
+
+  // 🔥 Remove an exercise from the workout (and track it for Firestore update)
+  const handleRemoveExercise = (index) => {
+    setRemovedExercises([...removedExercises, exercises[index].name]);
+    setExercises(exercises.filter((_, i) => i !== index));
   };
 
   // 🔥 Handle typing in new exercise name (Autocomplete)
@@ -548,58 +558,15 @@ const EditWorkout = () => {
               <p>
                 <strong>Circuit ID:</strong> {exercise.circuit_id || "None"}
               </p>
+              <button onClick={() => handleRemoveExercise(index)}>
+                ❌ Remove
+              </button>
               <hr />
             </div>
           ))}
           <button onClick={handleUpdate}>Save Changes</button>
         </form>
       )}
-
-      <h3>Add New Exercise</h3>
-      <input
-        type="text"
-        placeholder="Exercise Name"
-        value={newExercise.name}
-        onChange={(e) => handleNewExerciseChange("name", e.target.value)}
-      />
-      {filteredExercises.length > 0 && (
-        <ul>
-          {filteredExercises.map((exercise, index) => (
-            <li key={index} onClick={() => handleSelectExercise(exercise)}>
-              {exercise}
-            </li>
-          ))}
-        </ul>
-      )}
-      <input
-        type="number"
-        placeholder="Reps"
-        onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Sets"
-        onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Weight (lbs)"
-        onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
-      />
-
-      <select
-        value={selectedCircuitExercise}
-        onChange={(e) => setSelectedCircuitExercise(e.target.value)}
-      >
-        <option value="">-- Link to Exercise --</option>
-        {exercises.map((exercise, index) => (
-          <option key={index} value={exercise.name}>
-            {exercise.name}
-          </option>
-        ))}
-      </select>
-
-      <button onClick={handleAddExercise}>Add Exercise</button>
     </div>
   );
 };
