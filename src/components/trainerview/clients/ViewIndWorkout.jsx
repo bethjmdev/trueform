@@ -6,11 +6,10 @@
 // const ViewIndWorkout = () => {
 //   const location = useLocation();
 //   const navigate = useNavigate();
-//   const exercise_doc_id = location.state?.exercise_doc_id; // Get exercise_doc_id from navigation state
+//   const exercise_doc_id = location.state?.exercise_doc_id;
 //   const [exercises, setExercises] = useState([]);
 //   const [loading, setLoading] = useState(true);
 
-//   // Redirect if accessed without exercise_doc_id
 //   useEffect(() => {
 //     if (!exercise_doc_id) {
 //       console.error("❌ No exercise_doc_id found. Redirecting...");
@@ -27,14 +26,12 @@
 //           `📡 Fetching exercise details for doc ID: ${exercise_doc_id}`
 //         );
 
-//         // Get the document from CurrentWorkoutExercises where ID matches exercise_doc_id
 //         const exerciseRef = doc(db, "CurrentWorkoutExercises", exercise_doc_id);
 //         const exerciseSnap = await getDoc(exerciseRef);
 
 //         if (exerciseSnap.exists()) {
 //           console.log("✅ Exercise details found:", exerciseSnap.data());
 
-//           // Convert object to array
 //           const exerciseData = exerciseSnap.data();
 //           const exerciseArray = Object.entries(exerciseData).map(
 //             ([name, details]) => ({
@@ -57,7 +54,7 @@
 //     fetchExerciseDetails();
 //   }, [exercise_doc_id]);
 
-//   if (!exercise_doc_id) return null; // Prevents rendering if no ID is found
+//   if (!exercise_doc_id) return null;
 
 //   return (
 //     <div>
@@ -81,16 +78,47 @@
 //               <p>
 //                 <strong>Weight:</strong> {exercise.weight} lbs
 //               </p>
+
+//               {exercise.cues && (
+//                 <p>
+//                   <strong>Cues:</strong> {exercise.cues}
+//                 </p>
+//               )}
+
 //               <hr />
 //             </li>
 //           ))}
 //         </ul>
 //       )}
+
+//       {/* 🔥 Edit Button to navigate to EditWorkout */}
+//       <button
+//         onClick={() =>
+//           navigate("/edit-workout", { state: { exercise_doc_id } })
+//         }
+//       >
+//         Edit Workout
+//       </button>
 //     </div>
 //   );
 // };
 
 // export default ViewIndWorkout;
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -100,10 +128,11 @@ import { doc, getDoc } from "firebase/firestore";
 const ViewIndWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const exercise_doc_id = location.state?.exercise_doc_id;
+  const exercise_doc_id = location.state?.exercise_doc_id; // Get exercise_doc_id from navigation state
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Redirect if accessed without exercise_doc_id
   useEffect(() => {
     if (!exercise_doc_id) {
       console.error("❌ No exercise_doc_id found. Redirecting...");
@@ -120,12 +149,14 @@ const ViewIndWorkout = () => {
           `📡 Fetching exercise details for doc ID: ${exercise_doc_id}`
         );
 
+        // Get the document from CurrentWorkoutExercises where ID matches exercise_doc_id
         const exerciseRef = doc(db, "CurrentWorkoutExercises", exercise_doc_id);
         const exerciseSnap = await getDoc(exerciseRef);
 
         if (exerciseSnap.exists()) {
           console.log("✅ Exercise details found:", exerciseSnap.data());
 
+          // Convert object to array
           const exerciseData = exerciseSnap.data();
           const exerciseArray = Object.entries(exerciseData).map(
             ([name, details]) => ({
@@ -148,7 +179,17 @@ const ViewIndWorkout = () => {
     fetchExerciseDetails();
   }, [exercise_doc_id]);
 
-  if (!exercise_doc_id) return null;
+  if (!exercise_doc_id) return null; // Prevents rendering if no ID is found
+
+  // 🔥 Group exercises by circuit_id
+  const groupedExercises = exercises.reduce((groups, exercise) => {
+    const circuitId = exercise.circuit_id || "standalone";
+    if (!groups[circuitId]) {
+      groups[circuitId] = [];
+    }
+    groups[circuitId].push(exercise);
+    return groups;
+  }, {});
 
   return (
     <div>
@@ -158,10 +199,19 @@ const ViewIndWorkout = () => {
 
       {!loading && exercises.length === 0 && <p>No exercise details found.</p>}
 
-      {exercises.length > 0 && (
-        <ul>
+      {/* 🔥 Render exercises grouped by circuits */}
+      {Object.entries(groupedExercises).map(([circuitId, exercises]) => (
+        <div
+          key={circuitId}
+          style={{
+            border: circuitId !== "standalone" ? "2px solid blue" : "none",
+            padding: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          {circuitId !== "standalone" && <h3>🔥 Circuit</h3>}
           {exercises.map((exercise, index) => (
-            <li key={index}>
+            <div key={index} style={{ marginBottom: "10px" }}>
               <h3>{exercise.name}</h3>
               <p>
                 <strong>Reps:</strong> {exercise.reps}
@@ -172,20 +222,16 @@ const ViewIndWorkout = () => {
               <p>
                 <strong>Weight:</strong> {exercise.weight} lbs
               </p>
-
-              {exercise.cues && (
-                <p>
-                  <strong>Cues:</strong> {exercise.cues}
-                </p>
-              )}
-
+              <p>
+                <strong>Cues:</strong> {exercise.cues}
+              </p>
               <hr />
-            </li>
+            </div>
           ))}
-        </ul>
-      )}
+        </div>
+      ))}
 
-      {/* 🔥 Edit Button to navigate to EditWorkout */}
+      {/* Edit Workout Button */}
       <button
         onClick={() =>
           navigate("/edit-workout", { state: { exercise_doc_id } })

@@ -7,7 +7,7 @@
 // const CreateWorkout = () => {
 //   const location = useLocation();
 //   const navigate = useNavigate();
-//   const client_uid = location.state?.client_uid; // Get client ID from navigation state
+//   const client_uid = location.state?.client_uid;
 //   const trainer_uid = "mMvzoIRDMsgNDYooKgQU49LvBb32"; // Replace with actual logged-in trainer
 
 //   const [workoutName, setWorkoutName] = useState("");
@@ -21,7 +21,7 @@
 //     cues: "",
 //   });
 //   const [filteredExercises, setFilteredExercises] = useState([]);
-//   const [selectedExercises, setSelectedExercises] = useState([]);
+//   const [selectedExercises, setSelectedExercises] = useState([]); // 👈 Stores added exercises
 
 //   // 🔥 Fetch available exercises from ExerciseDatabase
 //   useEffect(() => {
@@ -71,7 +71,7 @@
 //     });
 //   };
 
-//   // 🔥 Add exercise to list
+//   // 🔥 Add exercise to list (Updates UI)
 //   const handleAddExercise = () => {
 //     if (
 //       !newExercise.name ||
@@ -92,8 +92,13 @@
 //       return;
 //     }
 
-//     setSelectedExercises([...selectedExercises, newExercise]);
-//     setNewExercise({ name: "", reps: "", sets: "", weight: "", cues: "" });
+//     setSelectedExercises([...selectedExercises, newExercise]); // ✅ Add exercise to UI
+//     setNewExercise({ name: "", reps: "", sets: "", weight: "", cues: "" }); // ✅ Clear input fields
+//   };
+
+//   // 🔥 Remove exercise from list
+//   const handleRemoveExercise = (index) => {
+//     setSelectedExercises(selectedExercises.filter((_, i) => i !== index));
 //   };
 
 //   // 🔥 Save Workout to Firestore
@@ -183,12 +188,47 @@
 //       />
 //       <button onClick={handleAddExercise}>Add Exercise</button>
 
+//       {/* 🔥 LIVE PREVIEW OF SELECTED EXERCISES */}
+//       {selectedExercises.length > 0 && (
+//         <div>
+//           <h3>Workout Preview</h3>
+//           <ul>
+//             {selectedExercises.map((exercise, index) => (
+//               <li key={index}>
+//                 <h4>{exercise.name}</h4>
+//                 <p>
+//                   <strong>Reps:</strong> {exercise.reps}
+//                 </p>
+//                 <p>
+//                   <strong>Sets:</strong> {exercise.sets}
+//                 </p>
+//                 <p>
+//                   <strong>Weight:</strong> {exercise.weight} lbs
+//                 </p>
+//                 <p>
+//                   <strong>Cues:</strong> {exercise.cues}
+//                 </p>
+//                 <button onClick={() => handleRemoveExercise(index)}>
+//                   ❌ Remove
+//                 </button>
+//                 <hr />
+//               </li>
+//             ))}
+//           </ul>
+//         </div>
+//       )}
+
 //       <button onClick={handleSaveWorkout}>Save Workout</button>
 //     </div>
 //   );
 // };
 
 // export default CreateWorkout;
+//
+//
+//
+//
+//
 
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -211,9 +251,10 @@ const CreateWorkout = () => {
     sets: "",
     weight: "",
     cues: "",
+    circuit_id: null, // Default to null (not in a circuit)
   });
   const [filteredExercises, setFilteredExercises] = useState([]);
-  const [selectedExercises, setSelectedExercises] = useState([]); // 👈 Stores added exercises
+  const [selectedExercises, setSelectedExercises] = useState([]);
 
   // 🔥 Fetch available exercises from ExerciseDatabase
   useEffect(() => {
@@ -263,8 +304,47 @@ const CreateWorkout = () => {
     });
   };
 
-  // 🔥 Add exercise to list (Updates UI)
-  const handleAddExercise = () => {
+  // 🔥 Add exercise to list
+  // const handleAddExercise = (linkToAbove) => {
+  //   if (
+  //     !newExercise.name ||
+  //     !newExercise.reps ||
+  //     !newExercise.sets ||
+  //     !newExercise.weight
+  //   ) {
+  //     console.error("❌ Please fill in all fields.");
+  //     return;
+  //   }
+
+  //   if (
+  //     !exerciseDatabase.some((exercise) => exercise.name === newExercise.name)
+  //   ) {
+  //     console.error(
+  //       "❌ Invalid exercise name. Please choose from suggestions."
+  //     );
+  //     return;
+  //   }
+
+  //   let updatedExercise = { ...newExercise, circuit_id: null };
+
+  //   // 🔗 If linking to above, assign circuit_id from the last exercise
+  //   if (linkToAbove && selectedExercises.length > 0) {
+  //     const lastExercise = selectedExercises[selectedExercises.length - 1];
+  //     updatedExercise.circuit_id = lastExercise.circuit_id || uuidv4();
+  //   }
+
+  //   setSelectedExercises([...selectedExercises, updatedExercise]);
+  //   setNewExercise({
+  //     name: "",
+  //     reps: "",
+  //     sets: "",
+  //     weight: "",
+  //     cues: "",
+  //     circuit_id: null,
+  //   });
+  // };
+
+  const handleAddExercise = (linkToAbove) => {
     if (
       !newExercise.name ||
       !newExercise.reps ||
@@ -284,8 +364,31 @@ const CreateWorkout = () => {
       return;
     }
 
-    setSelectedExercises([...selectedExercises, newExercise]); // ✅ Add exercise to UI
-    setNewExercise({ name: "", reps: "", sets: "", weight: "", cues: "" }); // ✅ Clear input fields
+    let updatedExercise = { ...newExercise, circuit_id: null };
+
+    if (linkToAbove && selectedExercises.length > 0) {
+      const lastExercise = selectedExercises[selectedExercises.length - 1];
+
+      // If last exercise has no circuit_id, generate one and assign to both
+      if (!lastExercise.circuit_id) {
+        const newCircuitId = uuidv4();
+        lastExercise.circuit_id = newCircuitId;
+        updatedExercise.circuit_id = newCircuitId;
+      } else {
+        // Otherwise, inherit the circuit_id from the last exercise
+        updatedExercise.circuit_id = lastExercise.circuit_id;
+      }
+    }
+
+    setSelectedExercises([...selectedExercises, updatedExercise]);
+    setNewExercise({
+      name: "",
+      reps: "",
+      sets: "",
+      weight: "",
+      cues: "",
+      circuit_id: null,
+    });
   };
 
   // 🔥 Remove exercise from list
@@ -316,6 +419,7 @@ const CreateWorkout = () => {
         sets: exercise.sets,
         weight: exercise.weight,
         cues: exercise.cues,
+        circuit_id: exercise.circuit_id, // ✅ Saves circuit ID
       };
       return acc;
     }, {});
@@ -378,35 +482,40 @@ const CreateWorkout = () => {
         placeholder="Weight"
         onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
       />
-      <button onClick={handleAddExercise}>Add Exercise</button>
+      <button onClick={() => handleAddExercise(false)}>Add Exercise</button>
+      <button onClick={() => handleAddExercise(true)}>Link to Above</button>
 
       {/* 🔥 LIVE PREVIEW OF SELECTED EXERCISES */}
       {selectedExercises.length > 0 && (
         <div>
           <h3>Workout Preview</h3>
-          <ul>
-            {selectedExercises.map((exercise, index) => (
-              <li key={index}>
-                <h4>{exercise.name}</h4>
-                <p>
-                  <strong>Reps:</strong> {exercise.reps}
-                </p>
-                <p>
-                  <strong>Sets:</strong> {exercise.sets}
-                </p>
-                <p>
-                  <strong>Weight:</strong> {exercise.weight} lbs
-                </p>
-                <p>
-                  <strong>Cues:</strong> {exercise.cues}
-                </p>
-                <button onClick={() => handleRemoveExercise(index)}>
-                  ❌ Remove
-                </button>
-                <hr />
-              </li>
-            ))}
-          </ul>
+          {selectedExercises.map((exercise, index) => (
+            <div
+              key={index}
+              style={{
+                border: exercise.circuit_id ? "2px solid blue" : "none",
+                padding: "5px",
+              }}
+            >
+              <h4>{exercise.name}</h4>
+              <p>
+                <strong>Reps:</strong> {exercise.reps}
+              </p>
+              <p>
+                <strong>Sets:</strong> {exercise.sets}
+              </p>
+              <p>
+                <strong>Weight:</strong> {exercise.weight} lbs
+              </p>
+              <p>
+                <strong>Cues:</strong> {exercise.cues}
+              </p>
+              {exercise.circuit_id && <p>🔥 Circuit</p>}
+              <button onClick={() => handleRemoveExercise(index)}>
+                ❌ Remove
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
