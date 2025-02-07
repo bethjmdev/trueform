@@ -13,16 +13,18 @@
 //   const [workoutName, setWorkoutName] = useState("");
 //   const [notes, setNotes] = useState("");
 //   const [exerciseDatabase, setExerciseDatabase] = useState([]);
+//   const [filteredExercises, setFilteredExercises] = useState([]);
+//   const [selectedExercises, setSelectedExercises] = useState([]);
+//   const [selectedCircuitExercise, setSelectedCircuitExercise] = useState(""); // Dropdown selection
+
 //   const [newExercise, setNewExercise] = useState({
 //     name: "",
 //     reps: "",
 //     sets: "",
 //     weight: "",
 //     cues: "",
-//     circuit_id: null, // Default to null (not in a circuit)
+//     circuit_id: null,
 //   });
-//   const [filteredExercises, setFilteredExercises] = useState([]);
-//   const [selectedExercises, setSelectedExercises] = useState([]);
 
 //   // 🔥 Fetch available exercises from ExerciseDatabase
 //   useEffect(() => {
@@ -72,7 +74,8 @@
 //     });
 //   };
 
-//   const handleAddExercise = (linkToAbove) => {
+//   // 🔥 Add exercise & maintain circuit linking
+//   const handleAddExercise = () => {
 //     if (
 //       !newExercise.name ||
 //       !newExercise.reps ||
@@ -94,17 +97,14 @@
 
 //     let updatedExercise = { ...newExercise, circuit_id: null };
 
-//     if (linkToAbove && selectedExercises.length > 0) {
-//       const lastExercise = selectedExercises[selectedExercises.length - 1];
-
-//       // If last exercise has no circuit_id, generate one and assign to both
-//       if (!lastExercise.circuit_id) {
-//         const newCircuitId = uuidv4();
-//         lastExercise.circuit_id = newCircuitId;
-//         updatedExercise.circuit_id = newCircuitId;
-//       } else {
-//         // Otherwise, inherit the circuit_id from the last exercise
-//         updatedExercise.circuit_id = lastExercise.circuit_id;
+//     if (selectedCircuitExercise) {
+//       // 🔥 Link exercise to selected one in dropdown
+//       const linkedExercise = selectedExercises.find(
+//         (e) => e.name === selectedCircuitExercise
+//       );
+//       if (linkedExercise) {
+//         updatedExercise.circuit_id = linkedExercise.circuit_id || uuidv4();
+//         linkedExercise.circuit_id = updatedExercise.circuit_id; // Ensure previous exercise is also linked
 //       }
 //     }
 
@@ -117,6 +117,7 @@
 //       cues: "",
 //       circuit_id: null,
 //     });
+//     setSelectedCircuitExercise(""); // Reset dropdown selection
 //   };
 
 //   // 🔥 Remove exercise from list
@@ -210,8 +211,21 @@
 //         placeholder="Weight"
 //         onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
 //       />
-//       <button onClick={() => handleAddExercise(false)}>Add Exercise</button>
-//       <button onClick={() => handleAddExercise(true)}>Link to Above</button>
+
+//       {/* 🔥 Dropdown for linking exercise to a circuit */}
+//       <select
+//         value={selectedCircuitExercise}
+//         onChange={(e) => setSelectedCircuitExercise(e.target.value)}
+//       >
+//         <option value="">-- Link to Exercise --</option>
+//         {selectedExercises.map((exercise, index) => (
+//           <option key={index} value={exercise.name}>
+//             {exercise.name}
+//           </option>
+//         ))}
+//       </select>
+
+//       <button onClick={handleAddExercise}>Add Exercise</button>
 
 //       {/* 🔥 LIVE PREVIEW OF SELECTED EXERCISES */}
 //       {selectedExercises.length > 0 && (
@@ -365,14 +379,17 @@ const CreateWorkout = () => {
     }
 
     setSelectedExercises([...selectedExercises, updatedExercise]);
+
+    // ✅ Clear all input fields after adding an exercise
     setNewExercise({
-      name: "",
+      name: "", // 🔥 Clears exercise name field
       reps: "",
       sets: "",
       weight: "",
       cues: "",
       circuit_id: null,
     });
+
     setSelectedCircuitExercise(""); // Reset dropdown selection
   };
 
@@ -455,16 +472,19 @@ const CreateWorkout = () => {
       <input
         type="number"
         placeholder="Reps"
+        value={newExercise.reps}
         onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
       />
       <input
         type="number"
         placeholder="Sets"
+        value={newExercise.sets}
         onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
       />
       <input
         type="number"
         placeholder="Weight"
+        value={newExercise.weight}
         onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
       />
 

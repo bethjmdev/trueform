@@ -18,6 +18,7 @@
 //   const [loading, setLoading] = useState(true);
 //   const [exerciseDatabase, setExerciseDatabase] = useState([]);
 //   const [filteredExercises, setFilteredExercises] = useState([]);
+//   const [selectedCircuitExercise, setSelectedCircuitExercise] = useState(""); // Dropdown selection
 //   const [newExercise, setNewExercise] = useState({
 //     name: "",
 //     reps: "",
@@ -137,7 +138,6 @@
 //   const handleSelectExercise = async (name) => {
 //     setFilteredExercises([]); // Hide suggestions after selection
 
-//     // 🔥 Find the selected exercise in ExerciseDatabase and get its cues
 //     const selectedExercise = exerciseDatabase.find(
 //       (exercise) => exercise.name === name
 //     );
@@ -154,7 +154,7 @@
 //   };
 
 //   // 🔥 Add exercise & maintain circuit linking
-//   const handleAddExercise = (linkToAbove) => {
+//   const handleAddExercise = () => {
 //     if (
 //       !newExercise.name ||
 //       !newExercise.reps ||
@@ -176,15 +176,14 @@
 
 //     let updatedExercise = { ...newExercise, circuit_id: null };
 
-//     if (linkToAbove && exercises.length > 0) {
-//       const lastExercise = exercises[exercises.length - 1];
-
-//       if (!lastExercise.circuit_id) {
-//         const newCircuitId = uuidv4();
-//         lastExercise.circuit_id = newCircuitId;
-//         updatedExercise.circuit_id = newCircuitId;
-//       } else {
-//         updatedExercise.circuit_id = lastExercise.circuit_id;
+//     if (selectedCircuitExercise) {
+//       // 🔥 Link exercise to selected one in dropdown
+//       const linkedExercise = exercises.find(
+//         (e) => e.name === selectedCircuitExercise
+//       );
+//       if (linkedExercise) {
+//         updatedExercise.circuit_id = linkedExercise.circuit_id || uuidv4();
+//         linkedExercise.circuit_id = updatedExercise.circuit_id; // Ensure previous exercise is also linked
 //       }
 //     }
 
@@ -197,6 +196,7 @@
 //       cues: "",
 //       circuit_id: null,
 //     });
+//     setSelectedCircuitExercise(""); // Reset dropdown selection
 //   };
 
 //   if (!exercise_doc_id) return null;
@@ -267,28 +267,38 @@
 //       <input
 //         type="number"
 //         placeholder="Reps"
-//         value={newExercise.reps}
 //         onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
 //       />
 //       <input
 //         type="number"
 //         placeholder="Sets"
-//         value={newExercise.sets}
 //         onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
 //       />
 //       <input
 //         type="number"
 //         placeholder="Weight (lbs)"
-//         value={newExercise.weight}
 //         onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
 //       />
-//       <button onClick={() => handleAddExercise(false)}>Add Exercise</button>
-//       <button onClick={() => handleAddExercise(true)}>Link to Above</button>
+
+//       <select
+//         value={selectedCircuitExercise}
+//         onChange={(e) => setSelectedCircuitExercise(e.target.value)}
+//       >
+//         <option value="">-- Link to Exercise --</option>
+//         {exercises.map((exercise, index) => (
+//           <option key={index} value={exercise.name}>
+//             {exercise.name}
+//           </option>
+//         ))}
+//       </select>
+
+//       <button onClick={handleAddExercise}>Add Exercise</button>
 //     </div>
 //   );
 // };
 
 // export default EditWorkout;
+//
 //
 //
 //
@@ -315,6 +325,7 @@ const EditWorkout = () => {
   const [exerciseDatabase, setExerciseDatabase] = useState([]);
   const [filteredExercises, setFilteredExercises] = useState([]);
   const [selectedCircuitExercise, setSelectedCircuitExercise] = useState(""); // Dropdown selection
+
   const [newExercise, setNewExercise] = useState({
     name: "",
     reps: "",
