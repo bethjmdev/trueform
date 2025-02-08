@@ -18,7 +18,6 @@ import EditWorkout from "./components/trainerview/clients/EditWorkout";
 import CreateWorkout from "./components/trainerview/clients/CreateWorkout";
 import ViewWorkouts from "./components/clientview/ViewWorkouts";
 import SingleWorkout from "./components/clientview/SingleWorkout";
-import ClientsProfile from "./components/trainerview/ClientsProfile";
 
 // const AppRouter = () => {
 //   return (
@@ -161,11 +160,6 @@ const AppRouter = () => {
         <Route
           path="/single-workout"
           element={<ProtectedRoute element={<SingleWorkout />} clientOnly />}
-        />
-
-        <Route
-          path="/client-profile"
-          element={<ProtectedRoute element={<ClientsProfile />} />}
         />
 
         <Route path="/" element={<AuthButtons />} />
