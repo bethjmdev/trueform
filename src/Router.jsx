@@ -157,6 +157,11 @@ const AppRouter = () => {
           element={<ProtectedRoute element={<ViewWorkouts />} clientOnly />}
         />
 
+        <Route
+          path="/single-workout"
+          element={<ProtectedRoute element={<SingleWorkout />} clientOnly />}
+        />
+
         <Route path="/" element={<AuthButtons />} />
       </Routes>
     </Router>
