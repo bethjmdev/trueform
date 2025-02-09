@@ -30,7 +30,6 @@ const StartWorkout = () => {
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime + 1);
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -94,7 +93,6 @@ const StartWorkout = () => {
 
   const saveWorkout = async () => {
     if (!workoutDetails || !currentUser) return;
-
     setSaving(true);
     const exerciseDocId = uuidv4();
 
@@ -125,16 +123,18 @@ const StartWorkout = () => {
           ?.map((checked, index) => (checked ? index : null))
           .filter((index) => index !== null);
 
-        workoutExercises[exercise] = {
-          ...details,
-          actual_weights_per_set: checkedIndices.map(
-            (i) => weights[exercise]?.[i] ?? ""
-          ),
-          actual_reps_per_set: checkedIndices.map(
-            (i) => reps[exercise]?.[i] ?? ""
-          ),
-          completed_sets: checkedIndices.map(() => true),
-        };
+        if (checkedIndices.length > 0) {
+          workoutExercises[exercise] = {
+            ...details,
+            actual_weights_per_set: checkedIndices.map(
+              (i) => weights[exercise]?.[i] ?? ""
+            ),
+            actual_reps_per_set: checkedIndices.map(
+              (i) => reps[exercise]?.[i] ?? ""
+            ),
+            completed_sets: checkedIndices.map(() => true),
+          };
+        }
       });
 
       await setDoc(
@@ -153,7 +153,7 @@ const StartWorkout = () => {
 
   if (!workoutDetails) return <p>Workout data not found.</p>;
 
-  // ✅ Group exercises by `circuit_id`
+  // ✅ Group exercises by circuit_id
   const groupedExercises = {};
   const nonCircuitExercises = [];
 
@@ -171,8 +171,48 @@ const StartWorkout = () => {
   return (
     <div>
       <h2>Workout in Progress</h2>
-
       {workout_name && <h3>Workout: {workout_name}</h3>}
+
+      {/* ✅ Pre-Workout Questions */}
+      <div>
+        {[
+          {
+            key: "slept_6_hours",
+            question: "Did you sleep more than 6 hours last night?",
+          },
+          {
+            key: "motivated",
+            question: "Do you feel motivated to workout right now?",
+          },
+          {
+            key: "ate_enough",
+            question: "Have you had enough to eat/drink today?",
+          },
+          { key: "hydrated", question: "Have you had enough water today?" },
+        ].map(({ key, question }) => (
+          <div key={key}>
+            <p>
+              <strong>{question}</strong>
+            </p>
+            <button
+              onClick={() => handleQuestionChange(key, "Yes")}
+              style={{
+                backgroundColor: questions[key] === "Yes" ? "#4CAF50" : "#ddd",
+              }}
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => handleQuestionChange(key, "No")}
+              style={{
+                backgroundColor: questions[key] === "No" ? "#FF5252" : "#ddd",
+              }}
+            >
+              No
+            </button>
+          </div>
+        ))}
+      </div>
 
       <button
         onClick={saveWorkout}
@@ -182,7 +222,7 @@ const StartWorkout = () => {
         {saving ? "Saving..." : "Save Workout"}
       </button>
 
-      {/* ✅ Render Circuit Groups */}
+      {/* ✅ Render Circuit Groups & Non-Circuit Exercises */}
       {Object.entries(groupedExercises).map(([circuit_id, exercises]) => (
         <div
           key={circuit_id}
@@ -192,113 +232,66 @@ const StartWorkout = () => {
             marginTop: "20px",
           }}
         >
-          <h3>🔥 Circuit </h3>
+          <h3>🔥 Circuit</h3>
           {exercises.map(([exercise, details]) => (
-            <ExerciseComponent
-              key={exercise}
-              exercise={exercise}
-              details={details}
-              handleCheckboxChange={handleCheckboxChange}
-              handleRepsChange={handleRepsChange}
-              handleWeightChange={handleWeightChange}
-              exerciseProgress={exerciseProgress}
-              reps={reps}
-              weights={weights}
-            />
+            <div key={exercise}>
+              <h3>{exercise}</h3>
+              {details.videoDemo && (
+                <p>
+                  <strong>Video Demo:</strong>{" "}
+                  <a
+                    href={details.videoDemo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {details.videoDemo}
+                  </a>
+                </p>
+              )}
+              <p>
+                <strong>Reps (Planned):</strong> {details.reps}
+              </p>
+              <p>
+                <strong>Weight (Planned):</strong> {details.weight} lbs
+              </p>
+              {exerciseProgress[exercise]?.map((isChecked, setIndex) => (
+                <label
+                  key={setIndex}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "5px",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => handleCheckboxChange(exercise, setIndex)}
+                  />
+                  <input
+                    type="number"
+                    disabled={!isChecked}
+                    value={reps[exercise]?.[setIndex] ?? ""}
+                    onChange={(e) =>
+                      handleRepsChange(exercise, setIndex, e.target.value)
+                    }
+                  />
+                  <input
+                    type="number"
+                    disabled={!isChecked}
+                    value={weights[exercise]?.[setIndex] ?? ""}
+                    onChange={(e) =>
+                      handleWeightChange(exercise, setIndex, e.target.value)
+                    }
+                  />
+                </label>
+              ))}
+            </div>
           ))}
         </div>
-      ))}
-
-      {/* ✅ Render Non-Circuit Exercises */}
-      {nonCircuitExercises.map(([exercise, details]) => (
-        <ExerciseComponent
-          key={exercise}
-          exercise={exercise}
-          details={details}
-          handleCheckboxChange={handleCheckboxChange}
-          handleRepsChange={handleRepsChange}
-          handleWeightChange={handleWeightChange}
-          exerciseProgress={exerciseProgress}
-          reps={reps}
-          weights={weights}
-        />
       ))}
     </div>
   );
 };
-
-// ✅ Extracted Exercise Component to avoid duplication
-const ExerciseComponent = ({
-  exercise,
-  details,
-  handleCheckboxChange,
-  handleRepsChange,
-  handleWeightChange,
-  exerciseProgress,
-  reps,
-  weights,
-}) => (
-  <div>
-    <h3>{exercise}</h3>
-    {details.videoDemo && (
-      <p>
-        <strong>Video Demo:</strong>{" "}
-        <a href={details.videoDemo} target="_blank" rel="noopener noreferrer">
-          {details.videoDemo}
-        </a>
-      </p>
-    )}
-
-    <p>
-      <strong>Reps (Planned):</strong> {details.reps}
-    </p>
-    <p>
-      <strong>Weight (Planned):</strong> {details.weight} lbs
-    </p>
-    <p>
-      <strong>Sets:</strong> {details.sets}
-    </p>
-    <p>
-      <strong>Cues:</strong> {details.cues}
-    </p>
-
-    <div>
-      <strong>Complete Sets:</strong>
-      {exerciseProgress[exercise]?.map((isChecked, setIndex) => (
-        <label
-          key={setIndex}
-          style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}
-        >
-          <input
-            type="checkbox"
-            checked={isChecked}
-            onChange={() => handleCheckboxChange(exercise, setIndex)}
-            style={{ marginRight: "10px" }}
-          />
-          Set {setIndex + 1}
-          <input
-            type="number"
-            value={reps[exercise]?.[setIndex] ?? ""}
-            onChange={(e) =>
-              handleRepsChange(exercise, setIndex, e.target.value)
-            }
-            style={{ marginLeft: "10px", width: "50px" }}
-            placeholder="Reps"
-          />
-          <input
-            type="number"
-            value={weights[exercise]?.[setIndex] ?? ""}
-            onChange={(e) =>
-              handleWeightChange(exercise, setIndex, e.target.value)
-            }
-            style={{ marginLeft: "10px", width: "60px" }}
-            placeholder="Weight"
-          />
-          lbs
-        </label>
-      ))}
-    </div>
-  </div>
-);
 
 export default StartWorkout;
