@@ -150,7 +150,9 @@ const ViewWorkouts = () => {
                 }}
                 onClick={() =>
                   navigate("/single-workout", {
-                    state: { exercise_doc_id: workout.exercise_doc_id },
+                    state: {
+                      exercise_doc_id: workout.exercise_doc_id,
+                    },
                   })
                 }
               >
