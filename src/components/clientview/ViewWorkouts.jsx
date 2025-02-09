@@ -65,6 +65,7 @@ const ViewWorkouts = () => {
                     state: {
                       exercise_doc_id: workout.exercise_doc_id,
                       workout_name: workout.workout_name,
+                      trainer: workout.trainer_uid,
                     },
                   })
                 }

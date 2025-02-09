@@ -8,6 +8,7 @@ const SingleWorkout = () => {
   const navigate = useNavigate();
   const exercise_doc_id = location.state?.exercise_doc_id;
   const workout_name = location.state?.workout_name;
+  const trainer = location.state?.trainer;
 
   const [workoutDetails, setWorkoutDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +42,9 @@ const SingleWorkout = () => {
   if (!workoutDetails) return <p>Workout not found.</p>;
 
   const handleStartWorkout = () => {
-    navigate("/start-workout", { state: { workoutDetails, workout_name } });
+    navigate("/start-workout", {
+      state: { workoutDetails, workout_name, trainer },
+    });
   };
 
   return (

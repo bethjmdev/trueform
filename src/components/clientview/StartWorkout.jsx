@@ -10,6 +10,7 @@ const StartWorkout = () => {
   const navigate = useNavigate();
   const workoutDetails = location.state?.workoutDetails;
   const workout_name = location.state?.workout_name;
+  const trainer = location.state?.trainer;
   const [time, setTime] = useState(0);
   const [saving, setSaving] = useState(false);
   const [weights, setWeights] = useState({});
@@ -109,6 +110,7 @@ const StartWorkout = () => {
       await setDoc(doc(collection(db, "PastWorkoutDetails"), exerciseDocId), {
         uid: currentUser.uid,
         workout_name,
+        trainer,
         timestamp: serverTimestamp(),
         duration_seconds: time,
         notes: notes.trim(),
@@ -139,7 +141,8 @@ const StartWorkout = () => {
 
       await setDoc(
         doc(collection(db, "PastWorkoutExercises"), exerciseDocId),
-        workoutExercises
+        workoutExercises,
+        trainer
       );
 
       alert("Workout saved successfully!");
