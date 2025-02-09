@@ -1,271 +1,24 @@
-// import { useState, useEffect } from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import { db } from "../../utils/firebase/firebaseConfig"; // Ensure Firebase is imported
-// import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
-// import { v4 as uuidv4 } from "uuid";
-// import { getAuth } from "firebase/auth"; // Import Firebase auth
-
-// const StartWorkout = () => {
-//   const location = useLocation();
-//   const navigate = useNavigate(); // Hook for redirecting
-//   const workoutDetails = location.state?.workoutDetails;
-//   const [time, setTime] = useState(0);
-//   const [saving, setSaving] = useState(false);
-//   const [weights, setWeights] = useState({});
-//   const [notes, setNotes] = useState(""); // Notes state
-//   const [exerciseProgress, setExerciseProgress] = useState({}); // Track completed sets
-//   const auth = getAuth();
-//   const currentUser = auth.currentUser;
-
-//   // New state for questions
-//   const [questions, setQuestions] = useState({
-//     slept_6_hours: "",
-//     motivated: "",
-//     ate_enough: "",
-//     hydrated: "",
-//   });
-
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       setTime((prevTime) => prevTime + 1);
-//     }, 1000);
-
-//     return () => clearInterval(interval);
-//   }, []);
-
-//   useEffect(() => {
-//     if (workoutDetails) {
-//       const initialWeights = {};
-//       const initialProgress = {};
-//       Object.entries(workoutDetails).forEach(([exercise, details]) => {
-//         initialWeights[exercise] = details.weight ? String(details.weight) : "";
-//         initialProgress[exercise] = new Array(Number(details.sets)).fill(false); // Create checkboxes
-//       });
-//       setWeights(initialWeights);
-//       setExerciseProgress(initialProgress);
-//     }
-//   }, [workoutDetails]);
-
-//   const handleWeightChange = (exercise, value) => {
-//     setWeights((prevWeights) => ({
-//       ...prevWeights,
-//       [exercise]: value,
-//     }));
-//   };
-
-//   const handleCheckboxChange = (exercise, setIndex) => {
-//     setExerciseProgress((prevProgress) => ({
-//       ...prevProgress,
-//       [exercise]: prevProgress[exercise].map((checked, index) =>
-//         index === setIndex ? !checked : checked
-//       ),
-//     }));
-//   };
-
-//   const handleNotesChange = (e) => {
-//     setNotes(e.target.value);
-//   };
-
-//   const handleQuestionChange = (question, value) => {
-//     setQuestions((prev) => ({
-//       ...prev,
-//       [question]: value,
-//     }));
-//   };
-
-//   const saveWorkout = async () => {
-//     if (!workoutDetails || !currentUser) return;
-
-//     setSaving(true);
-//     const exerciseDocId = uuidv4(); // Generate unique ID
-
-//     try {
-//       // Stop the timer
-//       clearInterval(time);
-
-//       // Save workout details
-//       await setDoc(doc(collection(db, "PastWorkoutDetails"), exerciseDocId), {
-//         uid: currentUser.uid, // Save the current user's UID
-//         timestamp: serverTimestamp(), // Save timestamp
-//         duration_seconds: time, // Save workout duration
-//         notes: notes.trim(), // Save user-entered notes
-//         ...questions, // Save responses to questions
-//       });
-
-//       // Save workout exercises with progress tracking
-//       const workoutExercises = {};
-//       Object.entries(workoutDetails).forEach(([exercise, details]) => {
-//         workoutExercises[exercise] = {
-//           ...details,
-//           weight: weights[exercise] || "0", // Save entered weight
-//           completed_sets: exerciseProgress[exercise] || [], // Save checked sets
-//         };
-//       });
-
-//       await setDoc(
-//         doc(collection(db, "PastWorkoutExercises"), exerciseDocId),
-//         workoutExercises
-//       );
-
-//       alert("Workout saved successfully!");
-
-//       // Redirect user to Client Homepage
-//       navigate("/client-homepage");
-//     } catch (error) {
-//       console.error("Error saving workout:", error);
-//     } finally {
-//       setSaving(false);
-//     }
-//   };
-
-//   if (!workoutDetails) return <p>Workout data not found.</p>;
-
-//   return (
-//     <div>
-//       <h2>Workout in Progress</h2>
-
-//       {/* Pre-Workout Questions */}
-//       <div>
-//         {[
-//           {
-//             key: "slept_6_hours",
-//             question: "Did you sleep more than 6 hours last night?",
-//           },
-//           {
-//             key: "motivated",
-//             question: "Do you feel motivated to workout right now?",
-//           },
-//           {
-//             key: "ate_enough",
-//             question: "Have you had enough to eat/drink today?",
-//           },
-//           { key: "hydrated", question: "Have you had enough water today?" },
-//         ].map(({ key, question }) => (
-//           <div key={key}>
-//             <p>
-//               <strong>{question}</strong>
-//             </p>
-//             <button
-//               onClick={() => handleQuestionChange(key, "Yes")}
-//               style={{
-//                 backgroundColor: questions[key] === "Yes" ? "#4CAF50" : "#ddd",
-//                 color: questions[key] === "Yes" ? "white" : "black",
-//                 marginRight: "10px",
-//                 padding: "8px 16px",
-//                 border: "none",
-//                 cursor: "pointer",
-//               }}
-//             >
-//               Yes
-//             </button>
-//             <button
-//               onClick={() => handleQuestionChange(key, "No")}
-//               style={{
-//                 backgroundColor: questions[key] === "No" ? "#FF5252" : "#ddd",
-//                 color: questions[key] === "No" ? "white" : "black",
-//                 padding: "8px 16px",
-//                 border: "none",
-//                 cursor: "pointer",
-//               }}
-//             >
-//               No
-//             </button>
-//           </div>
-//         ))}
-//       </div>
-
-//       {/* Notes Input */}
-//       <div style={{ marginTop: "20px" }}>
-//         <label>
-//           <strong>Notes:</strong>
-//         </label>
-//         <textarea
-//           value={notes}
-//           onChange={handleNotesChange}
-//           placeholder="Add workout notes..."
-//           rows="3"
-//           style={{ width: "100%", marginTop: "5px" }}
-//         />
-//       </div>
-
-//       {/* Save Workout Button */}
-//       <button
-//         onClick={saveWorkout}
-//         disabled={saving}
-//         style={{ marginTop: "10px" }}
-//       >
-//         {saving ? "Saving..." : "Save Workout"}
-//       </button>
-
-//       {/* Display Workout Details */}
-//       {Object.entries(workoutDetails).map(([exercise, details], index) => (
-//         <div key={index}>
-//           <h3>{exercise}</h3>
-//           <p>
-//             <strong>Reps:</strong> {details.reps}
-//           </p>
-//           <p>
-//             <strong>Sets:</strong> {details.sets}
-//           </p>
-//           <p>
-//             <strong>Weight:</strong>
-//             <input
-//               type="number"
-//               value={weights[exercise] ?? ""}
-//               onChange={(e) => handleWeightChange(exercise, e.target.value)}
-//               style={{ marginLeft: "10px", width: "60px" }}
-//             />{" "}
-//             lbs
-//           </p>
-//           <p>
-//             <strong>Cues:</strong> {details.cues}
-//           </p>
-//           {details.circuit_id && <p>🔥 Circuit</p>}
-
-//           {/* Checkboxes for Sets */}
-//           <div>
-//             <strong>Complete Sets:</strong>
-//             {exerciseProgress[exercise]?.map((isChecked, setIndex) => (
-//               <label key={setIndex} style={{ marginLeft: "10px" }}>
-//                 <input
-//                   type="checkbox"
-//                   checked={isChecked}
-//                   onChange={() => handleCheckboxChange(exercise, setIndex)}
-//                 />
-//                 {setIndex + 1}
-//               </label>
-//             ))}
-//           </div>
-
-//           <hr />
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default StartWorkout;
-
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { db } from "../../utils/firebase/firebaseConfig"; // Ensure Firebase is imported
+import { db } from "../../utils/firebase/firebaseConfig";
 import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-import { getAuth } from "firebase/auth"; // Import Firebase auth
+import { getAuth } from "firebase/auth";
 
 const StartWorkout = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // Hook for redirecting
+  const navigate = useNavigate();
   const workoutDetails = location.state?.workoutDetails;
+  const workout_name = location.state?.workout_name;
   const [time, setTime] = useState(0);
   const [saving, setSaving] = useState(false);
   const [weights, setWeights] = useState({});
-  const [notes, setNotes] = useState(""); // Notes state
-  const [exerciseProgress, setExerciseProgress] = useState({}); // Track completed sets
+  const [reps, setReps] = useState({});
+  const [notes, setNotes] = useState("");
+  const [exerciseProgress, setExerciseProgress] = useState({});
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
-  // New state for questions
   const [questions, setQuestions] = useState({
     slept_6_hours: "",
     motivated: "",
@@ -284,20 +37,38 @@ const StartWorkout = () => {
   useEffect(() => {
     if (workoutDetails) {
       const initialWeights = {};
+      const initialReps = {};
       const initialProgress = {};
       Object.entries(workoutDetails).forEach(([exercise, details]) => {
-        initialWeights[exercise] = details.weight ? String(details.weight) : "";
-        initialProgress[exercise] = new Array(Number(details.sets)).fill(false); // Create checkboxes
+        initialWeights[exercise] = new Array(Number(details.sets)).fill(
+          details.weight || ""
+        );
+        initialReps[exercise] = new Array(Number(details.sets)).fill(
+          details.reps || ""
+        );
+        initialProgress[exercise] = new Array(Number(details.sets)).fill(false);
       });
       setWeights(initialWeights);
+      setReps(initialReps);
       setExerciseProgress(initialProgress);
     }
   }, [workoutDetails]);
 
-  const handleWeightChange = (exercise, value) => {
+  const handleWeightChange = (exercise, setIndex, value) => {
     setWeights((prevWeights) => ({
       ...prevWeights,
-      [exercise]: value,
+      [exercise]: prevWeights[exercise].map((weight, index) =>
+        index === setIndex ? value : weight
+      ),
+    }));
+  };
+
+  const handleRepsChange = (exercise, setIndex, value) => {
+    setReps((prevReps) => ({
+      ...prevReps,
+      [exercise]: prevReps[exercise].map((rep, index) =>
+        index === setIndex ? value : rep
+      ),
     }));
   };
 
@@ -325,13 +96,11 @@ const StartWorkout = () => {
     if (!workoutDetails || !currentUser) return;
 
     setSaving(true);
-    const exerciseDocId = uuidv4(); // Generate unique ID
+    const exerciseDocId = uuidv4();
 
     try {
-      // Stop the timer
       clearInterval(time);
 
-      // Calculate total sets and completed sets
       let totalSets = 0;
       let completedSets = 0;
       Object.values(exerciseProgress).forEach((sets) => {
@@ -339,24 +108,32 @@ const StartWorkout = () => {
         completedSets += sets.filter((set) => set).length;
       });
 
-      // Save workout details
       await setDoc(doc(collection(db, "PastWorkoutDetails"), exerciseDocId), {
-        uid: currentUser.uid, // Save the current user's UID
-        timestamp: serverTimestamp(), // Save timestamp
-        duration_seconds: time, // Save workout duration
-        notes: notes.trim(), // Save user-entered notes
-        completed_sets_count: completedSets, // Save completed checkboxes
-        total_sets_count: totalSets, // Save total checkboxes
-        ...questions, // Save responses to questions
+        uid: currentUser.uid,
+        workout_name,
+        timestamp: serverTimestamp(),
+        duration_seconds: time,
+        notes: notes.trim(),
+        completed_sets_count: completedSets,
+        total_sets_count: totalSets,
+        ...questions,
       });
 
-      // Save workout exercises with progress tracking
       const workoutExercises = {};
       Object.entries(workoutDetails).forEach(([exercise, details]) => {
+        const checkedIndices = exerciseProgress[exercise]
+          ?.map((checked, index) => (checked ? index : null))
+          .filter((index) => index !== null);
+
         workoutExercises[exercise] = {
           ...details,
-          weight: weights[exercise] || "0", // Save entered weight
-          completed_sets: exerciseProgress[exercise] || [], // Save checked sets
+          actual_weights_per_set: checkedIndices.map(
+            (i) => weights[exercise]?.[i] ?? ""
+          ),
+          actual_reps_per_set: checkedIndices.map(
+            (i) => reps[exercise]?.[i] ?? ""
+          ),
+          completed_sets: checkedIndices.map(() => true),
         };
       });
 
@@ -366,8 +143,6 @@ const StartWorkout = () => {
       );
 
       alert("Workout saved successfully!");
-
-      // Redirect user to Client Homepage
       navigate("/client-homepage");
     } catch (error) {
       console.error("Error saving workout:", error);
@@ -378,75 +153,27 @@ const StartWorkout = () => {
 
   if (!workoutDetails) return <p>Workout data not found.</p>;
 
+  // ✅ Group exercises by `circuit_id`
+  const groupedExercises = {};
+  const nonCircuitExercises = [];
+
+  Object.entries(workoutDetails).forEach(([exercise, details]) => {
+    if (details.circuit_id) {
+      if (!groupedExercises[details.circuit_id]) {
+        groupedExercises[details.circuit_id] = [];
+      }
+      groupedExercises[details.circuit_id].push([exercise, details]);
+    } else {
+      nonCircuitExercises.push([exercise, details]);
+    }
+  });
+
   return (
     <div>
       <h2>Workout in Progress</h2>
 
-      {/* Pre-Workout Questions */}
-      <div>
-        {[
-          {
-            key: "slept_6_hours",
-            question: "Did you sleep more than 6 hours last night?",
-          },
-          {
-            key: "motivated",
-            question: "Do you feel motivated to workout right now?",
-          },
-          {
-            key: "ate_enough",
-            question: "Have you had enough to eat/drink today?",
-          },
-          { key: "hydrated", question: "Have you had enough water today?" },
-        ].map(({ key, question }) => (
-          <div key={key}>
-            <p>
-              <strong>{question}</strong>
-            </p>
-            <button
-              onClick={() => handleQuestionChange(key, "Yes")}
-              style={{
-                backgroundColor: questions[key] === "Yes" ? "#4CAF50" : "#ddd",
-                color: questions[key] === "Yes" ? "white" : "black",
-                marginRight: "10px",
-                padding: "8px 16px",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => handleQuestionChange(key, "No")}
-              style={{
-                backgroundColor: questions[key] === "No" ? "#FF5252" : "#ddd",
-                color: questions[key] === "No" ? "white" : "black",
-                padding: "8px 16px",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              No
-            </button>
-          </div>
-        ))}
-      </div>
+      {workout_name && <h3>Workout: {workout_name}</h3>}
 
-      {/* Notes Input */}
-      <div style={{ marginTop: "20px" }}>
-        <label>
-          <strong>Notes:</strong>
-        </label>
-        <textarea
-          value={notes}
-          onChange={handleNotesChange}
-          placeholder="Add workout notes..."
-          rows="3"
-          style={{ width: "100%", marginTop: "5px" }}
-        />
-      </div>
-
-      {/* Save Workout Button */}
       <button
         onClick={saveWorkout}
         disabled={saving}
@@ -455,51 +182,123 @@ const StartWorkout = () => {
         {saving ? "Saving..." : "Save Workout"}
       </button>
 
-      {/* Display Workout Details */}
-      {Object.entries(workoutDetails).map(([exercise, details], index) => (
-        <div key={index}>
-          <h3>{exercise}</h3>
-          <p>
-            <strong>Reps:</strong> {details.reps}
-          </p>
-          <p>
-            <strong>Sets:</strong> {details.sets}
-          </p>
-          <p>
-            <strong>Weight:</strong>
-            <input
-              type="number"
-              value={weights[exercise] ?? ""}
-              onChange={(e) => handleWeightChange(exercise, e.target.value)}
-              style={{ marginLeft: "10px", width: "60px" }}
-            />{" "}
-            lbs
-          </p>
-          <p>
-            <strong>Cues:</strong> {details.cues}
-          </p>
-          {details.circuit_id && <p>🔥 Circuit</p>}
-
-          {/* Checkboxes for Sets */}
-          <div>
-            <strong>Complete Sets:</strong>
-            {exerciseProgress[exercise]?.map((isChecked, setIndex) => (
-              <label key={setIndex} style={{ marginLeft: "10px" }}>
-                <input
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={() => handleCheckboxChange(exercise, setIndex)}
-                />
-                {setIndex + 1}
-              </label>
-            ))}
-          </div>
-
-          <hr />
+      {/* ✅ Render Circuit Groups */}
+      {Object.entries(groupedExercises).map(([circuit_id, exercises]) => (
+        <div
+          key={circuit_id}
+          style={{
+            border: "2px solid #000",
+            padding: "10px",
+            marginTop: "20px",
+          }}
+        >
+          <h3>🔥 Circuit </h3>
+          {exercises.map(([exercise, details]) => (
+            <ExerciseComponent
+              key={exercise}
+              exercise={exercise}
+              details={details}
+              handleCheckboxChange={handleCheckboxChange}
+              handleRepsChange={handleRepsChange}
+              handleWeightChange={handleWeightChange}
+              exerciseProgress={exerciseProgress}
+              reps={reps}
+              weights={weights}
+            />
+          ))}
         </div>
+      ))}
+
+      {/* ✅ Render Non-Circuit Exercises */}
+      {nonCircuitExercises.map(([exercise, details]) => (
+        <ExerciseComponent
+          key={exercise}
+          exercise={exercise}
+          details={details}
+          handleCheckboxChange={handleCheckboxChange}
+          handleRepsChange={handleRepsChange}
+          handleWeightChange={handleWeightChange}
+          exerciseProgress={exerciseProgress}
+          reps={reps}
+          weights={weights}
+        />
       ))}
     </div>
   );
 };
+
+// ✅ Extracted Exercise Component to avoid duplication
+const ExerciseComponent = ({
+  exercise,
+  details,
+  handleCheckboxChange,
+  handleRepsChange,
+  handleWeightChange,
+  exerciseProgress,
+  reps,
+  weights,
+}) => (
+  <div>
+    <h3>{exercise}</h3>
+    {details.videoDemo && (
+      <p>
+        <strong>Video Demo:</strong>{" "}
+        <a href={details.videoDemo} target="_blank" rel="noopener noreferrer">
+          {details.videoDemo}
+        </a>
+      </p>
+    )}
+
+    <p>
+      <strong>Reps (Planned):</strong> {details.reps}
+    </p>
+    <p>
+      <strong>Weight (Planned):</strong> {details.weight} lbs
+    </p>
+    <p>
+      <strong>Sets:</strong> {details.sets}
+    </p>
+    <p>
+      <strong>Cues:</strong> {details.cues}
+    </p>
+
+    <div>
+      <strong>Complete Sets:</strong>
+      {exerciseProgress[exercise]?.map((isChecked, setIndex) => (
+        <label
+          key={setIndex}
+          style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}
+        >
+          <input
+            type="checkbox"
+            checked={isChecked}
+            onChange={() => handleCheckboxChange(exercise, setIndex)}
+            style={{ marginRight: "10px" }}
+          />
+          Set {setIndex + 1}
+          <input
+            type="number"
+            value={reps[exercise]?.[setIndex] ?? ""}
+            onChange={(e) =>
+              handleRepsChange(exercise, setIndex, e.target.value)
+            }
+            style={{ marginLeft: "10px", width: "50px" }}
+            placeholder="Reps"
+          />
+          <input
+            type="number"
+            value={weights[exercise]?.[setIndex] ?? ""}
+            onChange={(e) =>
+              handleWeightChange(exercise, setIndex, e.target.value)
+            }
+            style={{ marginLeft: "10px", width: "60px" }}
+            placeholder="Weight"
+          />
+          lbs
+        </label>
+      ))}
+    </div>
+  </div>
+);
 
 export default StartWorkout;
