@@ -554,43 +554,6 @@ const EditWorkout = () => {
 
       {exercises.length > 0 && (
         <form onSubmit={(e) => e.preventDefault()}>
-          {/* {exercises.map((exercise, index) => (
-            <div key={index}>
-              <h3>{exercise.name}</h3>
-              <label>Reps:</label>
-              <input
-                type="number"
-                value={exercise.reps}
-                onChange={(e) => handleChange(index, "reps", e.target.value)}
-              />
-              <br />
-              <label>Sets:</label>
-              <input
-                type="number"
-                value={exercise.sets}
-                onChange={(e) => handleChange(index, "sets", e.target.value)}
-              />
-              <br />
-              <label>Weight (lbs):</label>
-              <input
-                type="number"
-                value={exercise.weight}
-                onChange={(e) => handleChange(index, "weight", e.target.value)}
-              />
-              <br />
-              <p>
-                <strong>Cues:</strong> {exercise.cues}
-              </p>
-              <p>
-                <strong>Circuit ID:</strong> {exercise.circuit_id || "None"}
-              </p>
-              <button onClick={() => handleRemoveExercise(index)}>
-                ❌ Remove
-              </button>
-              <hr />
-            </div>
-          ))} */}
-
           {Object.entries(groupExercisesByCircuit()).map(
             ([circuitId, circuitExercises], idx) => (
               <div
