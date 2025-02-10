@@ -21,10 +21,6 @@ const PastWorkouts = () => {
       try {
         console.log(`📡 Fetching past workouts for client UID: ${client.uid}`);
 
-        // const pastWorkoutsQuery = query(
-        //   collection(db, "PastWorkoutDetails"),
-        //   where("client_uid", "==", client.uid)
-        // );
         const pastWorkoutsQuery = query(
           collection(db, "PastWorkoutDetails"),
           where("uid", "==", client.uid) // 🔍 Match client's UID
@@ -60,23 +56,8 @@ const PastWorkouts = () => {
       {!loading && pastWorkouts.length === 0 && (
         <p>No past workouts recorded for this client.</p>
       )}
-      {/* 
-      <ul>
-        {pastWorkouts.map((workout) => (
-          <li key={workout.id}>
-            <h3>{workout.workout_name}</h3>
-            <p>
-              <strong>Date:</strong>{" "}
-              {new Date(workout.timestamp).toLocaleString()}
-            </p>
-            <p>
-              <strong>Duration:</strong> {workout.duration} minutes
-            </p>
-            <hr />
-          </li>
-        ))}
-      </ul> */}
 
+      {/* 
       <ul>
         {pastWorkouts.map((workout) => {
           const timestamp = workout.timestamp?.toDate
@@ -94,6 +75,48 @@ const PastWorkouts = () => {
           return (
             <li key={workout.id}>
               <h3>{workout.workout_name}</h3>
+              <p>
+                <strong>Date:</strong> {formattedDate}
+              </p>
+              <p>
+                <strong>Duration:</strong> {minutes} min {seconds} sec
+              </p>
+              <hr />
+            </li>
+          );
+        })}
+      </ul> */}
+
+      <ul>
+        {pastWorkouts.map((workout) => {
+          const timestamp = workout.timestamp?.toDate
+            ? workout.timestamp.toDate()
+            : null;
+
+          const formattedDate = timestamp
+            ? timestamp.toLocaleString()
+            : "Unknown Date";
+
+          const totalSeconds = workout.duration_seconds || 0;
+          const minutes = Math.floor(totalSeconds / 60);
+          const seconds = totalSeconds % 60;
+
+          return (
+            <li key={workout.id}>
+              <h3
+                style={{
+                  cursor: "pointer",
+                  color: "blue",
+                  textDecoration: "underline",
+                }}
+                onClick={() =>
+                  navigate("/ind-past-workout", {
+                    state: { workoutId: workout.id },
+                  })
+                }
+              >
+                {workout.workout_name}
+              </h3>
               <p>
                 <strong>Date:</strong> {formattedDate}
               </p>
