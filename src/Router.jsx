@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import SignUpFormClient from "./utils/auth/SignUpFormClient";
 import SignUpFormTrainer from "./utils/auth/SignUpFormTrainer";
 import SignInFormClient from "./utils/auth/SignInFormClient";
 import SignInFormTrainer from "./utils/auth/SignInFormTrainer";
 import AuthButtons from "./utils/auth/AuthButtons";
-import TrainerHomePage from "./components/trainerview/TrainerHomePage";
-import ClientHomePage from "./components/clientview/ClientHomePage";
 import ProtectedRoute from "./utils/auth/ProtectedRoute";
+
+import TrainerHomePage from "./components/trainerview/TrainerHomePage";
 import AddExercise from "./components/trainerview/exercise/AddExercise";
 import ExerciseDatabase from "./components/trainerview/exercise/ExerciseDatabase";
 import EditExercise from "./components/trainerview/exercise/EditExercise";
@@ -15,6 +16,9 @@ import ViewAllClients from "./components/trainerview/clients/ViewAllClients";
 import ViewIndClient from "./components/trainerview/clients/ViewIndClient";
 import ViewIndWorkout from "./components/trainerview/clients/ViewIndWorkout";
 import EditWorkout from "./components/trainerview/clients/EditWorkout";
+import PastWorkouts from "./components/trainerview/clients/PastWorkouts";
+
+import ClientHomePage from "./components/clientview/ClientHomePage";
 import CreateWorkout from "./components/trainerview/clients/CreateWorkout";
 import ViewWorkouts from "./components/clientview/ViewWorkouts";
 import SingleWorkout from "./components/clientview/SingleWorkout";
@@ -79,6 +83,11 @@ const AppRouter = () => {
         <Route
           path="/create-workout"
           element={<ProtectedRoute element={<CreateWorkout />} trainerOnly />}
+        />
+
+        <Route
+          path="/past-workouts"
+          element={<ProtectedRoute element={<PastWorkouts />} trainerOnly />}
         />
 
         {/* 🔥 Client-Only Routes */}
