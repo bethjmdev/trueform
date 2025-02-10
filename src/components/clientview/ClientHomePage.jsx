@@ -19,6 +19,11 @@ const ClientHomePage = () => {
       <button onClick={() => navigate("/client-view-profile")}>
         View Profile
       </button>
+      <br />
+      <br />
+      <button onClick={() => navigate("/client-past-workouts")}>
+        View Past Workouts
+      </button>
     </div>
   );
 };
