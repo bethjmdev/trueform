@@ -18,78 +18,8 @@ import EditWorkout from "./components/trainerview/clients/EditWorkout";
 import CreateWorkout from "./components/trainerview/clients/CreateWorkout";
 import ViewWorkouts from "./components/clientview/ViewWorkouts";
 import SingleWorkout from "./components/clientview/SingleWorkout";
-
-// const AppRouter = () => {
-//   return (
-//     <Router>
-//       <Routes>
-//         <Route path="/client-reg" element={<SignUpFormClient />} />
-//         <Route path="/trainer-reg" element={<SignUpFormTrainer />} />
-//         <Route path="/client-signin" element={<SignInFormClient />} />
-//         <Route path="/trainer-signin" element={<SignInFormTrainer />} />
-
-//         {/* Protected Routes */}
-//         <Route
-//           path="/trainer-homepage"
-//           element={<ProtectedRoute element={<TrainerHomePage />} />}
-//         />
-//         <Route
-//           path="/client-homepage"
-//           element={<ProtectedRoute element={<ClientHomePage />} />}
-//         />
-
-//         <Route
-//           path="/profile"
-//           element={<ProtectedRoute element={<Profile />} />}
-//         />
-
-//         {/* 🔥 Trainer-Only Routes */}
-//         <Route
-//           path="/exercise-database"
-//           element={
-//             <ProtectedRoute element={<ExerciseDatabase />} trainerOnly />
-//           }
-//         />
-//         <Route
-//           path="/add-exercise"
-//           element={<ProtectedRoute element={<AddExercise />} trainerOnly />}
-//         />
-//         <Route
-//           path="/edit-exercise/:exerciseId"
-//           element={<ProtectedRoute element={<EditExercise />} trainerOnly />}
-//         />
-//         <Route
-//           path="/all-clients"
-//           element={<ProtectedRoute element={<ViewAllClients />} trainerOnly />}
-//         />
-
-//         <Route
-//           path="/client-profile"
-//           element={<ProtectedRoute element={<ViewIndClient />} trainerOnly />}
-//         />
-
-//         <Route
-//           path="/workout-details"
-//           element={<ProtectedRoute element={<ViewIndWorkout />} trainerOnly />}
-//         />
-
-//         <Route
-//           path="/edit-workout"
-//           element={<ProtectedRoute element={<EditWorkout />} trainerOnly />}
-//         />
-
-//         <Route
-//           path="/create-workout"
-//           element={<ProtectedRoute element={<CreateWorkout />} trainerOnly />}
-//         />
-
-//         <Route path="/" element={<AuthButtons />} />
-//       </Routes>
-//     </Router>
-//   );
-// };
-
-// export default AppRouter;
+import ClientProfile from "./components/clientview/ClientProfile";
+import StartWorkout from "./components/clientview/StartWorkout";
 
 const AppRouter = () => {
   return (
@@ -155,6 +85,21 @@ const AppRouter = () => {
         <Route
           path="/view-workout"
           element={<ProtectedRoute element={<ViewWorkouts />} clientOnly />}
+        />
+
+        <Route
+          path="/single-workout"
+          element={<ProtectedRoute element={<SingleWorkout />} clientOnly />}
+        />
+
+        <Route
+          path="/client-view-profile"
+          element={<ProtectedRoute element={<ClientProfile />} clientOnly />}
+        />
+
+        <Route
+          path="/start-workout"
+          element={<ProtectedRoute element={<StartWorkout />} clientOnly />}
         />
 
         <Route path="/" element={<AuthButtons />} />

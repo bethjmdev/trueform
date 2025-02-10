@@ -299,6 +299,20 @@
 // };
 
 // export default EditWorkout;
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -516,6 +530,18 @@ const EditWorkout = () => {
     setSelectedCircuitExercise(""); // Reset dropdown selection
   };
 
+  const groupExercisesByCircuit = () => {
+    const groupedExercises = {};
+    exercises.forEach((exercise) => {
+      const circuitKey = exercise.circuit_id || "individual";
+      if (!groupedExercises[circuitKey]) {
+        groupedExercises[circuitKey] = [];
+      }
+      groupedExercises[circuitKey].push(exercise);
+    });
+    return groupedExercises;
+  };
+
   if (!exercise_doc_id) return null;
 
   return (
@@ -528,7 +554,7 @@ const EditWorkout = () => {
 
       {exercises.length > 0 && (
         <form onSubmit={(e) => e.preventDefault()}>
-          {exercises.map((exercise, index) => (
+          {/* {exercises.map((exercise, index) => (
             <div key={index}>
               <h3>{exercise.name}</h3>
               <label>Reps:</label>
@@ -563,8 +589,113 @@ const EditWorkout = () => {
               </button>
               <hr />
             </div>
-          ))}
+          ))} */}
+
+          {Object.entries(groupExercisesByCircuit()).map(
+            ([circuitId, circuitExercises], idx) => (
+              <div
+                key={idx}
+                style={{
+                  border:
+                    circuitId !== "individual" ? "2px solid #007bff" : "none",
+                  padding: "10px",
+                  marginBottom: "10px",
+                }}
+              >
+                {circuitId !== "individual" && (
+                  <h3 style={{ color: "#007bff" }}>Circuit {idx + 1}</h3>
+                )}
+
+                {circuitExercises.map((exercise, index) => (
+                  <div key={index} style={{ marginBottom: "10px" }}>
+                    <h4>{exercise.name}</h4>
+                    <label>Reps:</label>
+                    <input
+                      type="number"
+                      value={exercise.reps}
+                      onChange={(e) =>
+                        handleChange(index, "reps", e.target.value)
+                      }
+                    />
+                    <br />
+                    <label>Sets:</label>
+                    <input
+                      type="number"
+                      value={exercise.sets}
+                      onChange={(e) =>
+                        handleChange(index, "sets", e.target.value)
+                      }
+                    />
+                    <br />
+                    <label>Weight (lbs):</label>
+                    <input
+                      type="number"
+                      value={exercise.weight}
+                      onChange={(e) =>
+                        handleChange(index, "weight", e.target.value)
+                      }
+                    />
+                    <br />
+                    <p>
+                      <strong>Cues:</strong> {exercise.cues}
+                    </p>
+                    <button onClick={() => handleRemoveExercise(index)}>
+                      ❌ Remove
+                    </button>
+                    <hr />
+                  </div>
+                ))}
+              </div>
+            )
+          )}
+
           <button onClick={handleUpdate}>Save Changes</button>
+
+          <h3>Add New Exercise</h3>
+          <input
+            type="text"
+            placeholder="Exercise Name"
+            value={newExercise.name}
+            onChange={(e) => handleNewExerciseChange("name", e.target.value)}
+          />
+          {filteredExercises.length > 0 && (
+            <ul>
+              {filteredExercises.map((exercise, index) => (
+                <li key={index} onClick={() => handleSelectExercise(exercise)}>
+                  {exercise}
+                </li>
+              ))}
+            </ul>
+          )}
+          <input
+            type="number"
+            placeholder="Reps"
+            onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="Sets"
+            onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="Weight (lbs)"
+            onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
+          />
+
+          <select
+            value={selectedCircuitExercise}
+            onChange={(e) => setSelectedCircuitExercise(e.target.value)}
+          >
+            <option value="">-- Link to Exercise --</option>
+            {exercises.map((exercise, index) => (
+              <option key={index} value={exercise.name}>
+                {exercise.name}
+              </option>
+            ))}
+          </select>
+
+          <button onClick={handleAddExercise}>Add Exercise</button>
         </form>
       )}
     </div>
