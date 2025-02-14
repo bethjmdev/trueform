@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useAuth } from "./utils/auth/AuthProvider";
 
 import SignUpFormClient from "./utils/auth/SignUpFormClient";
 import SignUpFormTrainer from "./utils/auth/SignUpFormTrainer";
@@ -6,6 +7,8 @@ import SignInFormClient from "./utils/auth/SignInFormClient";
 import SignInFormTrainer from "./utils/auth/SignInFormTrainer";
 import AuthButtons from "./utils/auth/AuthButtons";
 import ProtectedRoute from "./utils/auth/ProtectedRoute";
+
+import NavBar from "./components/NavBar";
 
 import TrainerHomePage from "./components/trainerview/TrainerHomePage";
 import AddExercise from "./components/trainerview/exercise/AddExercise";
@@ -29,8 +32,10 @@ import ClientPastWorkouts from "./components/clientview/ClientPastWorkouts";
 import ClientIndPastWorkout from "./components/clientview/ClientIndPastWorkouts";
 
 const AppRouter = () => {
+  const { user } = useAuth();
   return (
     <Router>
+      {user && <NavBar />}
       <Routes>
         <Route path="/client-reg" element={<SignUpFormClient />} />
         <Route path="/trainer-reg" element={<SignUpFormTrainer />} />
