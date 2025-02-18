@@ -55,13 +55,21 @@ const ViewClients = () => {
 
         <ul>
           {clients.map((client) => (
-            <li key={client.id} className="client_container">
+            <li
+              key={client.id}
+              className="client_container"
+              onClick={() =>
+                navigate("/client-profile", {
+                  state: { client },
+                })
+              }
+            >
               <h3
-                onClick={() =>
-                  navigate("/client-profile", {
-                    state: { client },
-                  })
-                }
+              // onClick={() =>
+              //   navigate("/client-profile", {
+              //     state: { client },
+              //   })
+              // }
               >
                 {client.name}
               </h3>

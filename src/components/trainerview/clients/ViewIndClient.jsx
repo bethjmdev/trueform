@@ -106,21 +106,16 @@ const ViewIndClient = () => {
 
         <ul>
           {workouts.map((workout) => (
-            <li key={workout.id} className="ind_workout_container">
-              <h3
-                // style={{
-                //   cursor: "pointer",
-                //   color: "blue",
-                //   textDecoration: "underline",
-                // }}
-                onClick={() =>
-                  navigate("/workout-details", {
-                    state: { exercise_doc_id: workout.exercise_doc_id },
-                  })
-                }
-              >
-                {workout.workout_name}
-              </h3>
+            <li
+              key={workout.id}
+              className="ind_workout_container"
+              onClick={() =>
+                navigate("/workout-details", {
+                  state: { exercise_doc_id: workout.exercise_doc_id },
+                })
+              }
+            >
+              <h3>{workout.workout_name}</h3>
 
               <p>
                 <strong>Notes:</strong> {workout.notes}
