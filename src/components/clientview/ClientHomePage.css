@@ -10,9 +10,7 @@
 }
 
 .ClientHomePage .client_homepage_container {
-  padding: 2rem;
   text-align: center;
-  /* width: 18rem; */
   width: 100vw;
   display: flex;
   flex-direction: column;
@@ -21,9 +19,11 @@
 }
 
 .ClientHomePage .homepage_buttons {
-  padding: 2rem;
+  /* padding: 2rem; */
   text-align: center;
-  /* width: 18rem; */
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Creates two equal columns */
+  gap: 1rem; /* Adds spacing between buttons */
+  justify-content: center;
+  align-items: center;
 }
