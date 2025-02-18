@@ -1,0 +1,90 @@
+/* .ViewAllClients ul {
+  list-style-type: none;
+}
+
+.ViewAllClients {
+  background-color: #fdf8f6;
+  width: 100vw;
+  height: 100vh;
+  margin-top: 5rem;
+  text-align: center;
+}
+
+.ViewAllClients .view_all_container {
+  display: flex;
+  flex-direction: column;
+}
+
+.ViewAllClients .client_container {
+  background-color: #a88bfa;
+  padding: 2rem;
+  margin: 2rem;
+  border-radius: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+} */
+
+.ViewAllClients ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Default: 3 clients per row */
+  gap: 1.5rem; /* Space between clients */
+  width: fit-content;
+}
+
+.ViewAllClients {
+  background-color: #fdf8f6;
+  width: 100vw;
+  min-height: 100vh;
+  margin-top: 5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.view_all_container {
+  width: 100%;
+  max-width: 900px; /* Prevents stretching too wide */
+}
+
+ul li {
+  display: flex;
+  justify-content: center;
+}
+
+.ViewAllClients .client_container {
+  background-color: #a88bfa;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.ViewAllClients .client_container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Styling */
+@media (max-width: 900px) {
+  .ViewAllClients ul {
+    grid-template-columns: repeat(2, 1fr); /* 2 clients per row on tablets */
+  }
+}
+
+@media (max-width: 600px) {
+  .ViewAllClients ul {
+    grid-template-columns: repeat(1, 1fr); /* 1 client per row on mobile */
+  }
+}

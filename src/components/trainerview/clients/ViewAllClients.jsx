@@ -4,6 +4,8 @@ import { db } from "../../../utils/firebase/firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
+import "./ViewAllClients.css";
+
 const ViewClients = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -43,37 +45,33 @@ const ViewClients = () => {
   }, [user]);
 
   return (
-    <div>
-      <h2>Your Clients</h2>
+    <div className="ViewAllClients">
+      <div className="view_all_container">
+        <h2>Your Clients</h2>
 
-      {loading && <p>Loading clients...</p>}
+        {loading && <p>Loading clients...</p>}
 
-      {!loading && clients.length === 0 && <p>No clients assigned to you.</p>}
+        {!loading && clients.length === 0 && <p>No clients assigned to you.</p>}
 
-      <ul>
-        {clients.map((client) => (
-          <li key={client.id}>
-            <h3
-              style={{
-                cursor: "pointer",
-                color: "blue",
-                textDecoration: "underline",
-              }}
-              onClick={() =>
-                navigate("/client-profile", {
-                  state: { client },
-                })
-              }
-            >
-              {client.name}
-            </h3>
-            <p>
-              <strong>Email:</strong> {client.email}
-            </p>
-            <hr />
-          </li>
-        ))}
-      </ul>
+        <ul>
+          {clients.map((client) => (
+            <li key={client.id} className="client_container">
+              <h3
+                onClick={() =>
+                  navigate("/client-profile", {
+                    state: { client },
+                  })
+                }
+              >
+                {client.name}
+              </h3>
+              <p>
+                <strong>Email:</strong> {client.email}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
