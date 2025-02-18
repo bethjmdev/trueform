@@ -1,0 +1,81 @@
+.ViewIndWorkout ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Default: 3 items per row */
+  gap: 1.5rem; /* Space between items */
+  width: fit-content;
+}
+
+.ViewIndWorkout {
+  background-color: #fdf8f6;
+  width: 100vw;
+  min-height: 100vh;
+  margin-top: 5rem;
+
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.view_ind_workout_container {
+  width: 100%;
+  max-width: 900px;
+}
+
+.ViewIndWorkout ul li {
+  display: flex;
+  justify-content: center;
+}
+
+.ViewIndWorkout .ind_workout_container {
+  background-color: #a88bfa;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.ViewIndWorkout .ind_workout_container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+}
+
+.ViewIndWorkout .ind_workout_container button {
+  background-color: #a88bfa;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  /* color: white; */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.ViewIndWorkout .ind_workout_container button:hover {
+  background-color: #8c6ae0;
+}
+
+/* Responsive Styling */
+@media (max-width: 900px) {
+  .ViewIndWorkout ul {
+    grid-template-columns: repeat(2, 1fr); /* 2 items per row on tablets */
+  }
+}
+
+@media (max-width: 600px) {
+  .ViewIndWorkout ul {
+    grid-template-columns: repeat(1, 1fr); /* 1 item per row on mobile */
+  }
+
+  .ViewIndWorkout .ind_workout_container {
+    width: 20rem;
+  }
+}

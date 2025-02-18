@@ -1,0 +1,54 @@
+.AuthButton {
+  background-color: #a88bfa;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.AuthButton .auth_button_container {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 18rem;
+}
+
+.AuthButton .trainer_auth,
+.AuthButton .client_auth {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.AuthButton .trainer_auth p,
+.AuthButton .client_auth p {
+  font-family: sans-serif;
+  font-weight: bold;
+  color: #4a4a4a;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  /* text-decoration: underline; */
+}
+
+.AuthButton .trainer_auth button,
+.AuthButton .client_auth button {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.AuthButton .trainer_auth button:hover,
+.AuthButton .client_auth button:hover {
+  background-color: #8f9fc7;
+  color: white;
+}

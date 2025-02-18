@@ -1,0 +1,67 @@
+.ViewWorkout ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Default: 3 boxes across */
+  gap: 1.5rem; /* Space between boxes */
+  width: fit-content;
+}
+
+.ViewWorkout {
+  background-color: #fdf8f6;
+  min-height: 100vh;
+  width: 100vw;
+  margin-top: 5rem;
+  /* padding: 2rem 1rem; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.view-workouts-container {
+  width: 100%;
+  max-width: 900px; /* Prevents stretching too wide */
+  text-align: center;
+}
+
+.ViewWorkout ul li {
+  display: flex;
+  justify-content: center;
+}
+
+.ViewWorkout .workout_container {
+  background-color: #a88bfa;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  width: 12rem;
+  height: 12rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.ViewWorkout .workout_container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Styling */
+@media (max-width: 900px) {
+  .ViewWorkout ul {
+    grid-template-columns: repeat(2, 1fr); /* 2 boxes across on tablets */
+  }
+}
+
+@media (max-width: 600px) {
+  .ViewWorkout ul {
+    grid-template-columns: repeat(1, 1fr); /* 1 box across on mobile */
+  }
+
+  .ViewWorkout .workout_container {
+    width: 20rem;
+  }
+}

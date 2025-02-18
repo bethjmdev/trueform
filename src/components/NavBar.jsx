@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../utils/firebase/firebaseConfig";
 import { signOut } from "firebase/auth";
 
+import "./NavBar.css";
+
 const NavBar = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -80,18 +82,19 @@ const NavBar = () => {
   };
 
   return (
-    <div>
+    <div className="NavBar">
       {!roleChecked ? (
         <p>Loading...</p>
       ) : (
-        <>
+        <div className="nav_bar_container">
           <p onClick={handleHomeClick} style={{ cursor: "pointer" }}>
             Home
           </p>
+          <p id="logo">Vital Form</p>
           <p onClick={handleSignOut} style={{ cursor: "pointer" }}>
             Sign out
           </p>
-        </>
+        </div>
       )}
     </div>
   );

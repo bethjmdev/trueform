@@ -4,6 +4,8 @@ import { db } from "../../utils/firebase/firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
+import "./ViewWorkouts.css";
+
 const ViewWorkouts = () => {
   const { user } = useAuth(); // ✅ Ensure correct destructuring
   const navigate = useNavigate();
@@ -43,46 +45,39 @@ const ViewWorkouts = () => {
   if (!user) return <p>You must be logged in to view workouts.</p>;
 
   return (
-    <div>
-      <h2>Your Workouts</h2>
+    <div className="ViewWorkout">
+      <div className="view-workouts-container">
+        <h2>Your Workouts</h2>
 
-      {loading ? (
-        <p>Loading workouts...</p>
-      ) : workouts.length === 0 ? (
-        <p>You have no assigned workouts yet.</p>
-      ) : (
-        <ul>
-          {workouts.map((workout) => (
-            <li key={workout.id}>
-              <h3
-                style={{
-                  cursor: "pointer",
-                  color: "blue",
-                  textDecoration: "underline",
-                }}
-                onClick={() =>
-                  navigate("/single-workout", {
-                    state: {
-                      exercise_doc_id: workout.exercise_doc_id,
-                      workout_name: workout.workout_name,
-                      trainer: workout.trainer_uid,
-                    },
-                  })
-                }
-              >
-                {workout.workout_name}
-              </h3>
-              <p>
-                <strong>Notes:</strong> {workout.notes}
-              </p>
-              <p>
-                <strong>Trainer UID:</strong> {workout.trainer_uid}
-              </p>
-              <hr />
-            </li>
-          ))}
-        </ul>
-      )}
+        {loading ? (
+          <p>Loading workouts...</p>
+        ) : workouts.length === 0 ? (
+          <p>You have no assigned workouts yet.</p>
+        ) : (
+          <ul>
+            {workouts.map((workout) => (
+              <li key={workout.id} className="workout_container">
+                <h3
+                  onClick={() =>
+                    navigate("/single-workout", {
+                      state: {
+                        exercise_doc_id: workout.exercise_doc_id,
+                        workout_name: workout.workout_name,
+                        trainer: workout.trainer_uid,
+                      },
+                    })
+                  }
+                >
+                  {workout.workout_name}
+                </h3>
+                {/* <p>
+                  <strong>Notes:</strong> {workout.notes}
+                </p> */}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };

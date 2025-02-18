@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../../../utils/firebase/firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
+import "./PastWorkouts.css";
+
 const PastWorkouts = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -48,86 +50,53 @@ const PastWorkouts = () => {
   if (!client) return null;
 
   return (
-    <div>
-      <h2>Past Workouts for {client.name}</h2>
-      <button onClick={() => navigate(-1)}>⬅️ Back</button>
-      {loading && <p>Loading past workouts...</p>}
+    <div className="PastWorkouts">
+      <div className="past_workout_container">
+        <h2>Past Workouts for {client.name}</h2>
+        {/* <button onClick={() => navigate(-1)}>⬅️ Back</button> */}
+        {loading && <p>Loading past workouts...</p>}
 
-      {!loading && pastWorkouts.length === 0 && (
-        <p>No past workouts recorded for this client.</p>
-      )}
+        {!loading && pastWorkouts.length === 0 && (
+          <p>No past workouts recorded for this client.</p>
+        )}
 
-      {/* 
-      <ul>
-        {pastWorkouts.map((workout) => {
-          const timestamp = workout.timestamp?.toDate
-            ? workout.timestamp.toDate()
-            : null; // Convert Firestore Timestamp to Date
+        <ul>
+          {pastWorkouts.map((workout) => {
+            const timestamp = workout.timestamp?.toDate
+              ? workout.timestamp.toDate()
+              : null;
 
-          const formattedDate = timestamp
-            ? timestamp.toLocaleString()
-            : "Unknown Date"; // Handle invalid dates
+            const formattedDate = timestamp
+              ? timestamp.toLocaleString()
+              : "Unknown Date";
 
-          const totalSeconds = workout.duration_seconds || 0;
-          const minutes = Math.floor(totalSeconds / 60);
-          const seconds = totalSeconds % 60; // Get remaining seconds
+            const totalSeconds = workout.duration_seconds || 0;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
 
-          return (
-            <li key={workout.id}>
-              <h3>{workout.workout_name}</h3>
-              <p>
-                <strong>Date:</strong> {formattedDate}
-              </p>
-              <p>
-                <strong>Duration:</strong> {minutes} min {seconds} sec
-              </p>
-              <hr />
-            </li>
-          );
-        })}
-      </ul> */}
-
-      <ul>
-        {pastWorkouts.map((workout) => {
-          const timestamp = workout.timestamp?.toDate
-            ? workout.timestamp.toDate()
-            : null;
-
-          const formattedDate = timestamp
-            ? timestamp.toLocaleString()
-            : "Unknown Date";
-
-          const totalSeconds = workout.duration_seconds || 0;
-          const minutes = Math.floor(totalSeconds / 60);
-          const seconds = totalSeconds % 60;
-
-          return (
-            <li key={workout.id}>
-              <h3
-                style={{
-                  cursor: "pointer",
-                  color: "blue",
-                  textDecoration: "underline",
-                }}
+            return (
+              <li
+                key={workout.id}
+                className="ind_past_workout"
                 onClick={() =>
                   navigate("/ind-past-workout", {
                     state: { workoutId: workout.id },
                   })
                 }
               >
-                {workout.workout_name}
-              </h3>
-              <p>
-                <strong>Date:</strong> {formattedDate}
-              </p>
-              <p>
-                <strong>Duration:</strong> {minutes} min {seconds} sec
-              </p>
-              <hr />
-            </li>
-          );
-        })}
-      </ul>
+                <h3>{workout.workout_name}</h3>
+                <p>
+                  <strong>Date:</strong> {formattedDate}
+                </p>
+                <p>
+                  <strong>Duration:</strong> {minutes} min {seconds} sec
+                </p>
+                <hr />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 };

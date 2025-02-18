@@ -44,56 +44,52 @@ const ClientPastWorkouts = () => {
   if (!user) return <p>You must be logged in to view past workouts.</p>;
 
   return (
-    <div>
-      <h2>Your Past Workouts</h2>
-      <button onClick={() => navigate(-1)}>⬅️ Back</button>
+    <div className="PastWorkouts">
+      <div className="past_workout_container">
+        <h2>Your Past Workouts</h2>
 
-      {loading ? (
-        <p>Loading past workouts...</p>
-      ) : pastWorkouts.length === 0 ? (
-        <p>No past workouts recorded yet.</p>
-      ) : (
-        <ul>
-          {pastWorkouts.map((workout) => {
-            const timestamp = workout.timestamp?.toDate
-              ? workout.timestamp.toDate()
-              : null;
-            const formattedDate = timestamp
-              ? timestamp.toLocaleString()
-              : "Unknown Date";
+        {loading ? (
+          <p>Loading past workouts...</p>
+        ) : pastWorkouts.length === 0 ? (
+          <p>No past workouts recorded yet.</p>
+        ) : (
+          <ul>
+            {pastWorkouts.map((workout) => {
+              const timestamp = workout.timestamp?.toDate
+                ? workout.timestamp.toDate()
+                : null;
+              const formattedDate = timestamp
+                ? timestamp.toLocaleString()
+                : "Unknown Date";
 
-            const totalSeconds = workout.duration_seconds || 0;
-            const minutes = Math.floor(totalSeconds / 60);
-            const seconds = totalSeconds % 60;
+              const totalSeconds = workout.duration_seconds || 0;
+              const minutes = Math.floor(totalSeconds / 60);
+              const seconds = totalSeconds % 60;
 
-            return (
-              <li key={workout.id}>
-                <h3
-                  style={{
-                    cursor: "pointer",
-                    color: "blue",
-                    textDecoration: "underline",
-                  }}
+              return (
+                <li
+                  key={workout.id}
+                  className="ind_past_workout"
                   onClick={() =>
                     navigate("/client-ind-past-workout", {
                       state: { workoutId: workout.id },
                     })
                   }
                 >
-                  {workout.workout_name}
-                </h3>
-                <p>
-                  <strong>Date:</strong> {formattedDate}
-                </p>
-                <p>
-                  <strong>Duration:</strong> {minutes} min {seconds} sec
-                </p>
-                <hr />
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                  <h3>{workout.workout_name}</h3>
+                  <p>
+                    <strong>Date:</strong> {formattedDate}
+                  </p>
+                  <p>
+                    <strong>Duration:</strong> {minutes} min {seconds} sec
+                  </p>
+                  <hr />
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };

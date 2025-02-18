@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../../utils/firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
+import "../trainerview/clients/PastWorkouts.css";
+
 const ClientIndPastWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -59,94 +61,89 @@ const ClientIndPastWorkout = () => {
   if (!workoutId) return null;
 
   return (
-    <div>
-      <h2>Past Workout Exercises</h2>
-      <button onClick={() => navigate(-1)}>⬅️ Back</button>
-      {loading && <p>Loading exercises...</p>}
+    <div className="PastWorkouts">
+      <div className="past_workout_container">
+        <h2>Past Workout Exercises</h2>
+        <button onClick={() => navigate(-1)}>⬅️ Back</button>
+        {loading && <p>Loading exercises...</p>}
 
-      {!loading && Object.keys(groupedExercises).length === 0 && (
-        <p>No exercises recorded for this workout.</p>
-      )}
+        {!loading && Object.keys(groupedExercises).length === 0 && (
+          <p>No exercises recorded for this workout.</p>
+        )}
 
-      {Object.entries(groupedExercises).map(([circuitId, exercises]) => (
-        <div
-          key={circuitId}
-          style={{
-            marginBottom: "20px",
-            padding: "10px",
-            border: "2px solid black",
-          }}
-        >
-          <h3>
-            {circuitId === "No Circuit"
-              ? "Standalone Exercises"
-              : `Circuit ${circuitId}`}
-          </h3>
-          <ul>
-            {exercises.map((exercise, index) => (
-              <li
-                key={index}
-                style={{
-                  marginBottom: "10px",
-                  borderBottom: "1px solid gray",
-                  paddingBottom: "5px",
-                }}
-              >
-                <h4>{exercise.name}</h4>
-                <p>
-                  <strong>Planned Reps:</strong> {exercise.reps}
-                </p>
-                <p>
-                  <strong>Planned Sets:</strong> {exercise.sets}
-                </p>
-                <p>
-                  <strong>Planned Weight:</strong> {exercise.weight}
-                </p>
-                <p>
-                  <strong>Cues:</strong> {exercise.cues}
-                </p>
+        {Object.entries(groupedExercises).map(([circuitId, exercises]) => (
+          <div
+            key={circuitId}
+            style={{
+              marginBottom: "20px",
+              padding: "10px",
+              border: "2px solid black",
+            }}
+          >
+            <h3>
+              {circuitId === "No Circuit"
+                ? "Standalone Exercises"
+                : `Circuit ${circuitId}`}
+            </h3>
+            <ul>
+              {exercises.map((exercise, index) => (
+                <li key={index} className="ind_past_workout">
+                  <h4>{exercise.name}</h4>
+                  <p>
+                    <strong>Planned Reps:</strong> {exercise.reps}
+                  </p>
+                  <p>
+                    <strong>Planned Sets:</strong> {exercise.sets}
+                  </p>
+                  <p>
+                    <strong>Planned Weight:</strong> {exercise.weight}
+                  </p>
+                  <p>
+                    <strong>Cues:</strong> {exercise.cues}
+                  </p>
 
-                <h5>Actual Performance:</h5>
-                {exercise.actual_reps_per_set &&
-                exercise.actual_weights_per_set ? (
-                  <table
-                    border="1"
-                    cellPadding="5"
-                    style={{ borderCollapse: "collapse" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Set #</th>
-                        <th>Actual Reps</th>
-                        <th>Actual Weight</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {exercise.actual_reps_per_set.map((reps, setIndex) => (
-                        <tr key={setIndex}>
-                          <td>{setIndex + 1}</td>
-                          <td>{reps}</td>
-                          <td>{exercise.actual_weights_per_set[setIndex]}</td>
+                  <h5>Actual Performance:</h5>
+                  {exercise.actual_reps_per_set &&
+                  exercise.actual_weights_per_set ? (
+                    <table
+                      border="1"
+                      cellPadding="5"
+                      style={{ borderCollapse: "collapse" }}
+                    >
+                      <thead>
+                        <tr>
+                          <th>Set #</th>
+                          <th>Actual Reps</th>
+                          <th>Actual Weight</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p>No recorded actual reps/weights.</p>
-                )}
+                      </thead>
+                      <tbody>
+                        {exercise.actual_reps_per_set.map((reps, setIndex) => (
+                          <tr key={setIndex}>
+                            <td>{setIndex + 1}</td>
+                            <td>{reps}</td>
+                            <td>{exercise.actual_weights_per_set[setIndex]}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p>No recorded actual reps/weights.</p>
+                  )}
 
-                <a
-                  href={exercise.videoDemo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  📺 Video Demo
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+                  <a
+                    href={exercise.videoDemo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    📺 Video Demo
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
