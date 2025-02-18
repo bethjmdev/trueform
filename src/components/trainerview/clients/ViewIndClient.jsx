@@ -10,6 +10,8 @@ import {
   doc,
 } from "firebase/firestore";
 
+import "./ViewIndClient.css";
+
 const ViewIndClient = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -83,60 +85,59 @@ const ViewIndClient = () => {
   if (!client) return null;
 
   return (
-    <div>
-      <h2>Workouts for {client.name}</h2>
-      <p>
-        <strong>Email:</strong> {client.email}
-      </p>
+    <div className="ViewIndWorkout">
+      <div className="view_ind_workout_container">
+        <h2>Workouts for {client.name}</h2>
+        <p>
+          <strong>Email:</strong> {client.email}
+        </p>
 
-      <button onClick={handleAddWorkout}>Add Workout</button>
-      {/* <button>View Past Workouts</button> */}
-      <button onClick={() => navigate("/past-workouts", { state: { client } })}>
-        View Past Workouts
-      </button>
-      {loading && <p>Loading workouts...</p>}
+        <button onClick={handleAddWorkout}>Add Workout</button>
+        <button
+          onClick={() => navigate("/past-workouts", { state: { client } })}
+        >
+          View Past Workouts
+        </button>
+        {loading && <p>Loading workouts...</p>}
 
-      {!loading && workouts.length === 0 && (
-        <p>No workouts assigned to this client.</p>
-      )}
+        {!loading && workouts.length === 0 && (
+          <p>No workouts assigned to this client.</p>
+        )}
 
-      <ul>
-        {workouts.map((workout) => (
-          <li key={workout.id}>
-            <h3
-              style={{
-                cursor: "pointer",
-                color: "blue",
-                textDecoration: "underline",
-              }}
-              onClick={() =>
-                navigate("/workout-details", {
-                  state: { exercise_doc_id: workout.exercise_doc_id },
-                })
-              }
-            >
-              {workout.workout_name}
-            </h3>
-            <p>
-              <strong>Exercise Doc ID:</strong> {workout.exercise_doc_id}
-            </p>
-            <p>
-              <strong>Notes:</strong> {workout.notes}
-            </p>
-            <p>
-              <strong>Trainer UID:</strong> {workout.trainer_uid}
-            </p>
-            <button
-              onClick={() =>
-                handleDeleteWorkout(workout.id, workout.exercise_doc_id)
-              }
-            >
-              ❌ Delete Workout
-            </button>
-            <hr />
-          </li>
-        ))}
-      </ul>
+        <ul>
+          {workouts.map((workout) => (
+            <li key={workout.id} className="ind_workout_container">
+              <h3
+                // style={{
+                //   cursor: "pointer",
+                //   color: "blue",
+                //   textDecoration: "underline",
+                // }}
+                onClick={() =>
+                  navigate("/workout-details", {
+                    state: { exercise_doc_id: workout.exercise_doc_id },
+                  })
+                }
+              >
+                {workout.workout_name}
+              </h3>
+
+              <p>
+                <strong>Notes:</strong> {workout.notes}
+              </p>
+
+              <button
+                onClick={() =>
+                  handleDeleteWorkout(workout.id, workout.exercise_doc_id)
+                }
+              >
+                ❌ Delete Workout
+              </button>
+              <hr />
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
