@@ -37,11 +37,20 @@ const AppRouter = () => {
     <Router>
       {user && <NavBar />}
       <Routes>
-        <Route path="/client-reg" element={<SignUpFormClient />} />
+        {/* <Route path="/client-reg" element={<SignUpFormClient />} />
         <Route path="/trainer-reg" element={<SignUpFormTrainer />} />
         <Route path="/client-signin" element={<SignInFormClient />} />
-        <Route path="/trainer-signin" element={<SignInFormTrainer />} />
+        <Route path="/trainer-signin" element={<SignInFormTrainer />} /> */}
 
+        {!user && (
+          <>
+            <Route path="/client-reg" element={<SignUpFormClient />} />
+            <Route path="/trainer-reg" element={<SignUpFormTrainer />} />
+            <Route path="/client-signin" element={<SignInFormClient />} />
+            <Route path="/trainer-signin" element={<SignInFormTrainer />} />
+            <Route path="/" element={<AuthButtons />} />
+          </>
+        )}
         {/* Protected Routes */}
         <Route
           path="/trainer-homepage"

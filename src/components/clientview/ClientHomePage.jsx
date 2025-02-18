@@ -46,20 +46,18 @@ const ClientHomePage = () => {
       <div className="client_homepage_container">
         <p>Hi {clientData?.name || "Client"}</p>
         <div className="homepage_buttons">
-          <HomePageButton onClick={() => signOut(auth)}>
-            Sign Out
-          </HomePageButton>
-
           <HomePageButton onClick={() => navigate("/view-workout")}>
             View Workouts
           </HomePageButton>
 
+          <HomePageButton onClick={() => navigate("/client-past-workouts")}>
+            View Past Workouts
+          </HomePageButton>
           <HomePageButton onClick={() => navigate("/client-view-profile")}>
             View Profile
           </HomePageButton>
-
-          <HomePageButton onClick={() => navigate("/client-past-workouts")}>
-            View Past Workouts
+          <HomePageButton onClick={() => signOut(auth)}>
+            Sign Out
           </HomePageButton>
         </div>
       </div>

@@ -67,7 +67,7 @@ const SignInFormClient = () => {
           Sign In
         </MainButton>{" "}
         <p>
-          Don't have an account?
+          Don't have an account?{" "}
           <a href="/trainer-reg" style={{ color: "black" }}>
             Register
           </a>{" "}
