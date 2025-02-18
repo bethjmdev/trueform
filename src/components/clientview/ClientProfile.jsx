@@ -9,6 +9,8 @@ import {
   getDocs,
 } from "firebase/firestore";
 
+import "./ClientProfile.css";
+
 const ClientProfile = () => {
   const { user } = useAuth();
   const [clientData, setClientData] = useState(null);
@@ -105,8 +107,8 @@ const ClientProfile = () => {
   if (loading) return <p>Loading profile...</p>;
 
   return (
-    <div>
-      <h2>Client Profile</h2>
+    <div className="client-profile-container">
+      <h2>Profile</h2>
       {clientData ? (
         <div>
           <p>

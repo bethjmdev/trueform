@@ -14,6 +14,8 @@ import { useAuth } from "../../utils/auth/AuthProvider";
 import { db } from "../../utils/firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
+import "../clientview/ClientProfile.css";
+
 const Profile = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
@@ -53,8 +55,8 @@ const Profile = () => {
   if (!profile) return <p>Profile not found.</p>;
 
   return (
-    <div>
-      <h2>{profile.role} Profile</h2>
+    <div className="client-profile-container">
+      <h2>Profile</h2>
       <p>
         <strong>Name:</strong> {profile.name}
       </p>

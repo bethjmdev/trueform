@@ -1,0 +1,67 @@
+.client-profile-container {
+  background-color: #fdf8f6;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.client-profile-container h2,
+.client-profile-container h3 {
+  text-align: center;
+  color: #333;
+}
+
+.client-profile-container p {
+  font-size: 16px;
+  color: #555;
+  margin: 10px 0;
+}
+
+.client-profile-container strong {
+  color: #222;
+}
+
+.client-profile-container select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 16px;
+}
+
+.client-profile-container button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ff6b8b;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.client-profile-container button:hover {
+  background-color: #e45c7a;
+}
+
+.client-profile-container button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.client-profile-container input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 16px;
+}
