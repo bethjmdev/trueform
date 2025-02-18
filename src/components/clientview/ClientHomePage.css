@@ -1,0 +1,29 @@
+.ClientHomePage {
+  background-color: #fdf8f6;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.ClientHomePage .client_homepage_container {
+  padding: 2rem;
+  text-align: center;
+  /* width: 18rem; */
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ClientHomePage .homepage_buttons {
+  padding: 2rem;
+  text-align: center;
+  /* width: 18rem; */
+  display: flex;
+  flex-direction: row;
+}
