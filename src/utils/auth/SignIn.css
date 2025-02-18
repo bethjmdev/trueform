@@ -1,0 +1,88 @@
+/* .SignIn {
+  height: 100vh;
+  width: 100vw;
+  background-color: #a88bfa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.SignIn .sign_in_container {
+  display: flex;
+  flex-direction: column;
+  height: 30rem;
+}
+
+.SignIn .sign_in_container h2 {
+  font-family: sans-serif;
+  font-weight: bold;
+  color: white;
+  font-size: 2rem;
+  margin: 0;
+} */
+
+.SignIn {
+  height: 100vh;
+  width: 100vw;
+  background-color: #a88bfa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.SignIn .sign_in_container {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  justify-content: center;
+}
+
+.SignIn .sign_in_container h2 {
+  font-family: sans-serif;
+  font-weight: bold;
+  color: #4a4a4a;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.SignIn .sign_in_container input,
+.SignIn .sign_in_container select {
+  width: 18rem;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.SignIn .sign_in_container select {
+  width: 19.7rem;
+}
+
+.SignIn .sign_in_container input:focus {
+  border: 1px solid #6b5fce;
+  box-shadow: 0px 0px 5px rgba(107, 95, 206, 0.5);
+}
+
+.SignIn .sign_in_container p {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #4a4a4a;
+}
+
+.SignIn .sign_in_container a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #6b5fce;
+  transition: color 0.3s ease;
+}
+
+.SignIn .sign_in_container a:hover {
+  color: #4a3fc2;
+}

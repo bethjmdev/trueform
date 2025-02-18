@@ -133,6 +133,9 @@ import {
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
+import MainButton from "../buttons/MainButton";
+import "./Signin.css";
+
 const SignUpFormClient = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -204,44 +207,55 @@ const SignUpFormClient = () => {
   };
 
   return (
-    <div>
-      <h2>Register as a Client</h2>
-      <input
-        type="text"
-        placeholder="Full Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+    <div className="SignIn">
+      <div className="sign_in_container">
+        <h2>Register as a Client</h2>
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      {/* Trainer Dropdown Selection */}
-      <select
-        value={selectedTrainer}
-        onChange={(e) => handleTrainerSelection(e.target.value)}
-      >
-        <option value="">Select Your Trainer</option>
-        {trainers.map((trainer) => (
-          <option key={trainer.uid} value={trainer.uid}>
-            {trainer.name}
-          </option>
-        ))}
-      </select>
-
-      <button onClick={handleSignUp}>Sign Up</button>
-      <p>
-        Already have an account? <a href="/client-signin">Sign in</a>
-      </p>
+        {/* Trainer Dropdown Selection */}
+        <select
+          value={selectedTrainer}
+          onChange={(e) => handleTrainerSelection(e.target.value)}
+        >
+          <option value="">Select Your Trainer</option>
+          {trainers.map((trainer) => (
+            <option key={trainer.uid} value={trainer.uid}>
+              {trainer.name}
+            </option>
+          ))}
+        </select>
+        <MainButton
+          onClick={handleSignUp}
+          bgColor="#FF6B8B"
+          textColor="white"
+          hoverColor="#8f9fc7"
+        >
+          Sign Up
+        </MainButton>
+        <p>
+          Already have an account?{" "}
+          <a href="/client-signin" style={{ color: "black" }}>
+            Sign in
+          </a>
+        </p>
+      </div>
     </div>
   );
 };

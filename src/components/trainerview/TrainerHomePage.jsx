@@ -12,6 +12,7 @@ const TrainerHomePage = () => {
     localStorage.removeItem("authUser"); // ❌ Clear localStorage
     navigate("/"); // Redirect to home
   };
+  
   return (
     <div>
       <p>hi trainer</p>
