@@ -56,17 +56,29 @@ const ViewWorkouts = () => {
         ) : (
           <ul>
             {workouts.map((workout) => (
-              <li key={workout.id} className="workout_container">
+              <li
+                key={workout.id}
+                className="workout_container"
+                onClick={() =>
+                  navigate("/single-workout", {
+                    state: {
+                      exercise_doc_id: workout.exercise_doc_id,
+                      workout_name: workout.workout_name,
+                      trainer: workout.trainer_uid,
+                    },
+                  })
+                }
+              >
                 <h3
-                  onClick={() =>
-                    navigate("/single-workout", {
-                      state: {
-                        exercise_doc_id: workout.exercise_doc_id,
-                        workout_name: workout.workout_name,
-                        trainer: workout.trainer_uid,
-                      },
-                    })
-                  }
+                // onClick={() =>
+                //   navigate("/single-workout", {
+                //     state: {
+                //       exercise_doc_id: workout.exercise_doc_id,
+                //       workout_name: workout.workout_name,
+                //       trainer: workout.trainer_uid,
+                //     },
+                //   })
+                // }
                 >
                   {workout.workout_name}
                 </h3>
