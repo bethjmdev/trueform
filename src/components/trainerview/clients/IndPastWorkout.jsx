@@ -153,15 +153,13 @@
 // };
 
 // export default IndPastWorkout;
-
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../../../utils/firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import "./ViewIndWorkout.css";
 
-// import "../trainerview/clients/ViewIndWorkout.css";
-
-const IndPastWorkout = () => {
+const IndClientPastWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const workoutId = location.state?.workoutId;
@@ -217,49 +215,116 @@ const IndPastWorkout = () => {
   });
 
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
-      <h2>Past Workout Details</h2>
+    <div className="ViewIndWorkout">
+      <div className="view_ind_workout_container">
+        <h2>Past Workout Details</h2>
 
-      {/* Back Button */}
-      <button
-        onClick={handleBack}
-        style={{
-          backgroundColor: "#ff6b8b",
-          padding: "0.75rem 1.5rem",
-          border: "none",
-          borderRadius: "8px",
-          fontSize: "1rem",
-          fontWeight: "bold",
-          color: "white",
-          cursor: "pointer",
-          transition: "all 0.3s ease-in-out",
-          boxShadow: "0 4px 8px rgba(255, 107, 139, 0.3)",
-          marginBottom: "20px",
-        }}
-      >
-        ⬅️ Back
-      </button>
+        {/* ✅ Render Circuit Groups */}
+        {Object.entries(groupedExercises).map(([circuit_id, exercises]) => (
+          <div
+            key={circuit_id}
+            style={{
+              padding: "10px",
+              marginBottom: "10px",
+              borderRadius: "3rem",
+              background: "#FDF8F6",
+            }}
+            className="exercise_block"
+          >
+            {circuit_id.length > 10 && <h3>🔥 Circuit</h3>}
 
-      {/* ✅ Render Circuit Groups */}
-      {Object.entries(groupedExercises).map(([circuit_id, exercises]) => (
-        <div
-          key={circuit_id}
-          style={{
-            padding: "10px",
-            marginBottom: "10px",
-            borderRadius: "3rem",
-            background: "#FDF8F6",
-            width: "30rem",
-            margin: "0 auto 10px",
-          }}
-        >
-          {circuit_id.length > 10 && <h3>🔥 Circuit</h3>}
+            {exercises.map(([exercise, details], index) => {
+              const isLastExercise = index === exercises.length - 1;
 
-          {exercises.map(([exercise, details], index) => {
-            const isLastExercise = index === exercises.length - 1;
+              return (
+                <div key={exercise} style={{ marginBottom: "10px" }}>
+                  <h3>{exercise}</h3>
+                  <p>
+                    <strong>Cues:</strong> {details.cues}
+                  </p>
+                  {details.videoDemo && (
+                    <p>
+                      <a
+                        href={exercise.videoDemo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: "#213547",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Click to View Video Demo
+                      </a>
+                    </p>
+                  )}
+                  <p>
+                    <strong>Planned...</strong>
+                  </p>
+                  <p>
+                    <strong>Reps:</strong> {details.reps} <strong>Sets:</strong>{" "}
+                    {details.sets}, <strong>Weight:</strong> {details.weight}{" "}
+                    lbs
+                  </p>
+                  {/* <p>
+                    <strong>Planned Sets:</strong> {details.sets}
+                  </p>
+                  <p>
+                    <strong>Planned Weight:</strong> {details.weight} lbs
+                  </p> */}
 
-            return (
-              <div key={exercise} style={{ marginBottom: "10px" }}>
+                  {/* Display Actual Performance Per Set */}
+                  <p>
+                    <strong>Actual Performance...</strong>
+                  </p>
+                  {details.actual_reps_per_set &&
+                  details.actual_weights_per_set ? (
+                    <table
+                      border="1"
+                      cellPadding="5"
+                      style={{ borderCollapse: "collapse", width: "100%" }}
+                    >
+                      <thead>
+                        <tr>
+                          <th>Set #</th>
+                          <th>Actual Reps</th>
+                          <th>Actual Weight</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {details.actual_reps_per_set.map((reps, setIndex) => (
+                          <tr key={setIndex}>
+                            <td>{setIndex + 1}</td>
+                            <td>{reps}</td>
+                            <td>{details.actual_weights_per_set[setIndex]}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p>No recorded actual reps/weights.</p>
+                  )}
+                  <br />
+                  {!isLastExercise && <hr id="hr" />}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+
+        {/* ✅ Render Non-Circuit Exercises (Standalone) */}
+        {nonCircuitExercises.length > 0 && (
+          <div>
+            {nonCircuitExercises.map(([exercise, details]) => (
+              <div
+                key={exercise}
+                style={{
+                  padding: "10px",
+                  marginBottom: "10px",
+                  borderRadius: "3rem",
+                  background: "#FDF8F6",
+                }}
+                className="exercise_block"
+              >
                 <h3>{exercise}</h3>
                 {details.videoDemo && (
                   <p>
@@ -288,93 +353,13 @@ const IndPastWorkout = () => {
                 <p>
                   <strong>Cues:</strong> {details.cues}
                 </p>
-
-                {/* Display Actual Performance Per Set */}
-                <h5>Actual Performance:</h5>
-                {details.actual_reps_per_set &&
-                details.actual_weights_per_set ? (
-                  <table
-                    border="1"
-                    cellPadding="5"
-                    style={{ borderCollapse: "collapse", width: "100%" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Set #</th>
-                        <th>Actual Reps</th>
-                        <th>Actual Weight</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {details.actual_reps_per_set.map((reps, setIndex) => (
-                        <tr key={setIndex}>
-                          <td>{setIndex + 1}</td>
-                          <td>{reps}</td>
-                          <td>{details.actual_weights_per_set[setIndex]}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p>No recorded actual reps/weights.</p>
-                )}
-
-                {!isLastExercise && <hr />}
               </div>
-            );
-          })}
-        </div>
-      ))}
-
-      {/* ✅ Render Non-Circuit Exercises (Standalone) */}
-      {nonCircuitExercises.length > 0 && (
-        <div>
-          {nonCircuitExercises.map(([exercise, details]) => (
-            <div
-              key={exercise}
-              style={{
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "3rem",
-                background: "#FDF8F6",
-                width: "30rem",
-                margin: "0 auto 10px",
-              }}
-            >
-              <h3>{exercise}</h3>
-              {details.videoDemo && (
-                <p>
-                  <a
-                    href={details.videoDemo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      color: "#213547",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Click to View Video Demo
-                  </a>
-                </p>
-              )}
-              <p>
-                <strong>Planned Reps:</strong> {details.reps}
-              </p>
-              <p>
-                <strong>Planned Sets:</strong> {details.sets}
-              </p>
-              <p>
-                <strong>Planned Weight:</strong> {details.weight} lbs
-              </p>
-              <p>
-                <strong>Cues:</strong> {details.cues}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default IndPastWorkout;
+export default IndClientPastWorkout;
