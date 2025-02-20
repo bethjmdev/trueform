@@ -20,7 +20,7 @@
   align-items: center;
 }
 
-.view_ind_workout_container {
+.ViewIndWorkout .view_ind_workout_container {
   width: 100%;
   max-width: 900px;
 }
@@ -54,13 +54,43 @@
   border: none;
   border-radius: 0.5rem;
   font-size: 1rem;
-  /* color: white; */
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .ViewIndWorkout .ind_workout_container button:hover {
   background-color: #8c6ae0;
+}
+
+/* .ViewIndWorkout #button {
+  background-color: #ff6b8b;
+  margin: 0.5rem;
+  margin-bottom: 1rem;
+  transition: background-color 0.2s ease;
+  border: none;
+} */
+
+.ViewIndWorkout #button {
+  background-color: #ff6b8b;
+
+  /* background: linear-gradient(135deg, #ff6b8b, #ff3b6b); */
+  margin: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 8px rgba(255, 107, 139, 0.3);
+}
+
+.ViewIndWorkout #button:hover {
+  background: linear-gradient(135deg, #ff3b6b, #ff1a4e);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(255, 107, 139, 0.4);
 }
 
 /* Responsive Styling */

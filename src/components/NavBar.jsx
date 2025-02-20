@@ -90,7 +90,7 @@ const NavBar = () => {
           <p onClick={handleHomeClick} style={{ cursor: "pointer" }}>
             Home
           </p>
-          <p id="logo">Vital Form</p>
+          <p id="logo">VitalStrength</p>
           <p onClick={handleSignOut} style={{ cursor: "pointer" }}>
             Sign out
           </p>

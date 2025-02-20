@@ -92,12 +92,17 @@ const ViewIndClient = () => {
           <strong>Email:</strong> {client.email}
         </p>
 
-        <button onClick={handleAddWorkout}>Add Workout</button>
-        <button
-          onClick={() => navigate("/past-workouts", { state: { client } })}
-        >
-          View Past Workouts
-        </button>
+        <div className="action_buttons">
+          <button onClick={handleAddWorkout} id="button">
+            Add Workout
+          </button>
+          <button
+            onClick={() => navigate("/past-workouts", { state: { client } })}
+            id="button"
+          >
+            View Past Workouts
+          </button>
+        </div>
         {loading && <p>Loading workouts...</p>}
 
         {!loading && workouts.length === 0 && (
