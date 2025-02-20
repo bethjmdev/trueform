@@ -1,4 +1,4 @@
-.ViewIndWorkout ul {
+.ViewIndClient ul {
   list-style-type: none;
   padding: 0;
   margin: 0 auto;
@@ -8,7 +8,7 @@
   width: fit-content;
 }
 
-.ViewIndWorkout {
+.ViewIndClient {
   background-color: #fdf8f6;
   width: 100vw;
   min-height: 100vh;
@@ -20,17 +20,17 @@
   align-items: center;
 }
 
-.ViewIndWorkout .view_ind_workout_container {
+.ViewIndClient .view_ind_client_container {
   width: 100%;
   max-width: 900px;
 }
 
-.ViewIndWorkout ul li {
+.ViewIndClient ul li {
   display: flex;
   justify-content: center;
 }
 
-.ViewIndWorkout .ind_workout_container {
+.ViewIndClient .ind_client_container {
   background-color: #a88bfa;
   padding: 2rem;
   border-radius: 1.5rem;
@@ -43,12 +43,12 @@
   cursor: pointer;
 }
 
-.ViewIndWorkout .ind_workout_container:hover {
+.ViewIndClient .ind_client_container:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
 }
 
-.ViewIndWorkout .ind_workout_container button {
+.ViewIndClient .ind_client_container button {
   background-color: #a88bfa;
   padding: 0.5rem 1rem;
   border: none;
@@ -58,22 +58,12 @@
   transition: background-color 0.2s ease;
 }
 
-.ViewIndWorkout .ind_workout_container button:hover {
+.ViewIndClient .ind_client_container button:hover {
   background-color: #8c6ae0;
 }
 
-/* .ViewIndWorkout #button {
+.ViewIndClient #button {
   background-color: #ff6b8b;
-  margin: 0.5rem;
-  margin-bottom: 1rem;
-  transition: background-color 0.2s ease;
-  border: none;
-} */
-
-.ViewIndWorkout #button {
-  background-color: #ff6b8b;
-
-  /* background: linear-gradient(135deg, #ff6b8b, #ff3b6b); */
   margin: 0.5rem;
   margin-bottom: 1rem;
   padding: 0.75rem 1.5rem;
@@ -87,7 +77,7 @@
   box-shadow: 0 4px 8px rgba(255, 107, 139, 0.3);
 }
 
-.ViewIndWorkout #button:hover {
+.ViewIndClient #button:hover {
   background: linear-gradient(135deg, #ff3b6b, #ff1a4e);
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(255, 107, 139, 0.4);
@@ -95,17 +85,17 @@
 
 /* Responsive Styling */
 @media (max-width: 900px) {
-  .ViewIndWorkout ul {
+  .ViewIndClient ul {
     grid-template-columns: repeat(2, 1fr); /* 2 items per row on tablets */
   }
 }
 
 @media (max-width: 600px) {
-  .ViewIndWorkout ul {
+  .ViewIndClient ul {
     grid-template-columns: repeat(1, 1fr); /* 1 item per row on mobile */
   }
 
-  .ViewIndWorkout .ind_workout_container {
+  .ViewIndClient .ind_client_container {
     width: 20rem;
   }
 }

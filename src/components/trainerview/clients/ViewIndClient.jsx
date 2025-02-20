@@ -85,8 +85,8 @@ const ViewIndClient = () => {
   if (!client) return null;
 
   return (
-    <div className="ViewIndWorkout">
-      <div className="view_ind_workout_container">
+    <div className="ViewIndClient">
+      <div className="view_ind_client_container">
         <h2>Workouts for {client.name}</h2>
         <p>
           <strong>Email:</strong> {client.email}
@@ -113,7 +113,7 @@ const ViewIndClient = () => {
           {workouts.map((workout) => (
             <li
               key={workout.id}
-              className="ind_workout_container"
+              className="ind_client_container"
               onClick={() =>
                 navigate("/workout-details", {
                   state: { exercise_doc_id: workout.exercise_doc_id },
