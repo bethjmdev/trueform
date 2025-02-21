@@ -147,7 +147,10 @@ const IndClientPastWorkout = () => {
                         <table
                           border="1"
                           cellPadding="5"
-                          style={{ borderCollapse: "collapse", width: "100%" }}
+                          style={{
+                            borderCollapse: "collapse",
+                            width: "100%",
+                          }}
                         >
                           <thead>
                             <tr>
