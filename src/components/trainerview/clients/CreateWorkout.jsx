@@ -12,7 +12,6 @@ const CreateWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const client_uid = location.state?.client_uid;
-  // const trainer_uid = "mMvzoIRDMsgNDYooKgQU49LvBb32"; // Replace with actual logged-in trainer
   const auth = getAuth();
 
   const currentUser = auth.currentUser;
@@ -401,7 +400,7 @@ const CreateWorkout = () => {
           </select>
         </div>
         {/* <button id="button">Add Exercise</button> */}
-        <button id="button" onClick={handleAddExercise}>
+        <button onClick={handleAddExercise} id="button">
           Add Exercise
         </button>
 

@@ -22,6 +22,8 @@ const StartWorkout = () => {
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
+  const [sessionId, setSessionId] = useState(null); // ✅ Unique session ID for workout
+
   const [questions, setQuestions] = useState({
     slept_6_hours: "",
     motivated: "",
@@ -163,7 +165,8 @@ const StartWorkout = () => {
     const exerciseDocId = uuidv4();
 
     try {
-      clearInterval(time);
+      // clearInterval(time);
+      clearInterval(timerInterval); // ✅ Stop the correct timer
 
       let totalSets = 0;
       let completedSets = 0;
@@ -291,6 +294,51 @@ const StartWorkout = () => {
       });
     }
   });
+
+  // ✅ Save workout start time when user enters this component
+  // const saveWorkoutStartTime = async () => {
+  //   if (!currentUser) return;
+  //   try {
+  //     await setDoc(doc(db, "ActiveWorkouts", newSessionId), {
+  //       uid: currentUser.uid,
+  //       workout_name,
+  //       trainer,
+  //       start_timestamp: serverTimestamp(), // ✅ Save when it started
+  //       duration_seconds: time,
+  //     });
+  //     console.log("✅ Workout start time saved.");
+  //   } catch (error) {
+  //     console.error("❌ Error saving workout start time:", error);
+  //   }
+  // };
+
+  //   // ✅ Generate a unique session ID when workout starts
+  //   const newSessionId = uuidv4();
+  //   setSessionId(newSessionId);
+  //   saveWorkoutStartTime();
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const newSessionId = uuidv4();
+    setSessionId(newSessionId);
+
+    const saveWorkoutStartTime = async () => {
+      try {
+        await setDoc(doc(db, "ActiveWorkouts", newSessionId), {
+          uid: currentUser.uid,
+          workout_name,
+          trainer,
+          start_timestamp: serverTimestamp(), // ✅ Only save start time
+        });
+        console.log("✅ Workout start time saved.");
+      } catch (error) {
+        console.error("❌ Error saving workout start time:", error);
+      }
+    };
+
+    saveWorkoutStartTime();
+  }, [currentUser, workout_name, trainer]); // ✅ Runs only once when component mounts
 
   return (
     <div className="ViewIndWorkout">
