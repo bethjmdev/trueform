@@ -424,6 +424,7 @@ const CreateWorkout = () => {
                       borderRadius: "3rem",
                       background: "#FDF8F6",
                     }}
+                    className="exercise_block"
                   >
                     <h4>{group.name}</h4>
                     <p>
@@ -447,7 +448,17 @@ const CreateWorkout = () => {
           </div>
         )}
 
-        <button id="button">Save Workout</button>
+        {/* <button id="button" onClick={handleSaveWorkout}>
+          Save Workout
+        </button> */}
+
+        <button
+          id="button"
+          onClick={handleSaveWorkout}
+          disabled={!workoutName.trim()}
+        >
+          Save Workout
+        </button>
       </div>
     </div>
   );

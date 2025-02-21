@@ -55,19 +55,11 @@
 }
 
 .CreateWorkout .exercise_block {
-  width: 30rem;
+  width: 70vw;
 }
 
-/* .input_field {
-  color: black !important;
-} */
-
-@media (max-width: 768px) {
-  .CreateWorkout.exercise_block {
-    width: 70vw;
-  }
-
-  #hr {
-    width: 30vw;
+@media (min-width: 768px) {
+  .CreateWorkout .exercise_block {
+    width: 50vw;
   }
 }
