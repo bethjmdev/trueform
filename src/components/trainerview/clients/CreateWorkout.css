@@ -58,8 +58,12 @@
   width: 70vw;
 }
 
+.CreateWorkout .view_exercise_block {
+  width: 80vw;
+}
+
 @media (min-width: 768px) {
   .CreateWorkout .exercise_block {
-    width: 50vw;
+    width: 70vw;
   }
 }
