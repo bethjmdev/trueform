@@ -205,9 +205,12 @@ const CreateWorkout = () => {
         circuit_id: exercise.circuit_id,
         type: exercise.type,
         index: exercise.index, // Ensure index is saved
-        tempo: exercise.tempo, // ✅ New
-        tempoLength: exercise.tempoLength, // ✅ New
-        notes: exercise.notes, // ✅ New
+        // tempo: exercise.tempo, // ✅ New
+        // tempoLength: exercise.tempoLength, // ✅ New
+        // notes: exercise.notes, // ✅ New
+        tempo: exercise.tempo || "", // ✅ Ensure no undefined values
+        tempoLength: exercise.tempoLength || "", // ✅ Ensure no undefined values
+        notes: exercise.notes || "",
       };
       return acc;
     }, {});
