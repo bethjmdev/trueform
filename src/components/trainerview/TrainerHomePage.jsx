@@ -53,15 +53,14 @@ const TrainerHomePage = () => {
       <div className="client_homepage_container">
         <p>Hi {clientData?.name || "Trainer"}</p>
         <div className="homepage_buttons">
+          <HomePageButton onClick={() => navigate("/all-clients")}>
+            View Clients
+          </HomePageButton>
           <HomePageButton onClick={() => navigate("/add-exercise")}>
             Add Exercise
           </HomePageButton>
           <HomePageButton onClick={() => navigate("/exercise-database")}>
             View Exercise Database
-          </HomePageButton>
-          {/* ✅ Navigate to ViewAllClients */}
-          <HomePageButton onClick={() => navigate("/all-clients")}>
-            View Clients
           </HomePageButton>
           <HomePageButton onClick={() => navigate("/profile")}>
             View Profile

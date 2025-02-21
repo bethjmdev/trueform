@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../../utils/firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
+import "../trainerview/clients/ViewIndWorkout.css";
+
 const SingleWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -42,109 +44,147 @@ const SingleWorkout = () => {
   if (!workoutDetails) return <p>Workout not found.</p>;
 
   const handleStartWorkout = () => {
+    console.log("🚀 Navigating with workout details:", workoutDetails);
     navigate("/start-workout", {
       state: { workoutDetails, workout_name, trainer },
     });
   };
 
-  // ✅ Group exercises by circuit_id
-  const groupedExercises = {};
-  const nonCircuitExercises = [];
+  // ✅ Step 1: Identify first index of each circuit
+  const circuitIndexMap = {};
 
-  Object.entries(workoutDetails).forEach(([exercise, details]) => {
-    if (details.circuit_id) {
-      if (!groupedExercises[details.circuit_id]) {
-        groupedExercises[details.circuit_id] = [];
+  // ✅ Step 2: Convert `workoutDetails` to an array and sort by index
+  const sortedExercises = Object.entries(workoutDetails)
+    .map(([exercise, details]) => ({
+      exercise,
+      ...details,
+    }))
+    .sort((a, b) => {
+      const indexA = a.circuit_id
+        ? circuitIndexMap[a.circuit_id] ?? a.index
+        : a.index;
+      const indexB = b.circuit_id
+        ? circuitIndexMap[b.circuit_id] ?? b.index
+        : b.index;
+      return indexA - indexB;
+    });
+
+  // ✅ Step 3: Group circuits together visually while keeping everything ordered
+  const groupedExercises = [];
+  const seenCircuits = new Set();
+
+  sortedExercises.forEach((exercise) => {
+    if (exercise.circuit_id) {
+      if (!seenCircuits.has(exercise.circuit_id)) {
+        groupedExercises.push({
+          type: "circuit",
+          circuit_id: exercise.circuit_id,
+          exercises: sortedExercises.filter(
+            (e) => e.circuit_id === exercise.circuit_id
+          ),
+        });
+        seenCircuits.add(exercise.circuit_id);
       }
-      groupedExercises[details.circuit_id].push([exercise, details]);
     } else {
-      nonCircuitExercises.push([exercise, details]);
+      groupedExercises.push({
+        type: "exercise",
+        ...exercise,
+      });
     }
   });
 
   return (
-    <div>
-      <h2>Workout Details</h2>
-      {workout_name && <h3>Workout: {workout_name}</h3>}
+    <div className="ViewIndWorkout">
+      <div className="view_ind_workout_container">
+        {workout_name && <h2>Workout {workout_name}</h2>}
 
-      {/* Start Button */}
-      <button onClick={handleStartWorkout} style={{ marginTop: "20px" }}>
-        Start Workout
-      </button>
+        {/* Start Button */}
+        <button onClick={handleStartWorkout} id="button">
+          Start Workout
+        </button>
 
-      {/* ✅ Render Circuit Groups */}
-      {Object.entries(groupedExercises).map(([circuit_id, exercises]) => (
-        <div
-          key={circuit_id}
-          style={{
-            border: "2px solid #000",
-            padding: "10px",
-            marginTop: "20px",
-          }}
-        >
-          <h3>🔥 Circuit</h3>
-          {exercises.map(([exercise, details]) => (
-            <div key={exercise}>
-              <h3>{exercise}</h3>
-              {details.videoDemo && (
-                <p>
-                  <strong>Video Demo:</strong>{" "}
-                  <a
-                    href={details.videoDemo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {details.videoDemo}
-                  </a>
-                </p>
-              )}
-              <p>
-                <strong>Reps:</strong> {details.reps}
-              </p>
-              <p>
-                <strong>Sets:</strong> {details.sets}
-              </p>
-              <p>
-                <strong>Weight:</strong> {details.weight} lbs
-              </p>
-              <p>
-                <strong>Cues:</strong> {details.cues}
-              </p>
-            </div>
-          ))}
-        </div>
-      ))}
-
-      {/* ✅ Render Non-Circuit Exercises */}
-      {nonCircuitExercises.map(([exercise, details]) => (
-        <div key={exercise} style={{ marginTop: "20px" }}>
-          <h3>{exercise}</h3>
-          {details.videoDemo && (
-            <p>
-              <strong>Video Demo:</strong>{" "}
-              <a
-                href={details.videoDemo}
-                target="_blank"
-                rel="noopener noreferrer"
+        {/* ✅ Render Exercises & Circuits in Order */}
+        {groupedExercises.map((group) => {
+          if (group.type === "circuit") {
+            return (
+              <div
+                key={group.circuit_id}
+                style={{
+                  padding: "10px",
+                  marginBottom: "10px",
+                  borderRadius: "3rem",
+                  background: "#FDF8F6",
+                }}
+                className="exercise_block"
               >
-                {details.videoDemo}
-              </a>
-            </p>
-          )}
-          <p>
-            <strong>Reps:</strong> {details.reps}
-          </p>
-          <p>
-            <strong>Sets:</strong> {details.sets}
-          </p>
-          <p>
-            <strong>Weight:</strong> {details.weight} lbs
-          </p>
-          <p>
-            <strong>Cues:</strong> {details.cues}
-          </p>
-        </div>
-      ))}
+                <h3>🔥 Circuit</h3>
+                {group.exercises.map((details) => (
+                  <div key={details.exercise}>
+                    <h3>{details.exercise}</h3>
+                    {details.videoDemo && (
+                      <p>
+                        <a
+                          href={details.videoDemo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "#213547", cursor: "pointer" }}
+                        >
+                          Click to View Video Demo
+                        </a>
+                      </p>
+                    )}
+                    <p>
+                      <strong>Reps:</strong> {details.reps}
+                    </p>
+                    <p>
+                      <strong>Sets:</strong> {details.sets}
+                    </p>
+                    <p>
+                      <strong>Weight:</strong> {details.weight} lbs
+                    </p>
+                  </div>
+                ))}
+              </div>
+            );
+          } else {
+            return (
+              <div
+                key={group.exercise}
+                style={{
+                  padding: "10px",
+                  marginBottom: "10px",
+                  borderRadius: "3rem",
+                  background: "#FDF8F6",
+                }}
+                className="exercise_block"
+              >
+                <h3>{group.exercise}</h3>
+                {group.videoDemo && (
+                  <p>
+                    <a
+                      href={group.videoDemo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "#213547", cursor: "pointer" }}
+                    >
+                      Click to View Video Demo
+                    </a>
+                  </p>
+                )}
+                <p>
+                  <strong>Reps:</strong> {group.reps}
+                </p>
+                <p>
+                  <strong>Sets:</strong> {group.sets}
+                </p>
+                <p>
+                  <strong>Weight:</strong> {group.weight} lbs
+                </p>
+              </div>
+            );
+          }
+        })}
+      </div>
     </div>
   );
 };

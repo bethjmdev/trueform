@@ -1,179 +1,31 @@
-// import { useState, useEffect } from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import { db } from "../../../utils/firebase/firebaseConfig";
-// import { doc, getDoc } from "firebase/firestore";
-
-// const IndPastWorkout = () => {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-//   const workoutId = location.state?.workoutId;
-//   const [groupedExercises, setGroupedExercises] = useState({});
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     if (!workoutId) {
-//       console.error("❌ No workout ID found. Redirecting...");
-//       navigate("/past-workouts");
-//       return;
-//     }
-
-//     const fetchExercises = async () => {
-//       try {
-//         console.log(`📡 Fetching exercises for workout ID: ${workoutId}`);
-
-//         const workoutDoc = await getDoc(
-//           doc(db, "PastWorkoutExercises", workoutId)
-//         );
-
-//         if (!workoutDoc.exists()) {
-//           console.log("❌ No exercises found for this workout.");
-//           setGroupedExercises({});
-//         } else {
-//           const workoutData = workoutDoc.data();
-//           const exercises = Object.keys(workoutData).map((exerciseName) => ({
-//             name: exerciseName,
-//             ...workoutData[exerciseName], // Spread all exercise details
-//           }));
-
-//           // Group exercises by circuit_id
-//           const grouped = exercises.reduce((acc, exercise) => {
-//             const circuitId = exercise.circuit_id || "No Circuit"; // Handle missing circuit ID
-//             if (!acc[circuitId]) acc[circuitId] = [];
-//             acc[circuitId].push(exercise);
-//             return acc;
-//           }, {});
-
-//           console.log("✅ Grouped Exercises:", grouped);
-//           setGroupedExercises(grouped);
-//         }
-//       } catch (error) {
-//         console.error("❌ Error fetching exercises:", error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchExercises();
-//   }, [workoutId, navigate]);
-
-//   if (!workoutId) return null;
-
-//   return (
-//     <div>
-//       <h2>Past Workout Exercises</h2>
-//       <button onClick={() => navigate(-1)}>⬅️ Back</button>
-//       {loading && <p>Loading exercises...</p>}
-
-//       {!loading && Object.keys(groupedExercises).length === 0 && (
-//         <p>No exercises recorded for this workout.</p>
-//       )}
-
-//       {Object.entries(groupedExercises).map(([circuitId, exercises]) => (
-//         <div
-//           key={circuitId}
-//           style={{
-//             marginBottom: "20px",
-//             padding: "10px",
-//             border: "2px solid black",
-//           }}
-//         >
-//           <h3>
-//             {circuitId === "No Circuit"
-//               ? "Standalone Exercises"
-//               : `Circuit ${circuitId}`}
-//           </h3>
-//           <ul>
-//             {exercises.map((exercise, index) => (
-//               <li
-//                 key={index}
-//                 style={{
-//                   marginBottom: "10px",
-//                   borderBottom: "1px solid gray",
-//                   paddingBottom: "5px",
-//                 }}
-//               >
-//                 <h4>{exercise.name}</h4>
-//                 <p>
-//                   <strong>Reps:</strong> {exercise.reps}
-//                 </p>
-//                 <p>
-//                   <strong>Sets:</strong> {exercise.sets}
-//                 </p>
-//                 <p>
-//                   <strong>Weight:</strong> {exercise.weight}
-//                 </p>
-//                 <p>
-//                   <strong>Cues:</strong> {exercise.cues}
-//                 </p>
-//                 <p>
-//                   <strong>Completed Sets:</strong>{" "}
-//                   {exercise.completed_sets ? exercise.completed_sets.length : 0}
-//                 </p>
-//                 <a
-//                   href={exercise.videoDemo}
-//                   target="_blank"
-//                   rel="noopener noreferrer"
-//                 >
-//                   📺 Video Demo
-//                 </a>
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default IndPastWorkout;
-
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../../../utils/firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import "./ViewIndWorkout.css";
 
-const IndPastWorkout = () => {
+const IndClientPastWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const workoutId = location.state?.workoutId;
-  const [groupedExercises, setGroupedExercises] = useState({});
+  const [workoutDetails, setWorkoutDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!workoutId) {
-      console.error("❌ No workout ID found. Redirecting...");
-      navigate("/past-workouts");
-      return;
-    }
+    if (!workoutId) return;
 
     const fetchExercises = async () => {
       try {
         console.log(`📡 Fetching exercises for workout ID: ${workoutId}`);
-
         const workoutDoc = await getDoc(
           doc(db, "PastWorkoutExercises", workoutId)
         );
 
-        if (!workoutDoc.exists()) {
-          console.log("❌ No exercises found for this workout.");
-          setGroupedExercises({});
+        if (workoutDoc.exists()) {
+          console.log("✅ Workout details loaded:", workoutDoc.data());
+          setWorkoutDetails(workoutDoc.data());
         } else {
-          const workoutData = workoutDoc.data();
-          const exercises = Object.keys(workoutData).map((exerciseName) => ({
-            name: exerciseName,
-            ...workoutData[exerciseName], // Spread all exercise details
-          }));
-
-          // Group exercises by circuit_id
-          const grouped = exercises.reduce((acc, exercise) => {
-            const circuitId = exercise.circuit_id || "No Circuit"; // Handle missing circuit ID
-            if (!acc[circuitId]) acc[circuitId] = [];
-            acc[circuitId].push(exercise);
-            return acc;
-          }, {});
-
-          console.log("✅ Grouped Exercises:", grouped);
-          setGroupedExercises(grouped);
+          console.error("❌ No exercises found.");
         }
       } catch (error) {
         console.error("❌ Error fetching exercises:", error);
@@ -183,102 +35,226 @@ const IndPastWorkout = () => {
     };
 
     fetchExercises();
-  }, [workoutId, navigate]);
+  }, [workoutId]);
 
-  if (!workoutId) return null;
+  if (loading) return <p>Loading exercises...</p>;
+  if (!workoutDetails) return <p>No exercises found for this workout.</p>;
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  // ✅ Step 1: Identify first index of each circuit
+  const circuitIndexMap = {};
+
+  // ✅ Step 2: Convert `workoutDetails` to an array and sort by index
+  const sortedExercises = Object.entries(workoutDetails)
+    .map(([exercise, details]) => ({
+      exercise,
+      ...details,
+    }))
+    .sort((a, b) => {
+      const indexA = a.circuit_id
+        ? circuitIndexMap[a.circuit_id] ?? a.index
+        : a.index;
+      const indexB = b.circuit_id
+        ? circuitIndexMap[b.circuit_id] ?? b.index
+        : b.index;
+      return indexA - indexB;
+    });
+
+  // ✅ Step 3: Group circuits together while keeping everything in one ordered list
+  const groupedExercises = [];
+  const seenCircuits = new Set();
+
+  sortedExercises.forEach((exercise) => {
+    if (exercise.circuit_id) {
+      if (!seenCircuits.has(exercise.circuit_id)) {
+        groupedExercises.push({
+          type: "circuit",
+          circuit_id: exercise.circuit_id,
+          exercises: sortedExercises.filter(
+            (e) => e.circuit_id === exercise.circuit_id
+          ),
+        });
+        seenCircuits.add(exercise.circuit_id);
+      }
+    } else {
+      groupedExercises.push({
+        type: "exercise",
+        ...exercise,
+      });
+    }
+  });
+
+  console.log("workoutDetails", workoutDetails);
 
   return (
-    <div>
-      <h2>Past Workout Exercises</h2>
-      <button onClick={() => navigate(-1)}>⬅️ Back</button>
-      {loading && <p>Loading exercises...</p>}
+    <div className="ViewIndWorkout">
+      <div className="view_ind_workout_container">
+        <h2>Past Workout Details</h2>
 
-      {!loading && Object.keys(groupedExercises).length === 0 && (
-        <p>No exercises recorded for this workout.</p>
-      )}
+        {/* ✅ Render Exercises & Circuits in Order */}
+        {groupedExercises.map((group) => {
+          return (
+            <div
+              key={group.type === "circuit" ? group.circuit_id : group.exercise}
+              style={{
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "3rem",
+                background: "#FDF8F6",
+              }}
+              className="exercise_block"
+            >
+              {group.type === "circuit" && <h3>🔥 Circuit</h3>}
 
-      {Object.entries(groupedExercises).map(([circuitId, exercises]) => (
-        <div
-          key={circuitId}
-          style={{
-            marginBottom: "20px",
-            padding: "10px",
-            border: "2px solid black",
-          }}
-        >
-          <h3>
-            {circuitId === "No Circuit"
-              ? "Standalone Exercises"
-              : `Circuit ${circuitId}`}
-          </h3>
-          <ul>
-            {exercises.map((exercise, index) => (
-              <li
-                key={index}
-                style={{
-                  marginBottom: "10px",
-                  borderBottom: "1px solid gray",
-                  paddingBottom: "5px",
-                }}
-              >
-                <h4>{exercise.name}</h4>
-                <p>
-                  <strong>Planned Reps:</strong> {exercise.reps}
-                </p>
-                <p>
-                  <strong>Planned Sets:</strong> {exercise.sets}
-                </p>
-                <p>
-                  <strong>Planned Weight:</strong> {exercise.weight}
-                </p>
-                <p>
-                  <strong>Cues:</strong> {exercise.cues}
-                </p>
+              {group.type === "circuit"
+                ? group.exercises.map((details) => (
+                    <div
+                      key={details.exercise}
+                      style={{ marginBottom: "10px" }}
+                    >
+                      <h3>{details.exercise}</h3>
+                      <p>
+                        <strong>Cues:</strong> {details.cues}
+                      </p>
+                      {details.videoDemo && (
+                        <p>
+                          <a
+                            href={details.videoDemo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "#213547", cursor: "pointer" }}
+                          >
+                            Click to View Video Demo
+                          </a>
+                        </p>
+                      )}
+                      <p>
+                        <strong>Planned...</strong>
+                      </p>
+                      <p>
+                        <strong>Reps:</strong> {details.reps}{" "}
+                        <strong>Sets:</strong> {details.sets},{" "}
+                        <strong>Weight:</strong> {details.weight} lbs
+                      </p>
+                      <p>
+                        <strong>Actual Performance...</strong>
+                      </p>
+                      {details.actual_reps_per_set &&
+                      details.actual_weights_per_set ? (
+                        <table
+                          border="1"
+                          cellPadding="5"
+                          style={{ borderCollapse: "collapse", width: "100%" }}
+                        >
+                          <thead>
+                            <tr>
+                              <th>Set #</th>
+                              <th>Actual Reps</th>
+                              <th>Actual Weight</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {details.actual_reps_per_set.map(
+                              (reps, setIndex) => (
+                                <tr key={setIndex}>
+                                  <td>{setIndex + 1}</td>
+                                  <td>{reps}</td>
+                                  <td>
+                                    {details.actual_weights_per_set[setIndex]}
+                                  </td>
+                                </tr>
+                              )
+                            )}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p>No recorded actual reps/weights.</p>
+                      )}
+                    </div>
+                  ))
+                : // Single Exercise (Non-Circuit)
+                  (() => {
+                    const details = group;
+                    return (
+                      <div key={details.exercise}>
+                        <h3>{details.exercise}</h3>
+                        <p>
+                          <strong>Cues:</strong> {details.cues}
+                        </p>
+                        {details.videoDemo && (
+                          <p>
+                            <a
+                              href={details.videoDemo}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: "#213547", cursor: "pointer" }}
+                            >
+                              Click to View Video Demo
+                            </a>
+                          </p>
+                        )}
+                        <p>
+                          <strong>Planned...</strong>
+                        </p>
+                        <p>
+                          <strong>Reps:</strong> {details.reps}{" "}
+                          <strong>Sets:</strong> {details.sets},{" "}
+                          <strong>Weight:</strong> {details.weight} lbs
+                        </p>
+                        <p>
+                          <strong>Actual Performance...</strong>
+                        </p>
+                        {details.actual_reps_per_set &&
+                        details.actual_weights_per_set ? (
+                          <table
+                            border="1"
+                            cellPadding="5"
+                            style={{
+                              borderCollapse: "collapse",
+                              width: "100%",
+                            }}
+                          >
+                            <thead>
+                              <tr>
+                                <th>Set #</th>
+                                <th>Actual Reps</th>
+                                <th>Actual Weight</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {details.actual_reps_per_set.map(
+                                (reps, setIndex) => (
+                                  <tr key={setIndex}>
+                                    <td>{setIndex + 1}</td>
+                                    <td>{reps}</td>
+                                    <td>
+                                      {details.actual_weights_per_set[setIndex]}
+                                    </td>
+                                  </tr>
+                                )
+                              )}
+                            </tbody>
+                          </table>
+                        ) : (
+                          <p>No recorded actual reps/weights.</p>
+                        )}
+                      </div>
+                    );
+                  })()}
+            </div>
+          );
+        })}
 
-                {/* Display Actual Performance Per Set */}
-                <h5>Actual Performance:</h5>
-                {exercise.actual_reps_per_set &&
-                exercise.actual_weights_per_set ? (
-                  <table
-                    border="1"
-                    cellPadding="5"
-                    style={{ borderCollapse: "collapse" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Set #</th>
-                        <th>Actual Reps</th>
-                        <th>Actual Weight</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {exercise.actual_reps_per_set.map((reps, setIndex) => (
-                        <tr key={setIndex}>
-                          <td>{setIndex + 1}</td>
-                          <td>{reps}</td>
-                          <td>{exercise.actual_weights_per_set[setIndex]}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p>No recorded actual reps/weights.</p>
-                )}
-
-                <a
-                  href={exercise.videoDemo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  📺 Video Demo
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+        {/* Back Button */}
+        <button onClick={handleBack} id="button">
+          Back
+        </button>
+      </div>
     </div>
   );
 };
 
-export default IndPastWorkout;
+export default IndClientPastWorkout;

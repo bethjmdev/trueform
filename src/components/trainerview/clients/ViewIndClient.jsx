@@ -85,19 +85,24 @@ const ViewIndClient = () => {
   if (!client) return null;
 
   return (
-    <div className="ViewIndWorkout">
-      <div className="view_ind_workout_container">
+    <div className="ViewIndClient">
+      <div className="view_ind_client_container">
         <h2>Workouts for {client.name}</h2>
         <p>
           <strong>Email:</strong> {client.email}
         </p>
 
-        <button onClick={handleAddWorkout}>Add Workout</button>
-        <button
-          onClick={() => navigate("/past-workouts", { state: { client } })}
-        >
-          View Past Workouts
-        </button>
+        <div className="action_buttons">
+          <button onClick={handleAddWorkout} id="button">
+            Add Workout
+          </button>
+          <button
+            onClick={() => navigate("/past-workouts", { state: { client } })}
+            id="button"
+          >
+            View Past Workouts
+          </button>
+        </div>
         {loading && <p>Loading workouts...</p>}
 
         {!loading && workouts.length === 0 && (
@@ -108,7 +113,7 @@ const ViewIndClient = () => {
           {workouts.map((workout) => (
             <li
               key={workout.id}
-              className="ind_workout_container"
+              className="ind_client_container"
               onClick={() =>
                 navigate("/workout-details", {
                   state: { exercise_doc_id: workout.exercise_doc_id },

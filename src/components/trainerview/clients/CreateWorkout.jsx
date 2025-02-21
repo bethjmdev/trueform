@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import { getAuth } from "firebase/auth";
 import { serverTimestamp } from "firebase/firestore"; // ✅ Import this
 
+import "./CreateWorkout.css";
+
 const CreateWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -22,6 +24,8 @@ const CreateWorkout = () => {
   const [filteredExercises, setFilteredExercises] = useState([]);
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [selectedCircuitExercise, setSelectedCircuitExercise] = useState(""); // Dropdown selection
+
+  const [exerciseNotFound, setExerciseNotFound] = useState(false);
 
   const [newExercise, setNewExercise] = useState({
     name: "",
@@ -63,18 +67,19 @@ const CreateWorkout = () => {
     fetchExerciseDatabase();
   }, []);
 
-  // 🔥 Handle typing in new exercise name (Autocomplete)
   const handleNewExerciseChange = (field, value) => {
     if (field === "name") {
-      setFilteredExercises(
-        exerciseDatabase
-          .filter((exercise) =>
-            exercise.name.toLowerCase().includes(value.toLowerCase())
-          )
-          .map((exercise) => exercise.name)
+      const filtered = exerciseDatabase.filter((exercise) =>
+        exercise.name.toLowerCase().includes(value.toLowerCase())
       );
+      setFilteredExercises(filtered);
+
+      // Show notification if exercise is not found
+      setExerciseNotFound(filtered.length === 0 && value.trim() !== "");
     }
-    setNewExercise({ ...newExercise, [field]: value });
+
+    // setNewExercise({ ...newExercise, [field]: value });
+    setNewExercise((prev) => ({ ...prev, [field]: value }));
   };
 
   // 🔥 Handle selecting an exercise from autocomplete
@@ -114,24 +119,19 @@ const CreateWorkout = () => {
       return;
     }
 
-    // let updatedExercise = { ...newExercise, circuit_id: null };
+    //NEW
+    let nextIndex = selectedExercises.length
+      ? Math.max(...selectedExercises.map((e) => e.index || 0)) + 1
+      : 1;
+
     let updatedExercise = {
       ...newExercise,
       circuit_id: null,
       type: newExercise.type,
+      index: nextIndex, // Assign the next available index
     };
 
-    // if (selectedCircuitExercise) {
-    //   // 🔥 Link exercise to selected one in dropdown
-    //   const linkedExercise = selectedExercises.find(
-    //     (e) => e.name === selectedCircuitExercise
-    //   );
-    //   if (linkedExercise) {
-    //     updatedExercise.circuit_id = linkedExercise.circuit_id || uuidv4();
-    //     linkedExercise.circuit_id = updatedExercise.circuit_id; // Ensure previous exercise is also linked
-    //   }
-    // }
-
+    //NEW
     if (selectedCircuitExercise) {
       const linkedExercise = selectedExercises.find(
         (e) => e.name === selectedCircuitExercise
@@ -139,14 +139,14 @@ const CreateWorkout = () => {
       if (linkedExercise) {
         updatedExercise.circuit_id = linkedExercise.circuit_id || uuidv4();
         linkedExercise.circuit_id = updatedExercise.circuit_id; // Keep consistency
+        updatedExercise.index = linkedExercise.index; // Assign the same index to circuit exercises
       }
     }
 
-    // setSelectedExercises([...selectedExercises, updatedExercise]);
-    setSelectedExercises((prevExercises) => [
-      ...prevExercises,
-      updatedExercise,
-    ]);
+    //NEW
+    setSelectedExercises((prevExercises) =>
+      [...prevExercises, updatedExercise].sort((a, b) => a.index - b.index)
+    );
 
     // ✅ Clear all input fields after adding an exercise
     setNewExercise({
@@ -170,11 +170,6 @@ const CreateWorkout = () => {
 
   // 🔥 Save Workout to Firestore
   const handleSaveWorkout = async () => {
-    if (!workoutName || selectedExercises.length === 0) {
-      console.error("❌ Workout name and exercises are required.");
-      return;
-    }
-
     const workoutId = uuidv4(); // Unique ID for both documents
 
     const workoutDetails = {
@@ -196,6 +191,7 @@ const CreateWorkout = () => {
         videoDemo: exercise.videoDemo,
         circuit_id: exercise.circuit_id,
         type: exercise.type,
+        index: exercise.index, // Ensure index is saved
       };
       return acc;
     }, {});
@@ -214,114 +210,229 @@ const CreateWorkout = () => {
     }
   };
 
+  const sortedExercises = [...selectedExercises].sort(
+    (a, b) => a.index - b.index
+  );
+
+  // Group circuits while keeping order
+  const circuitGroups = {};
+  const nonCircuitExercises = [];
+
+  sortedExercises.forEach((exercise) => {
+    if (exercise.circuit_id) {
+      if (!circuitGroups[exercise.circuit_id]) {
+        circuitGroups[exercise.circuit_id] = [];
+      }
+      circuitGroups[exercise.circuit_id].push(exercise);
+    } else {
+      nonCircuitExercises.push(exercise);
+    }
+  });
+
   return (
-    <div>
-      <h2>Create Workout</h2>
-      <label>Workout Name:</label>
-      <input
-        type="text"
-        value={workoutName}
-        onChange={(e) => setWorkoutName(e.target.value)}
-      />
+    <div className="CreateWorkout">
+      <div className="create_workout_container">
+        <h2>Create Workout</h2>
+        <input
+          type="text"
+          value={workoutName}
+          onChange={(e) => setWorkoutName(e.target.value)}
+          placeholder="Workout Name"
+          className="input_field"
+        />
 
-      <label>Notes:</label>
-      <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
+        <textarea
+          placeholder="Add Notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="input_field"
+        />
 
-      <h3>Add Exercise</h3>
-      <input
-        type="text"
-        placeholder="Exercise Name"
-        value={newExercise.name}
-        onChange={(e) => handleNewExerciseChange("name", e.target.value)}
-      />
-      {filteredExercises.length > 0 && (
-        <ul>
-          {filteredExercises.map((exercise, index) => (
-            <li key={index} onClick={() => handleSelectExercise(exercise)}>
-              {exercise}
-            </li>
-          ))}
-        </ul>
-      )}
-      <input
-        type="number"
-        placeholder="Reps"
-        value={newExercise.reps}
-        onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Sets"
-        value={newExercise.sets}
-        onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Weight"
-        value={newExercise.weight}
-        onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
-      />
-      <select
-        value={newExercise.type}
-        onChange={(e) => handleNewExerciseChange("type", e.target.value)}
-      >
-        <option value="exercise">Strength</option>
-        <option value="warm up">Warm Up</option>
-        <option value="cool down">Cool Down</option>
-        <option value="cardio">Cardio</option>
-      </select>
+        <h3>Add Exercise</h3>
+        <div className="add_exercise_container">
+          <input
+            type="text"
+            placeholder="Search For Exercise Here"
+            value={newExercise.name}
+            className="input_field"
+            onChange={(e) => handleNewExerciseChange("name", e.target.value)}
+          />
 
-      <select
-        value={selectedCircuitExercise}
-        onChange={(e) => setSelectedCircuitExercise(e.target.value)}
-      >
-        <option value="">-- Link to Exercise --</option>
-        {selectedExercises.map((exercise, index) => (
-          <option key={index} value={exercise.name}>
-            {exercise.name}
-          </option>
-        ))}
-      </select>
+          {/* Dropdown is always visible */}
+          <select
+            className="input_field"
+            value={newExercise.name}
+            onChange={(e) => {
+              const selectedExercise = exerciseDatabase.find(
+                (exercise) => exercise.name === e.target.value
+              );
+              if (selectedExercise) {
+                setNewExercise({
+                  ...newExercise,
+                  name: selectedExercise.name,
+                  cues: selectedExercise.cues,
+                  videoDemo: selectedExercise.videoDemo,
+                });
+              }
+            }}
+          >
+            <option value="">Select Exericse Here</option>
+            {(filteredExercises.length > 0
+              ? filteredExercises
+              : exerciseDatabase
+            ).map((exercise, index) => (
+              <option key={index} value={exercise.name}>
+                {exercise.name}
+              </option>
+            ))}
+          </select>
 
-      <button onClick={handleAddExercise}>Add Exercise</button>
-
-      {selectedExercises.length > 0 && (
-        <div>
-          <h3>Workout Preview</h3>
-          {selectedExercises.map((exercise, index) => (
+          {exerciseNotFound && (
             <div
-              key={index}
               style={{
-                border: exercise.circuit_id ? "2px solid blue" : "none",
-                padding: "5px",
+                position: "fixed",
+                // top: "100px",
+                top: "55vh",
+                left: "50%",
+                transform: "translateX(-50%)",
+                background: "#ff4d4d",
+                color: "white",
+                padding: "10px 20px",
+                borderRadius: "5px",
+                fontSize: "14px",
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
               }}
             >
-              <h4>
-                {index + 1}. {exercise.name} <span>({exercise.type})</span>
-              </h4>
-
-              <p>
-                <strong>Reps:</strong> {exercise.reps}
-              </p>
-              <p>
-                <strong>Sets:</strong> {exercise.sets}
-              </p>
-              <p>
-                <strong>Weight:</strong> {exercise.weight} lbs
-              </p>
-              <p>
-                <strong>Cues:</strong> {exercise.cues}
-              </p>
-              {exercise.circuit_id && <p>🔥 Circuit</p>}
-              <button onClick={() => handleRemoveExercise(index)}>
-                ❌ Remove
-              </button>
+              This exercise isn't in the database. Please add it.
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      <button onClick={handleSaveWorkout}>Save Workout</button>
+          <input
+            className="input_field"
+            type="number"
+            placeholder="Reps"
+            value={newExercise.reps}
+            onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
+          />
+          <input
+            className="input_field"
+            type="number"
+            placeholder="Sets"
+            value={newExercise.sets}
+            onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
+          />
+          <input
+            className="input_field"
+            type="number"
+            placeholder="Weight"
+            value={newExercise.weight}
+            onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
+          />
+          <select
+            className="input_field"
+            value={newExercise.type}
+            onChange={(e) => handleNewExerciseChange("type", e.target.value)}
+          >
+            <option value="exercise">Strength</option>
+            <option value="warm up">Warm Up</option>
+            <option value="cool down">Cool Down</option>
+            <option value="cardio">Cardio</option>
+          </select>
+
+          <select
+            className="input_field"
+            value={selectedCircuitExercise}
+            onChange={(e) => setSelectedCircuitExercise(e.target.value)}
+          >
+            <option value="">Make a circuit with...</option>
+            {selectedExercises.map((exercise, index) => (
+              <option key={index} value={exercise.name}>
+                {exercise.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* <button id="button">Add Exercise</button> */}
+        <button id="button" onClick={handleAddExercise}>
+          Add Exercise
+        </button>
+
+        {selectedExercises.length > 0 && (
+          <div>
+            <h3>Workout Preview</h3>
+
+            {[...Object.values(circuitGroups), ...nonCircuitExercises].map(
+              (group, idx) =>
+                Array.isArray(group) ? (
+                  <div
+                    key={idx}
+                    style={{
+                      padding: "10px",
+                      marginBottom: "10px",
+                      borderRadius: "3rem",
+                      background: "#FDF8F6",
+                    }}
+                    className="exercise_block"
+                  >
+                    <h3>🔥 Circuit</h3>
+                    {group.map((exercise, index) => (
+                      <div key={index} style={{ marginBottom: "10px" }}>
+                        <h4>{exercise.name}</h4>
+                        <p>
+                          <strong>Reps:</strong> {exercise.reps}
+                        </p>
+                        <p>
+                          <strong>Sets:</strong> {exercise.sets}
+                        </p>
+                        <p>
+                          <strong>Weight:</strong> {exercise.weight} lbs
+                        </p>
+                        <p>
+                          <strong>Cues:</strong> {exercise.cues}
+                        </p>
+                        <button onClick={() => handleRemoveExercise(index)}>
+                          ❌ Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    key={group.index}
+                    style={{
+                      padding: "10px",
+                      marginBottom: "10px",
+                      borderRadius: "3rem",
+                      background: "#FDF8F6",
+                    }}
+                    className="exercise_block"
+                  >
+                    <h4>{group.name}</h4>
+                    <p>
+                      <strong>Reps:</strong> {group.reps}
+                    </p>
+                    <p>
+                      <strong>Sets:</strong> {group.sets}
+                    </p>
+                    <p>
+                      <strong>Weight:</strong> {group.weight} lbs
+                    </p>
+                    <p>
+                      <strong>Cues:</strong> {group.cues}
+                    </p>
+                    <button onClick={() => handleRemoveExercise(group.index)}>
+                      ❌ Remove
+                    </button>
+                  </div>
+                )
+            )}
+          </div>
+        )}
+
+        <button id="button" onClick={handleSaveWorkout}>
+          Save Workout
+        </button>
+      </div>
     </div>
   );
 };
