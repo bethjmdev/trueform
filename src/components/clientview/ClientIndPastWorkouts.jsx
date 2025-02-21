@@ -117,6 +117,9 @@ const IndClientPastWorkout = () => {
                       <p>
                         <strong>Cues:</strong> {details.cues}
                       </p>
+                      <p>
+                        <strong>Notes:</strong> {details.note}
+                      </p>
                       {details.videoDemo && (
                         <p>
                           <a
@@ -133,8 +136,10 @@ const IndClientPastWorkout = () => {
                         <strong>Planned...</strong>
                       </p>
                       <p>
+                        <strong>Sets:</strong> {details.sets},
                         <strong>Reps:</strong> {details.reps}{" "}
-                        <strong>Sets:</strong> {details.sets},{" "}
+                        <strong>Tempo:</strong> {details.tempo}
+                        <strong>Tempo Length:</strong> {details.tempoLength}
                         <strong>Weight:</strong> {details.weight} lbs
                       </p>
                       <p>
@@ -197,9 +202,17 @@ const IndClientPastWorkout = () => {
                         <p>
                           <strong>Planned...</strong>
                         </p>
-                        <p>
+                        {/* <p>
                           <strong>Reps:</strong> {details.reps}{" "}
                           <strong>Sets:</strong> {details.sets},{" "}
+                          <strong>Weight:</strong> {details.weight} lbs
+                        </p> */}
+
+                        <p>
+                          <strong>Sets:</strong> {details.sets},{" "}
+                          <strong>Reps:</strong> {details.reps}{" "}
+                          <strong>Tempo:</strong> {details.tempo}{" "}
+                          <strong>Tempo Length:</strong> {details.tempoLength},{" "}
                           <strong>Weight:</strong> {details.weight} lbs
                         </p>
                         <p>

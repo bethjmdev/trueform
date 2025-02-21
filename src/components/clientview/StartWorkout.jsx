@@ -193,6 +193,9 @@ const StartWorkout = () => {
         if (checkedIndices.length > 0) {
           workoutExercises[exercise] = {
             ...details,
+            tempo: details.tempo || "", // ✅ Save tempo
+            tempoLength: details.tempoLength || "", // ✅ Save tempo length
+            note: details.note || "", // ✅ Save note
             actual_weights_per_set: checkedIndices.map(
               (i) => weights[exercise]?.[i] ?? ""
             ),
@@ -401,11 +404,23 @@ const StartWorkout = () => {
                         Click to Watch Demo
                       </a>
 
-                      <p>
+                      {/* <p>
+                        <strong>Planned...</strong>
                         <strong>Reps (Planned):</strong> {details.reps}
                       </p>
                       <p>
                         <strong>Weight (Planned):</strong> {details.weight} lbs
+                      </p> */}
+
+                      <p style={{ margin: "0", marginBottom: ".5rem" }}>
+                        <strong>Planned...</strong>
+                        <br />
+                        <strong>Reps:</strong> {group.reps}{" "}
+                        <strong>Weight:</strong> {group.weight} lbs
+                      </p>
+                      <p style={{ margin: "0", marginBottom: ".5rem" }}>
+                        <strong>Tempo:</strong> {group.tempo}{" "}
+                        <strong>Tempo Length:</strong> {group.tempoLength}
                       </p>
 
                       {/* ✅ Checkbox, Reps, and Weights for tracking progress */}
@@ -477,11 +492,15 @@ const StartWorkout = () => {
                 >
                   <h3>{group.exercise}</h3>
 
-                  <p>
-                    <strong>Reps (Planned):</strong> {group.reps}
+                  <p style={{ margin: "0", marginBottom: ".5rem" }}>
+                    <strong>Planned...</strong>
+                    <br />
+                    <strong>Reps:</strong> {group.reps} <strong>Weight:</strong>{" "}
+                    {group.weight} lbs
                   </p>
-                  <p>
-                    <strong>Weight (Planned):</strong> {group.weight} lbs
+                  <p style={{ margin: "0", marginBottom: ".5rem" }}>
+                    <strong>Tempo:</strong> {group.tempo}{" "}
+                    <strong>Tempo Length:</strong> {group.tempoLength}
                   </p>
 
                   {/* ✅ Checkbox, Reps, and Weights for tracking progress */}

@@ -22,7 +22,8 @@ const ViewClients = () => {
         // 🔥 Query Clients where trainer UID matches logged-in trainer
         const clientsQuery = query(
           collection(db, "Clients"),
-          where("trainer", "==", user.uid)
+          // where("trainer", "==", user.uid)
+          where("trainer_uid", "==", user.uid)
         );
 
         const querySnapshot = await getDocs(clientsQuery);

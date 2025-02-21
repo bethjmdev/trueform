@@ -121,6 +121,7 @@ const SingleWorkout = () => {
                 {group.exercises.map((details) => (
                   <div key={details.exercise}>
                     <h3>{details.exercise}</h3>
+
                     {details.videoDemo && (
                       <p>
                         <a
@@ -134,11 +135,22 @@ const SingleWorkout = () => {
                       </p>
                     )}
                     <p>
-                      <strong>Reps:</strong> {details.reps}
+                      <strong>Note:</strong> {group.note}
                     </p>
                     <p>
                       <strong>Sets:</strong> {details.sets}
                     </p>
+                    <p>
+                      <strong>Reps:</strong> {details.reps}
+                    </p>
+
+                    <p>
+                      <strong>Tempo:</strong> {group.tempo}
+                    </p>
+                    <p>
+                      <strong>Tempo Length:</strong> {group.tempoLength}
+                    </p>
+
                     <p>
                       <strong>Weight:</strong> {details.weight} lbs
                     </p>
@@ -171,11 +183,28 @@ const SingleWorkout = () => {
                     </a>
                   </p>
                 )}
+                {/* 
                 <p>
                   <strong>Reps:</strong> {group.reps}
                 </p>
                 <p>
                   <strong>Sets:</strong> {group.sets}
+                </p> */}
+                <p>
+                  <strong>Note:</strong> {group.note}
+                </p>
+                <p>
+                  <strong>Sets:</strong> {group.sets}
+                </p>
+                <p>
+                  <strong>Reps:</strong> {group.reps}
+                </p>
+
+                <p>
+                  <strong>Tempo:</strong> {group.tempo}
+                </p>
+                <p>
+                  <strong>Tempo Length:</strong> {group.tempoLength}
                 </p>
                 <p>
                   <strong>Weight:</strong> {group.weight} lbs
