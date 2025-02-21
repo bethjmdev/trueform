@@ -50,46 +50,24 @@ const SingleWorkout = () => {
     });
   };
 
-  // ✅ Step 1: Identify first index of each circuit
-  const circuitIndexMap = {};
+  const sortedExercises = workoutDetails.exercises || []; // Always ensure it's an array
 
-  // ✅ Step 2: Convert `workoutDetails` to an array and sort by index
-  const sortedExercises = Object.entries(workoutDetails)
-    .map(([exercise, details]) => ({
-      exercise,
-      ...details,
-    }))
-    .sort((a, b) => {
-      const indexA = a.circuit_id
-        ? circuitIndexMap[a.circuit_id] ?? a.index
-        : a.index;
-      const indexB = b.circuit_id
-        ? circuitIndexMap[b.circuit_id] ?? b.index
-        : b.index;
-      return indexA - indexB;
-    });
-
-  // ✅ Step 3: Group circuits together visually while keeping everything ordered
   const groupedExercises = [];
-  const seenCircuits = new Set();
+  const seenCircuits = new Map(); // Use a Map for better tracking
 
   sortedExercises.forEach((exercise) => {
     if (exercise.circuit_id) {
       if (!seenCircuits.has(exercise.circuit_id)) {
-        groupedExercises.push({
+        seenCircuits.set(exercise.circuit_id, {
           type: "circuit",
           circuit_id: exercise.circuit_id,
-          exercises: sortedExercises.filter(
-            (e) => e.circuit_id === exercise.circuit_id
-          ),
+          exercises: [],
         });
-        seenCircuits.add(exercise.circuit_id);
+        groupedExercises.push(seenCircuits.get(exercise.circuit_id));
       }
+      seenCircuits.get(exercise.circuit_id).exercises.push(exercise);
     } else {
-      groupedExercises.push({
-        type: "exercise",
-        ...exercise,
-      });
+      groupedExercises.push({ type: "exercise", ...exercise });
     }
   });
 

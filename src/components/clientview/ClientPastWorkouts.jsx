@@ -14,48 +14,37 @@ const ClientPastWorkouts = () => {
   useEffect(() => {
     if (!user || !user.uid) return;
 
-    // const fetchPastWorkouts = async () => {
-    //   try {
-    //     console.log(`📡 Fetching past workouts for client UID: ${user.uid}`);
-
-    //     const pastWorkoutsQuery = query(
-    //       collection(db, "PastWorkoutDetails"),
-    //       where("uid", "==", user.uid) // Match logged-in client UID
-    //     );
-
-    //     const querySnapshot = await getDocs(pastWorkoutsQuery);
-
-    //     const workoutList = querySnapshot.docs.map((doc) => ({
-    //       id: doc.id,
-    //       ...doc.data(),
-    //     }));
-
-    //     console.log("✅ Past workouts found:", workoutList);
-    //     setPastWorkouts(workoutList);
-    //   } catch (error) {
-    //     console.error("❌ Error fetching past workouts:", error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-
     const fetchPastWorkouts = async () => {
       try {
         console.log(`📡 Fetching past workouts for client UID: ${user.uid}`);
 
+        // Fetch PastWorkoutDetails
         const pastWorkoutsQuery = query(
           collection(db, "PastWorkoutDetails"),
-          where("uid", "==", user.uid) // No orderBy to avoid index requirement
+          where("uid", "==", user.uid)
         );
+        const detailsSnapshot = await getDocs(pastWorkoutsQuery);
 
-        const querySnapshot = await getDocs(pastWorkoutsQuery);
-
-        let workoutList = querySnapshot.docs.map((doc) => ({
+        let workoutList = detailsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
-        // Sort manually by timestamp in descending order (newest first)
+        // Fetch PastWorkoutExercises for each workout
+        for (let workout of workoutList) {
+          const exercisesDocRef = doc(db, "PastWorkoutExercises", workout.id);
+          const exercisesDoc = await getDoc(exercisesDocRef);
+
+          if (exercisesDoc.exists()) {
+            workout.exercises = Object.values(
+              exercisesDoc.data().exercises || {}
+            );
+          } else {
+            workout.exercises = [];
+          }
+        }
+
+        // Sort workouts by timestamp (newest first)
         workoutList.sort(
           (a, b) =>
             (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0)
@@ -89,9 +78,9 @@ const ClientPastWorkouts = () => {
             {pastWorkouts.map((workout) => {
               const timestamp = workout.timestamp?.toDate
                 ? workout.timestamp.toDate()
-                : null;
+                : workout.timestamp;
               const formattedDate = timestamp
-                ? timestamp.toLocaleString()
+                ? new Date(timestamp).toLocaleString()
                 : "Unknown Date";
 
               const totalSeconds = workout.duration_seconds || 0;
@@ -115,6 +104,50 @@ const ClientPastWorkouts = () => {
                   <p>
                     <strong>Duration:</strong> {minutes} min {seconds} sec
                   </p>
+
+                  {/* ✅ Display Exercises Correctly */}
+                  <h4>Exercises:</h4>
+                  <ul>
+                    {workout.exercises.length > 0 ? (
+                      workout.exercises.map((exercise, index) => (
+                        <li key={index}>
+                          <p>
+                            <strong>{exercise.name}</strong>
+                          </p>
+                          <p>
+                            <strong>Planned Reps:</strong>{" "}
+                            {exercise.planned_reps || "N/A"}
+                          </p>
+                          <p>
+                            <strong>Planned Weight:</strong>{" "}
+                            {exercise.planned_weight || "N/A"} lbs
+                          </p>
+                          <p>
+                            <strong>Actual Reps:</strong>{" "}
+                            {exercise.actual_reps_per_set?.length
+                              ? exercise.actual_reps_per_set.join(", ")
+                              : "No recorded data"}
+                          </p>
+                          <p>
+                            <strong>Actual Weight:</strong>{" "}
+                            {exercise.actual_weights_per_set?.length
+                              ? exercise.actual_weights_per_set.join(", ")
+                              : "No recorded data"}{" "}
+                            lbs
+                          </p>
+                          <p>
+                            <strong>Completed:</strong>{" "}
+                            {exercise.completed_sets?.includes(true)
+                              ? "✅"
+                              : "❌"}
+                          </p>
+                        </li>
+                      ))
+                    ) : (
+                      <p>No recorded exercises.</p>
+                    )}
+                  </ul>
+
                   <hr />
                 </li>
               );
