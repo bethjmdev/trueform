@@ -25,6 +25,8 @@ const CreateWorkout = () => {
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [selectedCircuitExercise, setSelectedCircuitExercise] = useState(""); // Dropdown selection
 
+  const [exerciseNotFound, setExerciseNotFound] = useState(false);
+
   const [newExercise, setNewExercise] = useState({
     name: "",
     reps: "",
@@ -65,17 +67,17 @@ const CreateWorkout = () => {
     fetchExerciseDatabase();
   }, []);
 
-  // 🔥 Handle typing in new exercise name (Autocomplete)
   // const handleNewExerciseChange = (field, value) => {
   //   if (field === "name") {
-  //     setFilteredExercises(
-  //       exerciseDatabase
-  //         .filter((exercise) =>
-  //           exercise.name.toLowerCase().includes(value.toLowerCase())
-  //         )
-  //         .map((exercise) => exercise.name)
+  //     const filtered = exerciseDatabase.filter((exercise) =>
+  //       exercise.name.toLowerCase().includes(value.toLowerCase())
   //     );
+  //     setFilteredExercises(filtered);
+
+  //     // Show notification if exercise is not found
+  //     setExerciseNotFound(filtered.length === 0 && value.trim() !== "");
   //   }
+
   //   setNewExercise({ ...newExercise, [field]: value });
   // };
 
@@ -85,8 +87,13 @@ const CreateWorkout = () => {
         exercise.name.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredExercises(filtered);
+
+      // Show notification if exercise is not found
+      setExerciseNotFound(filtered.length === 0 && value.trim() !== "");
     }
-    setNewExercise({ ...newExercise, [field]: value });
+
+    // setNewExercise({ ...newExercise, [field]: value });
+    setNewExercise((prev) => ({ ...prev, [field]: value }));
   };
 
   // 🔥 Handle selecting an exercise from autocomplete
@@ -245,138 +252,133 @@ const CreateWorkout = () => {
     <div className="CreateWorkout">
       <div className="create_workout_container">
         <h2>Create Workout</h2>
-        <label>Workout Name:</label>
-        <br />
         <input
           type="text"
           value={workoutName}
           onChange={(e) => setWorkoutName(e.target.value)}
+          placeholder="Workout Name"
+          className="input_field"
         />
-        <br />
-        <br />
-        <label>Notes:</label>
-        <br />
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
+
+        <textarea
+          placeholder="Add Notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="input_field"
+        />
 
         <h3>Add Exercise</h3>
+        <div className="add_exercise_container">
+          <input
+            type="text"
+            placeholder="Search For Exercise Here"
+            value={newExercise.name}
+            className="input_field"
+            onChange={(e) => handleNewExerciseChange("name", e.target.value)}
+          />
 
-        <input
-          type="text"
-          placeholder="Exercise Name"
-          value={newExercise.name}
-          onChange={(e) => handleNewExerciseChange("name", e.target.value)}
-        />
+          {/* Dropdown is always visible */}
+          <select
+            className="input_field"
+            value={newExercise.name}
+            onChange={(e) => {
+              const selectedExercise = exerciseDatabase.find(
+                (exercise) => exercise.name === e.target.value
+              );
+              if (selectedExercise) {
+                setNewExercise({
+                  ...newExercise,
+                  name: selectedExercise.name,
+                  cues: selectedExercise.cues,
+                  videoDemo: selectedExercise.videoDemo,
+                });
+              }
+            }}
+          >
+            <option value="">Select Exericse Here</option>
+            {(filteredExercises.length > 0
+              ? filteredExercises
+              : exerciseDatabase
+            ).map((exercise, index) => (
+              <option key={index} value={exercise.name}>
+                {exercise.name}
+              </option>
+            ))}
+          </select>
 
-        {/* Dropdown is always visible */}
-        <select
-          value={newExercise.name}
-          onChange={(e) => {
-            const selectedExercise = exerciseDatabase.find(
-              (exercise) => exercise.name === e.target.value
-            );
-            if (selectedExercise) {
-              setNewExercise({
-                ...newExercise,
-                name: selectedExercise.name,
-                cues: selectedExercise.cues,
-                videoDemo: selectedExercise.videoDemo,
-              });
-            }
-          }}
-        >
-          <option value="">-- Select an Exercise --</option>
-          {(filteredExercises.length > 0
-            ? filteredExercises
-            : exerciseDatabase
-          ).map((exercise, index) => (
-            <option key={index} value={exercise.name}>
-              {exercise.name}
-            </option>
-          ))}
-        </select>
+          {exerciseNotFound && (
+            <div
+              style={{
+                position: "fixed",
+                // top: "100px",
+                top: "55vh",
+                left: "50%",
+                transform: "translateX(-50%)",
+                background: "#ff4d4d",
+                color: "white",
+                padding: "10px 20px",
+                borderRadius: "5px",
+                fontSize: "14px",
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              This exercise isn't in the database. Please add it.
+            </div>
+          )}
 
-        <input
-          type="number"
-          placeholder="Reps"
-          value={newExercise.reps}
-          onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Sets"
-          value={newExercise.sets}
-          onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Weight"
-          value={newExercise.weight}
-          onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
-        />
-        <select
-          value={newExercise.type}
-          onChange={(e) => handleNewExerciseChange("type", e.target.value)}
-        >
-          <option value="exercise">Strength</option>
-          <option value="warm up">Warm Up</option>
-          <option value="cool down">Cool Down</option>
-          <option value="cardio">Cardio</option>
-        </select>
+          <input
+            className="input_field"
+            type="number"
+            placeholder="Reps"
+            value={newExercise.reps}
+            onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
+          />
+          <input
+            className="input_field"
+            type="number"
+            placeholder="Sets"
+            value={newExercise.sets}
+            onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
+          />
+          <input
+            className="input_field"
+            type="number"
+            placeholder="Weight"
+            value={newExercise.weight}
+            onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
+          />
+          <select
+            className="input_field"
+            value={newExercise.type}
+            onChange={(e) => handleNewExerciseChange("type", e.target.value)}
+          >
+            <option value="exercise">Strength</option>
+            <option value="warm up">Warm Up</option>
+            <option value="cool down">Cool Down</option>
+            <option value="cardio">Cardio</option>
+          </select>
 
-        <select
-          value={selectedCircuitExercise}
-          onChange={(e) => setSelectedCircuitExercise(e.target.value)}
-        >
-          <option value="">Make a circuit with...</option>
-          {selectedExercises.map((exercise, index) => (
-            <option key={index} value={exercise.name}>
-              {exercise.name}
-            </option>
-          ))}
-        </select>
-
-        <button onClick={handleAddExercise}>Add Exercise</button>
+          <select
+            className="input_field"
+            value={selectedCircuitExercise}
+            onChange={(e) => setSelectedCircuitExercise(e.target.value)}
+          >
+            <option value="">Make a circuit with...</option>
+            {selectedExercises.map((exercise, index) => (
+              <option key={index} value={exercise.name}>
+                {exercise.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* <button id="button">Add Exercise</button> */}
+        <button id="button" onClick={handleAddExercise}>
+          Add Exercise
+        </button>
 
         {selectedExercises.length > 0 && (
           <div>
             <h3>Workout Preview</h3>
-            {/* {selectedExercises.map((exercise, index) => (
-              <div
-                key={index}
-                // style={{
-                //   border: exercise.circuit_id ? "2px solid blue" : "none",
-                //   padding: "5px",
-                // }}
-                style={{
-                  padding: "10px",
-                  marginBottom: "10px",
-                  borderRadius: "3rem",
-                  background: "#FDF8F6",
-                  // border: exercise.circuit_id ? "2px solid blue" : "none",
-                }}
-              >
-                <h4>
-                  {index + 1}. {exercise.name} <span>({exercise.type})</span>
-                </h4>
-
-                <p>
-                  <strong>Reps:</strong> {exercise.reps}
-                </p>
-                <p>
-                  <strong>Sets:</strong> {exercise.sets}
-                </p>
-                <p>
-                  <strong>Weight:</strong> {exercise.weight} lbs
-                </p>
-                <p>
-                  <strong>Cues:</strong> {exercise.cues}
-                </p>
-                {exercise.circuit_id && <p>🔥 Circuit</p>}
-                <button onClick={() => handleRemoveExercise(index)}>
-                  ❌ Remove
-                </button>
-              </div>
-            ))} */}
 
             {[...Object.values(circuitGroups), ...nonCircuitExercises].map(
               (group, idx) =>
@@ -388,8 +390,8 @@ const CreateWorkout = () => {
                       marginBottom: "10px",
                       borderRadius: "3rem",
                       background: "#FDF8F6",
-                      border: "2px solid blue", // ✅ Circuit border styling
                     }}
+                    className="exercise_block"
                   >
                     <h3>🔥 Circuit</h3>
                     {group.map((exercise, index) => (
@@ -445,7 +447,7 @@ const CreateWorkout = () => {
           </div>
         )}
 
-        <button onClick={handleSaveWorkout}>Save Workout</button>
+        <button id="button">Save Workout</button>
       </div>
     </div>
   );
