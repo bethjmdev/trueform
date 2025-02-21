@@ -43,7 +43,14 @@ const SingleWorkout = () => {
   if (loading) return <p>Loading workout details...</p>;
   if (!workoutDetails) return <p>Workout not found.</p>;
 
+  // const handleStartWorkout = () => {
+  //   navigate("/start-workout", {
+  //     state: { workoutDetails, workout_name, trainer },
+  //   });
+  // };
+
   const handleStartWorkout = () => {
+    console.log("🚀 Navigating with workout details:", workoutDetails);
     navigate("/start-workout", {
       state: { workoutDetails, workout_name, trainer },
     });
