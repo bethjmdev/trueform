@@ -136,10 +136,10 @@ const IndClientPastWorkout = () => {
                         <strong>Planned...</strong>
                       </p>
                       <p>
-                        <strong>Sets:</strong> {details.sets},
+                        <strong>Sets:</strong> {details.sets},{" "}
                         <strong>Reps:</strong> {details.reps}{" "}
-                        <strong>Tempo:</strong> {details.tempo}
-                        <strong>Tempo Length:</strong> {details.tempoLength}
+                        <strong>Tempo:</strong> {details.tempo},{" "}
+                        <strong>Tempo Length:</strong> {details.tempoLength},{" "}
                         <strong>Weight:</strong> {details.weight} lbs
                       </p>
                       <p>

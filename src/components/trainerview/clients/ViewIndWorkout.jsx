@@ -155,9 +155,16 @@ const ViewIndWorkout = () => {
                           </a>
                         </p>
                       )}
-                      <p>
+                      {/* <p>
                         <strong>Sets:</strong> {details.sets}{" "}
                         <strong>Reps:</strong> {details.reps}{" "}
+                        <strong>Weight:</strong> {details.weight} lbs
+                      </p> */}
+                      <p>
+                        <strong>Sets:</strong> {details.sets},
+                        <strong>Reps:</strong> {details.reps}{" "}
+                        <strong>Tempo:</strong> {details.tempo}
+                        <strong>Tempo Length:</strong> {details.tempoLength}
                         <strong>Weight:</strong> {details.weight} lbs
                       </p>
                       <p>
@@ -183,9 +190,16 @@ const ViewIndWorkout = () => {
                             </a>
                           </p>
                         )}
-                        <p>
+                        {/* <p>
                           <strong>Sets:</strong> {details.sets}{" "}
                           <strong>Reps:</strong> {details.reps}{" "}
+                          <strong>Weight:</strong> {details.weight} lbs
+                        </p> */}
+                        <p>
+                          <strong>Sets:</strong> {details.sets},{" "}
+                          <strong>Reps:</strong> {details.reps}{" "}
+                          <strong>Tempo:</strong> {details.tempo}{" "}
+                          <strong>Tempo Length:</strong> {details.tempoLength},{" "}
                           <strong>Weight:</strong> {details.weight} lbs
                         </p>
                         <p>
