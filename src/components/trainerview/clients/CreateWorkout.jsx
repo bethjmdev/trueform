@@ -222,6 +222,25 @@ const CreateWorkout = () => {
     }
   };
 
+  const sortedExercises = [...selectedExercises].sort(
+    (a, b) => a.index - b.index
+  );
+
+  // Group circuits while keeping order
+  const circuitGroups = {};
+  const nonCircuitExercises = [];
+
+  sortedExercises.forEach((exercise) => {
+    if (exercise.circuit_id) {
+      if (!circuitGroups[exercise.circuit_id]) {
+        circuitGroups[exercise.circuit_id] = [];
+      }
+      circuitGroups[exercise.circuit_id].push(exercise);
+    } else {
+      nonCircuitExercises.push(exercise);
+    }
+  });
+
   return (
     <div className="CreateWorkout">
       <div className="create_workout_container">
@@ -240,53 +259,6 @@ const CreateWorkout = () => {
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
 
         <h3>Add Exercise</h3>
-        {/* <input
-          type="text"
-          placeholder="Exercise Name"
-          value={newExercise.name}
-          onChange={(e) => handleNewExerciseChange("name", e.target.value)}
-        />
-        {filteredExercises.length > 0 && (
-          <ul>
-            {filteredExercises.map((exercise, index) => (
-              <li key={index} onClick={() => handleSelectExercise(exercise)}>
-                {exercise}
-              </li>
-            ))}
-          </ul>
-        )} */}
-
-        {/* <input
-          type="text"
-          placeholder="Exercise Name"
-          value={newExercise.name}
-          onChange={(e) => handleNewExerciseChange("name", e.target.value)}
-        />
-
-        {filteredExercises.length > 0 && (
-          <select
-            onChange={(e) => {
-              const selectedExercise = exerciseDatabase.find(
-                (exercise) => exercise.name === e.target.value
-              );
-              if (selectedExercise) {
-                setNewExercise({
-                  ...newExercise,
-                  name: selectedExercise.name,
-                  cues: selectedExercise.cues,
-                  videoDemo: selectedExercise.videoDemo,
-                });
-              }
-            }}
-          >
-            <option value="">-- Select an Exercise --</option>
-            {filteredExercises.map((exercise, index) => (
-              <option key={index} value={exercise.name}>
-                {exercise.name}
-              </option>
-            ))}
-          </select>
-        )} */}
 
         <input
           type="text"
@@ -355,7 +327,7 @@ const CreateWorkout = () => {
           value={selectedCircuitExercise}
           onChange={(e) => setSelectedCircuitExercise(e.target.value)}
         >
-          <option value="">-- Link to Exercise --</option>
+          <option value="">Make a circuit with...</option>
           {selectedExercises.map((exercise, index) => (
             <option key={index} value={exercise.name}>
               {exercise.name}
@@ -368,12 +340,19 @@ const CreateWorkout = () => {
         {selectedExercises.length > 0 && (
           <div>
             <h3>Workout Preview</h3>
-            {selectedExercises.map((exercise, index) => (
+            {/* {selectedExercises.map((exercise, index) => (
               <div
                 key={index}
+                // style={{
+                //   border: exercise.circuit_id ? "2px solid blue" : "none",
+                //   padding: "5px",
+                // }}
                 style={{
-                  border: exercise.circuit_id ? "2px solid blue" : "none",
-                  padding: "5px",
+                  padding: "10px",
+                  marginBottom: "10px",
+                  borderRadius: "3rem",
+                  background: "#FDF8F6",
+                  // border: exercise.circuit_id ? "2px solid blue" : "none",
                 }}
               >
                 <h4>
@@ -397,7 +376,72 @@ const CreateWorkout = () => {
                   ❌ Remove
                 </button>
               </div>
-            ))}
+            ))} */}
+
+            {[...Object.values(circuitGroups), ...nonCircuitExercises].map(
+              (group, idx) =>
+                Array.isArray(group) ? (
+                  <div
+                    key={idx}
+                    style={{
+                      padding: "10px",
+                      marginBottom: "10px",
+                      borderRadius: "3rem",
+                      background: "#FDF8F6",
+                      border: "2px solid blue", // ✅ Circuit border styling
+                    }}
+                  >
+                    <h3>🔥 Circuit</h3>
+                    {group.map((exercise, index) => (
+                      <div key={index} style={{ marginBottom: "10px" }}>
+                        <h4>{exercise.name}</h4>
+                        <p>
+                          <strong>Reps:</strong> {exercise.reps}
+                        </p>
+                        <p>
+                          <strong>Sets:</strong> {exercise.sets}
+                        </p>
+                        <p>
+                          <strong>Weight:</strong> {exercise.weight} lbs
+                        </p>
+                        <p>
+                          <strong>Cues:</strong> {exercise.cues}
+                        </p>
+                        <button onClick={() => handleRemoveExercise(index)}>
+                          ❌ Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    key={group.index}
+                    style={{
+                      padding: "10px",
+                      marginBottom: "10px",
+                      borderRadius: "3rem",
+                      background: "#FDF8F6",
+                    }}
+                  >
+                    <h4>{group.name}</h4>
+                    <p>
+                      <strong>Reps:</strong> {group.reps}
+                    </p>
+                    <p>
+                      <strong>Sets:</strong> {group.sets}
+                    </p>
+                    <p>
+                      <strong>Weight:</strong> {group.weight} lbs
+                    </p>
+                    <p>
+                      <strong>Cues:</strong> {group.cues}
+                    </p>
+                    <button onClick={() => handleRemoveExercise(group.index)}>
+                      ❌ Remove
+                    </button>
+                  </div>
+                )
+            )}
           </div>
         )}
 
