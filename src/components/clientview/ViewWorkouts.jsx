@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../utils/auth/AuthProvider";
 import { db } from "../../utils/firebase/firebaseConfig";
-import { collection, query, where, getDocs } from "firebase/firestore";
+// import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 import "./ViewWorkouts.css";
@@ -15,20 +16,52 @@ const ViewWorkouts = () => {
   useEffect(() => {
     if (!user || !user.uid) return; // ✅ Ensures user is fully loaded
 
+    // const fetchClientWorkouts = async () => {
+    //   try {
+    //     console.log(`📡 Fetching workouts for client UID: ${user.uid}`);
+
+    //     const workoutsQuery = query(
+    //       collection(db, "CurrentWorkoutDetails"),
+    //       where("client_uid", "==", user.uid)
+    //     );
+    //     const querySnapshot = await getDocs(workoutsQuery);
+
+    //     const workoutList = querySnapshot.docs.map((doc) => ({
+    //       id: doc.id,
+    //       ...doc.data(),
+    //     }));
+
+    //     console.log("✅ Workouts found:", workoutList);
+    //     setWorkouts(workoutList);
+    //   } catch (error) {
+    //     console.error("❌ Error fetching workouts:", error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+
     const fetchClientWorkouts = async () => {
       try {
         console.log(`📡 Fetching workouts for client UID: ${user.uid}`);
 
         const workoutsQuery = query(
           collection(db, "CurrentWorkoutDetails"),
-          where("client_uid", "==", user.uid)
+          where("client_uid", "==", user.uid) // No orderBy to avoid indexing requirement
         );
+
         const querySnapshot = await getDocs(workoutsQuery);
 
-        const workoutList = querySnapshot.docs.map((doc) => ({
+        let workoutList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+
+        // Sort manually by date_created in descending order (newest first)
+        workoutList.sort(
+          (a, b) =>
+            (b.date_created?.toMillis() || 0) -
+            (a.date_created?.toMillis() || 0)
+        );
 
         console.log("✅ Workouts found:", workoutList);
         setWorkouts(workoutList);

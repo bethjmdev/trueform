@@ -19,21 +19,52 @@ const PastWorkouts = () => {
       return;
     }
 
+    // const fetchPastWorkouts = async () => {
+    //   try {
+    //     console.log(`📡 Fetching past workouts for client UID: ${client.uid}`);
+
+    //     const pastWorkoutsQuery = query(
+    //       collection(db, "PastWorkoutDetails"),
+    //       where("uid", "==", client.uid) // 🔍 Match client's UID
+    //     );
+
+    //     const querySnapshot = await getDocs(pastWorkoutsQuery);
+
+    //     const workoutList = querySnapshot.docs.map((doc) => ({
+    //       id: doc.id,
+    //       ...doc.data(),
+    //     }));
+
+    //     console.log("✅ Past workouts found:", workoutList);
+    //     setPastWorkouts(workoutList);
+    //   } catch (error) {
+    //     console.error("❌ Error fetching past workouts:", error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+
     const fetchPastWorkouts = async () => {
       try {
         console.log(`📡 Fetching past workouts for client UID: ${client.uid}`);
 
         const pastWorkoutsQuery = query(
           collection(db, "PastWorkoutDetails"),
-          where("uid", "==", client.uid) // 🔍 Match client's UID
+          where("uid", "==", client.uid) // No orderBy to avoid index requirement
         );
 
         const querySnapshot = await getDocs(pastWorkoutsQuery);
 
-        const workoutList = querySnapshot.docs.map((doc) => ({
+        let workoutList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+
+        // Sort manually by timestamp in descending order (newest first)
+        workoutList.sort(
+          (a, b) =>
+            (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0)
+        );
 
         console.log("✅ Past workouts found:", workoutList);
         setPastWorkouts(workoutList);

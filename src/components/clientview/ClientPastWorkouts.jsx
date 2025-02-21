@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../utils/auth/AuthProvider";
 import { db } from "../../utils/firebase/firebaseConfig";
-import { collection, query, where, getDocs } from "firebase/firestore";
+// import { collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 
 const ClientPastWorkouts = () => {
   const { user } = useAuth();
@@ -13,21 +14,52 @@ const ClientPastWorkouts = () => {
   useEffect(() => {
     if (!user || !user.uid) return;
 
+    // const fetchPastWorkouts = async () => {
+    //   try {
+    //     console.log(`📡 Fetching past workouts for client UID: ${user.uid}`);
+
+    //     const pastWorkoutsQuery = query(
+    //       collection(db, "PastWorkoutDetails"),
+    //       where("uid", "==", user.uid) // Match logged-in client UID
+    //     );
+
+    //     const querySnapshot = await getDocs(pastWorkoutsQuery);
+
+    //     const workoutList = querySnapshot.docs.map((doc) => ({
+    //       id: doc.id,
+    //       ...doc.data(),
+    //     }));
+
+    //     console.log("✅ Past workouts found:", workoutList);
+    //     setPastWorkouts(workoutList);
+    //   } catch (error) {
+    //     console.error("❌ Error fetching past workouts:", error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+
     const fetchPastWorkouts = async () => {
       try {
         console.log(`📡 Fetching past workouts for client UID: ${user.uid}`);
 
         const pastWorkoutsQuery = query(
           collection(db, "PastWorkoutDetails"),
-          where("uid", "==", user.uid) // Match logged-in client UID
+          where("uid", "==", user.uid) // No orderBy to avoid index requirement
         );
 
         const querySnapshot = await getDocs(pastWorkoutsQuery);
 
-        const workoutList = querySnapshot.docs.map((doc) => ({
+        let workoutList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+
+        // Sort manually by timestamp in descending order (newest first)
+        workoutList.sort(
+          (a, b) =>
+            (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0)
+        );
 
         console.log("✅ Past workouts found:", workoutList);
         setPastWorkouts(workoutList);

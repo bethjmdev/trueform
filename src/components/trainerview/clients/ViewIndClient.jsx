@@ -31,20 +31,50 @@ const ViewIndClient = () => {
   useEffect(() => {
     if (!client) return;
 
+    // const fetchWorkouts = async () => {
+    //   try {
+    //     console.log(`📡 Fetching workouts for client UID: ${client.uid}`);
+
+    //     const workoutsQuery = query(
+    //       collection(db, "CurrentWorkoutDetails"),
+    //       where("client_uid", "==", client.uid)
+    //     );
+    //     const querySnapshot = await getDocs(workoutsQuery);
+
+    //     const workoutList = querySnapshot.docs.map((doc) => ({
+    //       id: doc.id,
+    //       ...doc.data(),
+    //     }));
+
+    //     console.log("✅ Workouts found:", workoutList);
+    //     setWorkouts(workoutList);
+    //   } catch (error) {
+    //     console.error("❌ Error fetching workouts:", error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+
     const fetchWorkouts = async () => {
       try {
         console.log(`📡 Fetching workouts for client UID: ${client.uid}`);
 
         const workoutsQuery = query(
           collection(db, "CurrentWorkoutDetails"),
-          where("client_uid", "==", client.uid)
+          where("client_uid", "==", client.uid) // No orderBy to avoid index requirement
         );
         const querySnapshot = await getDocs(workoutsQuery);
 
-        const workoutList = querySnapshot.docs.map((doc) => ({
+        let workoutList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+
+        // Sort manually by timestamp in descending order (newest first)
+        workoutList.sort(
+          (a, b) =>
+            (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0)
+        );
 
         console.log("✅ Workouts found:", workoutList);
         setWorkouts(workoutList);
