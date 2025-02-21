@@ -186,7 +186,56 @@ const CreateWorkout = () => {
   };
 
   // 🔥 Save Workout to Firestore
+  // const handleSaveWorkout = async () => {
+  //   const workoutId = uuidv4(); // Unique ID for both documents
+
+  //   const workoutDetails = {
+  //     workout_name: workoutName,
+  //     client_uid,
+  //     notes,
+  //     exercise_doc_id: workoutId, // Same ID as CurrentWorkoutExercises doc
+  //     trainer_uid,
+  //     created_at: serverTimestamp(),
+  //     type: "exercise", // ✅ Default tag
+  //   };
+
+  //   const workoutExercises = selectedExercises.reduce((acc, exercise) => {
+  //     acc[exercise.name] = {
+  //       reps: exercise.reps,
+  //       sets: exercise.sets,
+  //       weight: exercise.weight,
+  //       cues: exercise.cues,
+  //       videoDemo: exercise.videoDemo,
+  //       circuit_id: exercise.circuit_id,
+  //       type: exercise.type,
+  //       index: exercise.index, // Ensure index is saved
+  //       note: exercise.note, // ✅ Include note
+  //       tempo: exercise.tempo, // ✅ Include tempo
+  //       tempoLength: exercise.tempoLength, // ✅ Include tempo length
+  //     };
+  //     return acc;
+  //   }, {});
+
+  //   try {
+  //     await setDoc(doc(db, "CurrentWorkoutDetails", workoutId), workoutDetails);
+  //     await setDoc(
+  //       doc(db, "CurrentWorkoutExercises", workoutId),
+  //       workoutExercises
+  //     );
+
+  //     console.log("✅ Workout saved!");
+  //     navigate("/workout-details", { state: { exercise_doc_id: workoutId } });
+  //   } catch (error) {
+  //     console.error("❌ Error saving workout:", error);
+  //   }
+  // };
+
   const handleSaveWorkout = async () => {
+    if (!workoutName || selectedExercises.length === 0) {
+      console.error("❌ Workout name and exercises are required.");
+      return;
+    }
+
     const workoutId = uuidv4(); // Unique ID for both documents
 
     const workoutDetails = {
@@ -199,34 +248,24 @@ const CreateWorkout = () => {
       type: "exercise", // ✅ Default tag
     };
 
-    const workoutExercises = selectedExercises.reduce((acc, exercise) => {
-      acc[exercise.name] = {
-        reps: exercise.reps,
-        sets: exercise.sets,
-        weight: exercise.weight,
-        cues: exercise.cues,
-        videoDemo: exercise.videoDemo,
-        circuit_id: exercise.circuit_id,
-        type: exercise.type,
-        index: exercise.index, // Ensure index is saved
-        note: exercise.note, // ✅ Include note
-        tempo: exercise.tempo, // ✅ Include tempo
-        tempoLength: exercise.tempoLength, // ✅ Include tempo length
-      };
-      return acc;
-    }, {});
+    // ✅ Store exercises as an array instead of an object
+    const workoutExercises = {
+      exercises: selectedExercises, // 🔥 Save as an array
+    };
 
     try {
       await setDoc(doc(db, "CurrentWorkoutDetails", workoutId), workoutDetails);
+      console.log("✅ CurrentWorkoutDetails saved!");
+
       await setDoc(
         doc(db, "CurrentWorkoutExercises", workoutId),
         workoutExercises
       );
+      console.log("✅ CurrentWorkoutExercises saved!");
 
-      console.log("✅ Workout saved!");
       navigate("/workout-details", { state: { exercise_doc_id: workoutId } });
     } catch (error) {
-      console.error("❌ Error saving workout:", error);
+      console.error("❌ Firestore Save Error:", error);
     }
   };
 

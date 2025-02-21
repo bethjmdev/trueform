@@ -56,50 +56,87 @@ const EditWorkout = () => {
   useEffect(() => {
     if (!exercise_doc_id) return;
 
-    const fetchExerciseDetails = async () => {
-      try {
-        console.log(
-          `📡 Fetching exercise details for editing: ${exercise_doc_id}`
-        );
+    // const fetchExerciseDetails = async () => {
+    //   try {
+    //     console.log(
+    //       `📡 Fetching exercise details for editing: ${exercise_doc_id}`
+    //     );
 
-        const exerciseRef = doc(db, "CurrentWorkoutExercises", exercise_doc_id);
-        const exerciseSnap = await getDoc(exerciseRef);
+    //     const exerciseRef = doc(db, "CurrentWorkoutExercises", exercise_doc_id);
+    //     const exerciseSnap = await getDoc(exerciseRef);
 
-        if (exerciseSnap.exists()) {
-          console.log("✅ Exercise details loaded:", exerciseSnap.data());
+    //     if (exerciseSnap.exists()) {
+    //       console.log("✅ Exercise details loaded:", exerciseSnap.data());
 
-          const exerciseData = exerciseSnap.data();
-          // const exerciseArray = Object.entries(exerciseData).map(
-          //   ([name, details]) => ({
-          //     name,
-          //     ...details,
-          //   })
-          // );
+    //       const exerciseData = exerciseSnap.data();
+    //       // const exerciseArray = Object.entries(exerciseData).map(
+    //       //   ([name, details]) => ({
+    //       //     name,
+    //       //     ...details,
+    //       //   })
+    //       // );
 
-          const exerciseArray = Object.entries(exerciseData).map(
-            ([name, details]) => ({
-              name,
-              reps: details.reps || "",
-              sets: details.sets || "",
-              weight: details.weight || "",
-              cues: details.cues || "",
-              circuit_id: details.circuit_id || null,
-              tempo: details.tempo || "", // ✅ Load tempo
-              tempoLength: details.tempoLength || "", // ✅ Load tempo length
-              note: details.note || "", // ✅ Load note
-            })
+    //       const exerciseArray = Object.entries(exerciseData).map(
+    //         ([name, details]) => ({
+    //           name,
+    //           reps: details.reps || "",
+    //           sets: details.sets || "",
+    //           weight: details.weight || "",
+    //           cues: details.cues || "",
+    //           circuit_id: details.circuit_id || null,
+    //           tempo: details.tempo || "", // ✅ Load tempo
+    //           tempoLength: details.tempoLength || "", // ✅ Load tempo length
+    //           note: details.note || "", // ✅ Load note
+    //         })
+    //       );
+
+    //       setExercises(exerciseArray);
+    //     } else {
+    //       console.error("❌ No exercise found.");
+    //     }
+    //   } catch (error) {
+    //     console.error("❌ Error fetching exercise details:", error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+
+    useEffect(() => {
+      if (!exercise_doc_id) return;
+
+      const fetchExerciseDetails = async () => {
+        try {
+          console.log(
+            `📡 Fetching exercise details for doc ID: ${exercise_doc_id}`
           );
 
-          setExercises(exerciseArray);
-        } else {
-          console.error("❌ No exercise found.");
+          const exerciseRef = doc(
+            db,
+            "CurrentWorkoutExercises",
+            exercise_doc_id
+          );
+          const exerciseSnap = await getDoc(exerciseRef);
+
+          if (exerciseSnap.exists()) {
+            console.log("✅ Exercise details found:", exerciseSnap.data());
+
+            // ✅ Correctly extract efffxercises array
+            const exerciseData = exerciseSnap.data();
+            const exerciseArray = exerciseData.exercises || []; // Make sure it falls back to an empty array
+
+            setExercises(exerciseArray);
+          } else {
+            console.error("❌ No exercise found for this ID.");
+          }
+        } catch (error) {
+          console.error("❌ Error fetching exercise details:", error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("❌ Error fetching exercise details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
+
+      fetchExerciseDetails();
+    }, [exercise_doc_id]);
 
     fetchExerciseDetails();
   }, [exercise_doc_id]);
