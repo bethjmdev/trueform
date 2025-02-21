@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import { getAuth } from "firebase/auth";
 import { serverTimestamp } from "firebase/firestore"; // ✅ Import this
 
+import "./CreateWorkout.css";
+
 const CreateWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -64,15 +66,25 @@ const CreateWorkout = () => {
   }, []);
 
   // 🔥 Handle typing in new exercise name (Autocomplete)
+  // const handleNewExerciseChange = (field, value) => {
+  //   if (field === "name") {
+  //     setFilteredExercises(
+  //       exerciseDatabase
+  //         .filter((exercise) =>
+  //           exercise.name.toLowerCase().includes(value.toLowerCase())
+  //         )
+  //         .map((exercise) => exercise.name)
+  //     );
+  //   }
+  //   setNewExercise({ ...newExercise, [field]: value });
+  // };
+
   const handleNewExerciseChange = (field, value) => {
     if (field === "name") {
-      setFilteredExercises(
-        exerciseDatabase
-          .filter((exercise) =>
-            exercise.name.toLowerCase().includes(value.toLowerCase())
-          )
-          .map((exercise) => exercise.name)
+      const filtered = exerciseDatabase.filter((exercise) =>
+        exercise.name.toLowerCase().includes(value.toLowerCase())
       );
+      setFilteredExercises(filtered);
     }
     setNewExercise({ ...newExercise, [field]: value });
   };
@@ -211,113 +223,186 @@ const CreateWorkout = () => {
   };
 
   return (
-    <div>
-      <h2>Create Workout</h2>
-      <label>Workout Name:</label>
-      <input
-        type="text"
-        value={workoutName}
-        onChange={(e) => setWorkoutName(e.target.value)}
-      />
+    <div className="CreateWorkout">
+      <div className="create_workout_container">
+        <h2>Create Workout</h2>
+        <label>Workout Name:</label>
+        <br />
+        <input
+          type="text"
+          value={workoutName}
+          onChange={(e) => setWorkoutName(e.target.value)}
+        />
+        <br />
+        <br />
+        <label>Notes:</label>
+        <br />
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
 
-      <label>Notes:</label>
-      <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
+        <h3>Add Exercise</h3>
+        {/* <input
+          type="text"
+          placeholder="Exercise Name"
+          value={newExercise.name}
+          onChange={(e) => handleNewExerciseChange("name", e.target.value)}
+        />
+        {filteredExercises.length > 0 && (
+          <ul>
+            {filteredExercises.map((exercise, index) => (
+              <li key={index} onClick={() => handleSelectExercise(exercise)}>
+                {exercise}
+              </li>
+            ))}
+          </ul>
+        )} */}
 
-      <h3>Add Exercise</h3>
-      <input
-        type="text"
-        placeholder="Exercise Name"
-        value={newExercise.name}
-        onChange={(e) => handleNewExerciseChange("name", e.target.value)}
-      />
-      {filteredExercises.length > 0 && (
-        <ul>
-          {filteredExercises.map((exercise, index) => (
-            <li key={index} onClick={() => handleSelectExercise(exercise)}>
-              {exercise}
-            </li>
+        {/* <input
+          type="text"
+          placeholder="Exercise Name"
+          value={newExercise.name}
+          onChange={(e) => handleNewExerciseChange("name", e.target.value)}
+        />
+
+        {filteredExercises.length > 0 && (
+          <select
+            onChange={(e) => {
+              const selectedExercise = exerciseDatabase.find(
+                (exercise) => exercise.name === e.target.value
+              );
+              if (selectedExercise) {
+                setNewExercise({
+                  ...newExercise,
+                  name: selectedExercise.name,
+                  cues: selectedExercise.cues,
+                  videoDemo: selectedExercise.videoDemo,
+                });
+              }
+            }}
+          >
+            <option value="">-- Select an Exercise --</option>
+            {filteredExercises.map((exercise, index) => (
+              <option key={index} value={exercise.name}>
+                {exercise.name}
+              </option>
+            ))}
+          </select>
+        )} */}
+
+        <input
+          type="text"
+          placeholder="Exercise Name"
+          value={newExercise.name}
+          onChange={(e) => handleNewExerciseChange("name", e.target.value)}
+        />
+
+        {/* Dropdown is always visible */}
+        <select
+          value={newExercise.name}
+          onChange={(e) => {
+            const selectedExercise = exerciseDatabase.find(
+              (exercise) => exercise.name === e.target.value
+            );
+            if (selectedExercise) {
+              setNewExercise({
+                ...newExercise,
+                name: selectedExercise.name,
+                cues: selectedExercise.cues,
+                videoDemo: selectedExercise.videoDemo,
+              });
+            }
+          }}
+        >
+          <option value="">-- Select an Exercise --</option>
+          {(filteredExercises.length > 0
+            ? filteredExercises
+            : exerciseDatabase
+          ).map((exercise, index) => (
+            <option key={index} value={exercise.name}>
+              {exercise.name}
+            </option>
           ))}
-        </ul>
-      )}
-      <input
-        type="number"
-        placeholder="Reps"
-        value={newExercise.reps}
-        onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Sets"
-        value={newExercise.sets}
-        onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Weight"
-        value={newExercise.weight}
-        onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
-      />
-      <select
-        value={newExercise.type}
-        onChange={(e) => handleNewExerciseChange("type", e.target.value)}
-      >
-        <option value="exercise">Strength</option>
-        <option value="warm up">Warm Up</option>
-        <option value="cool down">Cool Down</option>
-        <option value="cardio">Cardio</option>
-      </select>
+        </select>
 
-      <select
-        value={selectedCircuitExercise}
-        onChange={(e) => setSelectedCircuitExercise(e.target.value)}
-      >
-        <option value="">-- Link to Exercise --</option>
-        {selectedExercises.map((exercise, index) => (
-          <option key={index} value={exercise.name}>
-            {exercise.name}
-          </option>
-        ))}
-      </select>
+        <input
+          type="number"
+          placeholder="Reps"
+          value={newExercise.reps}
+          onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Sets"
+          value={newExercise.sets}
+          onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Weight"
+          value={newExercise.weight}
+          onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
+        />
+        <select
+          value={newExercise.type}
+          onChange={(e) => handleNewExerciseChange("type", e.target.value)}
+        >
+          <option value="exercise">Strength</option>
+          <option value="warm up">Warm Up</option>
+          <option value="cool down">Cool Down</option>
+          <option value="cardio">Cardio</option>
+        </select>
 
-      <button onClick={handleAddExercise}>Add Exercise</button>
-
-      {selectedExercises.length > 0 && (
-        <div>
-          <h3>Workout Preview</h3>
+        <select
+          value={selectedCircuitExercise}
+          onChange={(e) => setSelectedCircuitExercise(e.target.value)}
+        >
+          <option value="">-- Link to Exercise --</option>
           {selectedExercises.map((exercise, index) => (
-            <div
-              key={index}
-              style={{
-                border: exercise.circuit_id ? "2px solid blue" : "none",
-                padding: "5px",
-              }}
-            >
-              <h4>
-                {index + 1}. {exercise.name} <span>({exercise.type})</span>
-              </h4>
-
-              <p>
-                <strong>Reps:</strong> {exercise.reps}
-              </p>
-              <p>
-                <strong>Sets:</strong> {exercise.sets}
-              </p>
-              <p>
-                <strong>Weight:</strong> {exercise.weight} lbs
-              </p>
-              <p>
-                <strong>Cues:</strong> {exercise.cues}
-              </p>
-              {exercise.circuit_id && <p>🔥 Circuit</p>}
-              <button onClick={() => handleRemoveExercise(index)}>
-                ❌ Remove
-              </button>
-            </div>
+            <option key={index} value={exercise.name}>
+              {exercise.name}
+            </option>
           ))}
-        </div>
-      )}
+        </select>
 
-      <button onClick={handleSaveWorkout}>Save Workout</button>
+        <button onClick={handleAddExercise}>Add Exercise</button>
+
+        {selectedExercises.length > 0 && (
+          <div>
+            <h3>Workout Preview</h3>
+            {selectedExercises.map((exercise, index) => (
+              <div
+                key={index}
+                style={{
+                  border: exercise.circuit_id ? "2px solid blue" : "none",
+                  padding: "5px",
+                }}
+              >
+                <h4>
+                  {index + 1}. {exercise.name} <span>({exercise.type})</span>
+                </h4>
+
+                <p>
+                  <strong>Reps:</strong> {exercise.reps}
+                </p>
+                <p>
+                  <strong>Sets:</strong> {exercise.sets}
+                </p>
+                <p>
+                  <strong>Weight:</strong> {exercise.weight} lbs
+                </p>
+                <p>
+                  <strong>Cues:</strong> {exercise.cues}
+                </p>
+                {exercise.circuit_id && <p>🔥 Circuit</p>}
+                <button onClick={() => handleRemoveExercise(index)}>
+                  ❌ Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <button onClick={handleSaveWorkout}>Save Workout</button>
+      </div>
     </div>
   );
 };
