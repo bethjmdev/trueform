@@ -37,6 +37,9 @@ const CreateWorkout = () => {
     circuit_id: null,
     timestamp: "",
     type: "exercise", // ✅ Default tag
+    tempo: "", // ✅ New
+    tempoLength: "", // ✅ New
+    notes: "", // ✅ New
   });
 
   if (!trainer_uid) {
@@ -124,11 +127,21 @@ const CreateWorkout = () => {
       ? Math.max(...selectedExercises.map((e) => e.index || 0)) + 1
       : 1;
 
+    // let updatedExercise = {
+    //   ...newExercise,
+    //   circuit_id: null,
+    //   type: newExercise.type,
+    //   index: nextIndex, // Assign the next available index
+    // };
+
     let updatedExercise = {
       ...newExercise,
       circuit_id: null,
       type: newExercise.type,
-      index: nextIndex, // Assign the next available index
+      index: nextIndex,
+      tempo: newExercise.tempo, // ✅ New
+      tempoLength: newExercise.tempoLength, // ✅ New
+      notes: newExercise.notes, // ✅ New
     };
 
     //NEW
@@ -192,6 +205,9 @@ const CreateWorkout = () => {
         circuit_id: exercise.circuit_id,
         type: exercise.type,
         index: exercise.index, // Ensure index is saved
+        tempo: exercise.tempo, // ✅ New
+        tempoLength: exercise.tempoLength, // ✅ New
+        notes: exercise.notes, // ✅ New
       };
       return acc;
     }, {});
@@ -306,24 +322,53 @@ const CreateWorkout = () => {
               This exercise isn't in the database. Please add it.
             </div>
           )}
-
-          <input
+          <textarea
+            placeholder="Add Exercise Notes"
+            value={newExercise.notes}
+            onChange={(e) => handleNewExerciseChange("notes", e.target.value)}
             className="input_field"
-            type="number"
-            placeholder="Reps"
-            value={newExercise.reps}
-            onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
           />
           <input
             className="input_field"
-            type="number"
+            type="text"
             placeholder="Sets"
             value={newExercise.sets}
             onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
           />
+
           <input
             className="input_field"
-            type="number"
+            type="text"
+            placeholder="Reps"
+            value={newExercise.reps}
+            onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
+          />
+
+          <select
+            className="input_field"
+            value={newExercise.tempo}
+            onChange={(e) => handleNewExerciseChange("tempo", e.target.value)}
+          >
+            <option value="">Select Tempo</option>
+            <option value="none">None</option>
+            <option value="eccentric">Eccentric</option>
+            <option value="concentric">Concentric</option>
+            <option value="isometric">Isometric</option>
+          </select>
+
+          <input
+            className="input_field"
+            type="text"
+            placeholder="Tempo Length"
+            value={newExercise.tempoLength}
+            onChange={(e) =>
+              handleNewExerciseChange("tempoLength", e.target.value)
+            }
+          />
+
+          <input
+            className="input_field"
+            type="text"
             placeholder="Weight"
             value={newExercise.weight}
             onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
@@ -379,10 +424,19 @@ const CreateWorkout = () => {
                       <div key={index} style={{ marginBottom: "10px" }}>
                         <h4>{exercise.name}</h4>
                         <p>
-                          <strong>Reps:</strong> {exercise.reps}
+                          <strong>Notes:</strong> {exercise.note}
                         </p>
                         <p>
                           <strong>Sets:</strong> {exercise.sets}
+                        </p>
+                        <p>
+                          <strong>Reps:</strong> {exercise.reps}
+                        </p>
+                        <p>
+                          <strong>Tempo</strong> {exercise.tempo}
+                        </p>
+                        <p>
+                          <strong>Tempo Length</strong> {exercise.tempoLength}
                         </p>
                         <p>
                           <strong>Weight:</strong> {exercise.weight} lbs
@@ -409,10 +463,19 @@ const CreateWorkout = () => {
                   >
                     <h4>{group.name}</h4>
                     <p>
-                      <strong>Reps:</strong> {group.reps}
+                      <strong>Notes:</strong> {group.note}
                     </p>
                     <p>
                       <strong>Sets:</strong> {group.sets}
+                    </p>
+                    <p>
+                      <strong>Reps:</strong> {group.reps}
+                    </p>
+                    <p>
+                      <strong>Tempo</strong> {group.tempo}
+                    </p>
+                    <p>
+                      <strong>Tempo Length</strong> {group.tempoLength}
                     </p>
                     <p>
                       <strong>Weight:</strong> {group.weight} lbs
