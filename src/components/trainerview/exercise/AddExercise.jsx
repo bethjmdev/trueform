@@ -1,14 +1,3 @@
-// function AddExercise() {
-//   return (
-//     <>
-//       <p>hi</p> <br />
-//       <p>add exercise</p>
-//     </>
-//   );
-// }
-
-// export default AddExercise;
-
 import { useState } from "react";
 import { db } from "../../../utils/firebase/firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
@@ -22,14 +11,46 @@ function AddExercise() {
   const [otherNotes, setOtherNotes] = useState("");
   const [message, setMessage] = useState("");
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     await addDoc(collection(db, "ExerciseDatabase"), {
+  //       name,
+  //       cues,
+  //       videoDemo,
+  //       otherNotes,
+  //     });
+
+  //     // Clear form fields after successful submission
+  //     setName("");
+  //     setCues("");
+  //     setVideoDemo("");
+  //     setOtherNotes("");
+  //     setMessage("Exercise added successfully!");
+  //   } catch (error) {
+  //     console.error("Error adding exercise:", error);
+  //     setMessage("Error adding exercise.");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let formattedVideoDemo = videoDemo.trim();
+    if (
+      formattedVideoDemo &&
+      !/^https?:\/\//i.test(formattedVideoDemo) &&
+      !/^www\./i.test(formattedVideoDemo)
+    ) {
+      formattedVideoDemo = `https://${formattedVideoDemo}`;
+    }
 
     try {
       await addDoc(collection(db, "ExerciseDatabase"), {
         name,
         cues,
-        videoDemo,
+        videoDemo: formattedVideoDemo,
         otherNotes,
       });
 
