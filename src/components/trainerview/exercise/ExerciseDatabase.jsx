@@ -10,14 +10,36 @@ function ExerciseDatabase() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate(); // Initialize navigate function
 
+  // useEffect(() => {
+  //   const fetchExercises = async () => {
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, "ExerciseDatabase"));
+  //       const exerciseList = querySnapshot.docs.map((doc) => ({
+  //         id: doc.id,
+  //         ...doc.data(),
+  //       }));
+  //       setExercises(exerciseList);
+  //     } catch (error) {
+  //       console.error("Error fetching exercises:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchExercises();
+  // }, []);
+
   useEffect(() => {
     const fetchExercises = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "ExerciseDatabase"));
-        const exerciseList = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const exerciseList = querySnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name
+
         setExercises(exerciseList);
       } catch (error) {
         console.error("Error fetching exercises:", error);
