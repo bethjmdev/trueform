@@ -13,6 +13,8 @@ import { useState } from "react";
 import { db } from "../../../utils/firebase/firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 
+import "./AddExercise.css";
+
 function AddExercise() {
   const [name, setName] = useState("");
   const [cues, setCues] = useState("");
@@ -44,44 +46,52 @@ function AddExercise() {
   };
 
   return (
-    <div>
-      <h2>Add Exercise</h2>
-      {message && <p>{message}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Exercise Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <br />
+    <div className="AddExercise">
+      <div className="add_exercise_container">
+        <h2>Add Exercise</h2>
+        {message && <p>{message}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Exercise Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="input_field"
+          />
+          <br />
 
-        <textarea
-          placeholder="Cues"
-          value={cues}
-          onChange={(e) => setCues(e.target.value)}
-          required
-        />
-        <br />
+          <textarea
+            placeholder="Cues"
+            value={cues}
+            onChange={(e) => setCues(e.target.value)}
+            required
+            className="input_field"
+          />
+          <br />
 
-        <input
-          type="text"
-          placeholder="Video Demo URL"
-          value={videoDemo}
-          onChange={(e) => setVideoDemo(e.target.value)}
-        />
-        <br />
+          <input
+            type="text"
+            placeholder="Video Demo URL"
+            value={videoDemo}
+            onChange={(e) => setVideoDemo(e.target.value)}
+            className="input_field"
+          />
+          <br />
 
-        <textarea
-          placeholder="Other Notes"
-          value={otherNotes}
-          onChange={(e) => setOtherNotes(e.target.value)}
-        />
-        <br />
+          <textarea
+            placeholder="Other Notes"
+            value={otherNotes}
+            onChange={(e) => setOtherNotes(e.target.value)}
+            className="input_field"
+          />
+          <br />
 
-        <button type="submit">Add Exercise</button>
-      </form>
+          <button type="submit" id="button">
+            Add Exercise
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
