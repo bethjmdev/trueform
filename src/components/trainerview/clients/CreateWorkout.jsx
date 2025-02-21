@@ -114,13 +114,6 @@ const CreateWorkout = () => {
       return;
     }
 
-    //OLD
-    // let updatedExercise = {
-    //   ...newExercise,
-    //   circuit_id: null,
-    //   type: newExercise.type,
-    // };
-
     //NEW
     let nextIndex = selectedExercises.length
       ? Math.max(...selectedExercises.map((e) => e.index || 0)) + 1
@@ -133,28 +126,6 @@ const CreateWorkout = () => {
       index: nextIndex, // Assign the next available index
     };
 
-    // if (selectedCircuitExercise) {
-    //   // 🔥 Link exercise to selected one in dropdown
-    //   const linkedExercise = selectedExercises.find(
-    //     (e) => e.name === selectedCircuitExercise
-    //   );
-    //   if (linkedExercise) {
-    //     updatedExercise.circuit_id = linkedExercise.circuit_id || uuidv4();
-    //     linkedExercise.circuit_id = updatedExercise.circuit_id; // Ensure previous exercise is also linked
-    //   }
-    // }
-
-    //OLD
-    // if (selectedCircuitExercise) {
-    //   const linkedExercise = selectedExercises.find(
-    //     (e) => e.name === selectedCircuitExercise
-    //   );
-    //   if (linkedExercise) {
-    //     updatedExercise.circuit_id = linkedExercise.circuit_id || uuidv4();
-    //     linkedExercise.circuit_id = updatedExercise.circuit_id; // Keep consistency
-    //   }
-    // }
-
     //NEW
     if (selectedCircuitExercise) {
       const linkedExercise = selectedExercises.find(
@@ -166,13 +137,6 @@ const CreateWorkout = () => {
         updatedExercise.index = linkedExercise.index; // Assign the same index to circuit exercises
       }
     }
-
-    //OLD
-    // setSelectedExercises([...selectedExercises, updatedExercise]);
-    // setSelectedExercises((prevExercises) => [
-    //   ...prevExercises,
-    //   updatedExercise,
-    // ]);
 
     //NEW
     setSelectedExercises((prevExercises) =>
@@ -217,20 +181,6 @@ const CreateWorkout = () => {
       created_at: serverTimestamp(),
       type: "exercise", // ✅ Default tag
     };
-
-    //OLD
-    // const workoutExercises = selectedExercises.reduce((acc, exercise) => {
-    //   acc[exercise.name] = {
-    //     reps: exercise.reps,
-    //     sets: exercise.sets,
-    //     weight: exercise.weight,
-    //     cues: exercise.cues,
-    //     videoDemo: exercise.videoDemo,
-    //     circuit_id: exercise.circuit_id,
-    //     type: exercise.type,
-    //   };
-    //   return acc;
-    // }, {});
 
     const workoutExercises = selectedExercises.reduce((acc, exercise) => {
       acc[exercise.name] = {
@@ -334,39 +284,36 @@ const CreateWorkout = () => {
       {selectedExercises.length > 0 && (
         <div>
           <h3>Workout Preview</h3>
-          {/* {selectedExercises.map((exercise, index) => ( */}
-          {[...selectedExercises]
-            .sort((a, b) => a.index - b.index) // Sort by index
-            .map((exercise, index) => (
-              <div
-                key={index}
-                style={{
-                  border: exercise.circuit_id ? "2px solid blue" : "none",
-                  padding: "5px",
-                }}
-              >
-                <h4>
-                  {index + 1}. {exercise.name} <span>({exercise.type})</span>
-                </h4>
+          {selectedExercises.map((exercise, index) => (
+            <div
+              key={index}
+              style={{
+                border: exercise.circuit_id ? "2px solid blue" : "none",
+                padding: "5px",
+              }}
+            >
+              <h4>
+                {index + 1}. {exercise.name} <span>({exercise.type})</span>
+              </h4>
 
-                <p>
-                  <strong>Reps:</strong> {exercise.reps}
-                </p>
-                <p>
-                  <strong>Sets:</strong> {exercise.sets}
-                </p>
-                <p>
-                  <strong>Weight:</strong> {exercise.weight} lbs
-                </p>
-                <p>
-                  <strong>Cues:</strong> {exercise.cues}
-                </p>
-                {exercise.circuit_id && <p>🔥 Circuit</p>}
-                <button onClick={() => handleRemoveExercise(index)}>
-                  ❌ Remove
-                </button>
-              </div>
-            ))}
+              <p>
+                <strong>Reps:</strong> {exercise.reps}
+              </p>
+              <p>
+                <strong>Sets:</strong> {exercise.sets}
+              </p>
+              <p>
+                <strong>Weight:</strong> {exercise.weight} lbs
+              </p>
+              <p>
+                <strong>Cues:</strong> {exercise.cues}
+              </p>
+              {exercise.circuit_id && <p>🔥 Circuit</p>}
+              <button onClick={() => handleRemoveExercise(index)}>
+                ❌ Remove
+              </button>
+            </div>
+          ))}
         </div>
       )}
 

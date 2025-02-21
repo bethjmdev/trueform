@@ -61,20 +61,47 @@ const ViewIndWorkout = () => {
 
   if (!exercise_doc_id) return null; // Prevents rendering if no ID is found
 
-  // 🔥 Group exercises by circuit_id, but keep standalone exercises separate
-  const groupedExercises = exercises.reduce((groups, exercise) => {
-    if (!exercise.circuit_id) {
-      // Treat standalone exercises separately
-      groups[exercise.name] = [exercise];
-    } else {
-      // Group exercises with the same circuit_id
-      if (!groups[exercise.circuit_id]) {
-        groups[exercise.circuit_id] = [];
+  // ✅ Step 1: Identify first index of each circuit
+  const circuitIndexMap = {};
+
+  // ✅ Step 2: Convert `exercises` to an array and sort by index
+  const sortedExercises = exercises
+    .map((exercise) => ({
+      ...exercise,
+    }))
+    .sort((a, b) => {
+      const indexA = a.circuit_id
+        ? circuitIndexMap[a.circuit_id] ?? a.index
+        : a.index;
+      const indexB = b.circuit_id
+        ? circuitIndexMap[b.circuit_id] ?? b.index
+        : b.index;
+      return indexA - indexB;
+    });
+
+  // ✅ Step 3: Group circuits together while keeping everything in one ordered list
+  const groupedExercises = [];
+  const seenCircuits = new Set();
+
+  sortedExercises.forEach((exercise) => {
+    if (exercise.circuit_id) {
+      if (!seenCircuits.has(exercise.circuit_id)) {
+        groupedExercises.push({
+          type: "circuit",
+          circuit_id: exercise.circuit_id,
+          exercises: sortedExercises.filter(
+            (e) => e.circuit_id === exercise.circuit_id
+          ),
+        });
+        seenCircuits.add(exercise.circuit_id);
       }
-      groups[exercise.circuit_id].push(exercise);
+    } else {
+      groupedExercises.push({
+        type: "exercise",
+        ...exercise,
+      });
     }
-    return groups;
-  }, {});
+  });
 
   return (
     <div className="ViewIndWorkout">
@@ -97,51 +124,79 @@ const ViewIndWorkout = () => {
           <p>No exercise details found.</p>
         )}
 
-        {/* 🔥 Render exercises grouped by circuits */}
-        {Object.entries(groupedExercises).map(([groupId, exercises]) => (
-          <div
-            key={groupId}
-            style={{
-              padding: "10px",
-              marginBottom: "10px",
-              borderRadius: "3rem",
-              background: "#FDF8F6",
-            }}
-            className="exercise_block"
-          >
-            {/* Show 🔥 Circuit only if the groupId is a circuit_id and not a standalone exercise name */}
-            {groupId.length > 10 && <h3>🔥 Circuit</h3>}
+        {/* ✅ Render Exercises & Circuits in Order */}
+        {groupedExercises.map((group) => {
+          return (
+            <div
+              key={group.type === "circuit" ? group.circuit_id : group.name}
+              style={{
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "3rem",
+                background: "#FDF8F6",
+              }}
+              className="exercise_block"
+            >
+              {group.type === "circuit" && <h3>🔥 Circuit</h3>}
 
-            {exercises.map((exercise, index) => (
-              <div key={index} style={{ marginBottom: "10px" }}>
-                <h3>{exercise.name}</h3>
-                <p>
-                  <a
-                    href={exercise.videoDemo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      color: "#213547",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Click to View Video Demo
-                  </a>
-                </p>
-                <p>
-                  <strong>Sets:</strong> {exercise.sets} <strong>Reps:</strong>{" "}
-                  {exercise.reps} <strong>Weight:</strong> {exercise.weight} lbs
-                </p>
-
-                <p>
-                  <strong>Cues:</strong> {exercise.cues}
-                </p>
-
-                {index !== exercises.length - 1 && <hr id="hr" />}
-              </div>
-            ))}
-          </div>
-        ))}
+              {group.type === "circuit"
+                ? group.exercises.map((details) => (
+                    <div key={details.name} style={{ marginBottom: "10px" }}>
+                      <h3>{details.name}</h3>
+                      {details.videoDemo && (
+                        <p>
+                          <a
+                            href={details.videoDemo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "#213547", cursor: "pointer" }}
+                          >
+                            Click to View Video Demo
+                          </a>
+                        </p>
+                      )}
+                      <p>
+                        <strong>Sets:</strong> {details.sets}{" "}
+                        <strong>Reps:</strong> {details.reps}{" "}
+                        <strong>Weight:</strong> {details.weight} lbs
+                      </p>
+                      <p>
+                        <strong>Cues:</strong> {details.cues}
+                      </p>
+                    </div>
+                  ))
+                : // Single Exercise (Non-Circuit)
+                  (() => {
+                    const details = group;
+                    return (
+                      <div key={details.name}>
+                        <h3>{details.name}</h3>
+                        {details.videoDemo && (
+                          <p>
+                            <a
+                              href={details.videoDemo}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: "#213547", cursor: "pointer" }}
+                            >
+                              Click to View Video Demo
+                            </a>
+                          </p>
+                        )}
+                        <p>
+                          <strong>Sets:</strong> {details.sets}{" "}
+                          <strong>Reps:</strong> {details.reps}{" "}
+                          <strong>Weight:</strong> {details.weight} lbs
+                        </p>
+                        <p>
+                          <strong>Cues:</strong> {details.cues}
+                        </p>
+                      </div>
+                    );
+                  })()}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

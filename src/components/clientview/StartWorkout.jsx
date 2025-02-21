@@ -184,26 +184,6 @@ const StartWorkout = () => {
         ...questions,
       });
 
-      // const workoutExercises = {};
-      // Object.entries(workoutDetails).forEach(([exercise, details]) => {
-      //   const checkedIndices = exerciseProgress[exercise]
-      //     ?.map((checked, index) => (checked ? index : null))
-      //     .filter((index) => index !== null);
-
-      //   if (checkedIndices.length > 0) {
-      //     workoutExercises[exercise] = {
-      //       ...details,
-      //       actual_weights_per_set: checkedIndices.map(
-      //         (i) => weights[exercise]?.[i] ?? ""
-      //       ),
-      //       actual_reps_per_set: checkedIndices.map(
-      //         (i) => reps[exercise]?.[i] ?? ""
-      //       ),
-      //       completed_sets: checkedIndices.map(() => true),
-      //     };
-      //   }
-      // });
-
       const workoutExercises = {};
       Object.entries(workoutDetails).forEach(([exercise, details]) => {
         const checkedIndices = exerciseProgress[exercise]
@@ -253,13 +233,17 @@ const StartWorkout = () => {
   // Step 1️⃣: Identify the first index of each circuit
   const circuitIndexMap = {};
 
-  // Convert workoutDetails to an array and sort by index
-  const exercisesArray = Object.entries(workoutDetails).map(
-    ([exercise, details]) => ({
+  //NEW
+  const exercisesArray = Object.entries(workoutDetails)
+    .map(([exercise, details]) => ({
       exercise,
       ...details,
-    })
-  );
+    }))
+    .sort((a, b) => {
+      const indexA = a.circuit_id ? circuitIndexMap[a.circuit_id] : a.index;
+      const indexB = b.circuit_id ? circuitIndexMap[b.circuit_id] : b.index;
+      return indexA - indexB;
+    });
 
   // Step 2️⃣: Assign the first index to each circuit group
   exercisesArray.forEach((details) => {
@@ -381,14 +365,6 @@ const StartWorkout = () => {
               return (
                 <div
                   key={group.circuit_id}
-                  // style={{
-                  //   border: "2px solid #ff6600",
-                  //   backgroundColor: "#ffefd5",
-                  //   padding: "10px",
-                  //   marginBottom: "15px",
-                  //   borderRadius: "10px",
-                  // }}
-
                   style={{
                     padding: "10px",
                     marginBottom: "10px",
