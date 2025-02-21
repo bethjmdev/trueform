@@ -67,20 +67,6 @@ const CreateWorkout = () => {
     fetchExerciseDatabase();
   }, []);
 
-  // const handleNewExerciseChange = (field, value) => {
-  //   if (field === "name") {
-  //     const filtered = exerciseDatabase.filter((exercise) =>
-  //       exercise.name.toLowerCase().includes(value.toLowerCase())
-  //     );
-  //     setFilteredExercises(filtered);
-
-  //     // Show notification if exercise is not found
-  //     setExerciseNotFound(filtered.length === 0 && value.trim() !== "");
-  //   }
-
-  //   setNewExercise({ ...newExercise, [field]: value });
-  // };
-
   const handleNewExerciseChange = (field, value) => {
     if (field === "name") {
       const filtered = exerciseDatabase.filter((exercise) =>
@@ -184,11 +170,6 @@ const CreateWorkout = () => {
 
   // 🔥 Save Workout to Firestore
   const handleSaveWorkout = async () => {
-    if (!workoutName || selectedExercises.length === 0) {
-      console.error("❌ Workout name and exercises are required.");
-      return;
-    }
-
     const workoutId = uuidv4(); // Unique ID for both documents
 
     const workoutDetails = {
@@ -448,15 +429,7 @@ const CreateWorkout = () => {
           </div>
         )}
 
-        {/* <button id="button" onClick={handleSaveWorkout}>
-          Save Workout
-        </button> */}
-
-        <button
-          id="button"
-          onClick={handleSaveWorkout}
-          disabled={!workoutName.trim()}
-        >
+        <button id="button" onClick={handleSaveWorkout}>
           Save Workout
         </button>
       </div>
