@@ -151,13 +151,7 @@ const EditWorkout = () => {
     setExercises(updatedExercises);
   };
 
-  // 🔥 Remove an exercise from the workout (and track it for Firestore update)
-  const handleRemoveExercise = (index) => {
-    setRemovedExercises([...removedExercises, exercises[index].name]);
-    setExercises(exercises.filter((_, i) => i !== index));
-  };
-
-  // 🔥 Handle typing in new exercise name (Autocomplete)
+  // // 🔥 Handle typing in new exercise name (Autocomplete)
   const handleNewExerciseChange = (field, value) => {
     if (field === "name") {
       setFilteredExercises(
@@ -169,6 +163,34 @@ const EditWorkout = () => {
       );
     }
     setNewExercise({ ...newExercise, [field]: value });
+  };
+
+  const handleRemoveExercise = (name, circuitId = null) => {
+    if (!name) {
+      console.error("❌ Cannot remove exercise because name is undefined.");
+      return;
+    }
+
+    console.log(
+      `🗑️ Attempting to remove exercise: ${name}, circuitId: ${circuitId}`
+    );
+
+    if (!exercises || exercises.length === 0) {
+      console.error("⚠️ No exercises to remove.");
+      return;
+    }
+
+    // If the exercise is inside a circuit, only remove it from that circuit
+    setExercises((prevExercises) =>
+      prevExercises.filter(
+        (exercise) =>
+          exercise.name !== name ||
+          (circuitId !== null && exercise.circuit_id !== circuitId)
+      )
+    );
+
+    setRemovedExercises((prev) => [...prev, name]);
+    console.log(`✅ Removed exercise: ${name} (circuitId: ${circuitId})`);
   };
 
   // 🔥 Handle selecting an exercise from autocomplete
@@ -236,22 +258,9 @@ const EditWorkout = () => {
     setSelectedCircuitExercise(""); // Reset dropdown selection
   };
 
-  // const groupExercisesByCircuit = () => {
-  //   const groupedExercises = {};
-  //   exercises.forEach((exercise) => {
-  //     const circuitKey = exercise.circuit_id || "individual";
-  //     if (!groupedExercises[circuitKey]) {
-  //       groupedExercises[circuitKey] = [];
-  //     }
-  //     groupedExercises[circuitKey].push(exercise);
-  //   });
-  //   return groupedExercises;
-  // };
-
   // ✅ ADD: Sorting exercises before rendering
   const sortedExercises = [...exercises].sort((a, b) => a.index - b.index);
 
-  // ✅ ADD: New circuit grouping logic to match `CreateWorkout`
   const circuitGroups = {};
   const nonCircuitExercises = [];
 
@@ -260,7 +269,10 @@ const EditWorkout = () => {
       if (!circuitGroups[exercise.circuit_id]) {
         circuitGroups[exercise.circuit_id] = [];
       }
-      circuitGroups[exercise.circuit_id].push(exercise);
+      // Only push if it still exists in exercises
+      if (exercises.some((ex) => ex.name === exercise.name)) {
+        circuitGroups[exercise.circuit_id].push(exercise);
+      }
     } else {
       nonCircuitExercises.push(exercise);
     }
@@ -378,126 +390,6 @@ const EditWorkout = () => {
                 Add Exercise
               </button>
             </div>
-            {/* {Object.entries(groupExercisesByCircuit()).map(
-              ([circuitId, circuitExercises], idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    border:
-                      circuitId !== "individual" ? "2px solid #007bff" : "none",
-                    padding: "10px",
-                    marginBottom: "10px",
-                  }}
-                  // style={{
-                  //   padding: "10px",
-                  //   marginBottom: "10px",
-                  //   borderRadius: "3rem",
-                  //   background: "#FDF8F6",
-                  // }}
-                  // className="exercise_block"
-                >
-        
-
-                  {circuitExercises.map((exercise, index) => (
-                    <div
-                      key={index}
-                      className="exercise_block"
-                      style={{
-                        padding: "10px",
-                        marginBottom: "10px",
-                        borderRadius: "3rem",
-                        background: "#FDF8F6",
-                      }}
-                    >
-                      <h4>{exercise.name}</h4>
-
-                      <br />
-                      <label>Notes:</label>
-                      <br />
-                      <textarea
-                        className="input_field"
-                        value={exercise.notes}
-                        onChange={(e) =>
-                          handleChange(index, "notes", e.target.value)
-                        }
-                      />
-                      <br />
-                      <label>Sets:</label>
-                      <br />
-                      <input
-                        type="text"
-                        className="input_field"
-                        value={exercise.sets}
-                        onChange={(e) =>
-                          handleChange(index, "sets", e.target.value)
-                        }
-                      />
-
-                      <br />
-                      <label>Reps:</label>
-                      <br />
-                      <input
-                        type="text"
-                        className="input_field"
-                        value={exercise.reps}
-                        onChange={(e) =>
-                          handleChange(index, "reps", e.target.value)
-                        }
-                      />
-                      <br />
-
-                      <label>Tempo:</label>
-                      <br />
-                      <select
-                        className="input_field"
-                        value={exercise.tempo}
-                        onChange={(e) =>
-                          handleChange(index, "tempo", e.target.value)
-                        }
-                      >
-                        <option value="">Choose Tempo</option>
-                        <option value="none">None</option>
-                        <option value="eccentric">Eccentric</option>
-                        <option value="concentric">Concentric</option>
-                        <option value="isometric">Isometric</option>
-                      </select>
-                      <br />
-                      <label>Tempo Length:</label>
-                      <br />
-                      <input
-                        className="input_field"
-                        type="text"
-                        value={exercise.tempoLength}
-                        onChange={(e) =>
-                          handleChange(index, "tempoLength", e.target.value)
-                        }
-                      />
-
-                      <br />
-                      <label>Weight (lbs):</label>
-                      <br />
-                      <input
-                        className="input_field"
-                        type="text"
-                        value={exercise.weight}
-                        onChange={(e) =>
-                          handleChange(index, "weight", e.target.value)
-                        }
-                      />
-                      <br />
-                      <p>
-                        <strong>Cues:</strong> {exercise.cues}
-                      </p>
-                      <br />
-                      <button onClick={() => handleRemoveExercise(index)}>
-                        ❌ Remove
-                      </button>
-                      <hr />
-                    </div>
-                  ))}
-                </div>
-              )
-            )} */}
             {[...Object.values(circuitGroups), ...nonCircuitExercises].map(
               (group, idx) =>
                 Array.isArray(group) ? (
@@ -530,7 +422,15 @@ const EditWorkout = () => {
                         <p>
                           <strong>Weight:</strong> {exercise.weight} lbs
                         </p>
-                        <button onClick={() => handleRemoveExercise(index)}>
+
+                        <button
+                          onClick={() =>
+                            handleRemoveExercise(
+                              exercise.name,
+                              exercise.circuit_id
+                            )
+                          }
+                        >
                           ❌ Remove
                         </button>
                       </div>
@@ -563,7 +463,15 @@ const EditWorkout = () => {
                     <p>
                       <strong>Weight:</strong> {group.weight} lbs
                     </p>
-                    <button onClick={() => handleRemoveExercise(group.index)}>
+                    {/* <button onClick={() => handleRemoveExercise(group.index)}>
+                      ❌ Remove
+                    </button> */}
+                    <button
+                      onClick={() => {
+                        console.log("Clicked remove button for:", group);
+                        handleRemoveExercise(group?.name);
+                      }}
+                    >
                       ❌ Remove
                     </button>
                   </div>
