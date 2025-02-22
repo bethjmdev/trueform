@@ -171,14 +171,43 @@ const CreateWorkout = () => {
       type: "",
       videoDemo: "",
       circuit_id: null,
+      tempo: "", // ✅ New
+      tempoLength: "", // ✅ New
+      notes: "", // ✅ New
     });
 
     setSelectedCircuitExercise(""); // Reset dropdown selection
   };
 
   // 🔥 Remove exercise from list
-  const handleRemoveExercise = (index) => {
-    setSelectedExercises(selectedExercises.filter((_, i) => i !== index));
+  // const handleRemoveExercise = (index) => {
+  //   setSelectedExercises(selectedExercises.filter((_, i) => i !== index));
+  // };
+
+  const handleRemoveExercise = (name, circuitId = null) => {
+    if (!name || typeof name !== "string") {
+      console.error(
+        "❌ Cannot remove exercise because name is missing or invalid:",
+        name
+      );
+      return;
+    }
+
+    console.log(
+      `🗑️ Attempting to remove exercise: ${name}, circuitId: ${circuitId}`
+    );
+
+    setSelectedExercises((prevExercises) => {
+      const updatedExercises = prevExercises.filter((exercise) => {
+        if (circuitId) {
+          return exercise.name !== name || exercise.circuit_id !== circuitId;
+        }
+        return exercise.name !== name;
+      });
+
+      console.log("✅ Updated exercises after removal:", updatedExercises);
+      return updatedExercises;
+    });
   };
 
   // 🔥 Save Workout to Firestore
@@ -234,19 +263,40 @@ const CreateWorkout = () => {
   );
 
   // Group circuits while keeping order
+  // const circuitGroups = {};
+  // const nonCircuitExercises = [];
+
+  // sortedExercises.forEach((exercise) => {
+  //   if (exercise.circuit_id) {
+  //     if (!circuitGroups[exercise.circuit_id]) {
+  //       circuitGroups[exercise.circuit_id] = [];
+  //     }
+  //     circuitGroups[exercise.circuit_id].push(exercise);
+  //   } else {
+  //     nonCircuitExercises.push(exercise);
+  //   }
+  // });
+
   const circuitGroups = {};
   const nonCircuitExercises = [];
 
-  sortedExercises.forEach((exercise) => {
+  selectedExercises.forEach((exercise) => {
     if (exercise.circuit_id) {
       if (!circuitGroups[exercise.circuit_id]) {
         circuitGroups[exercise.circuit_id] = [];
       }
-      circuitGroups[exercise.circuit_id].push(exercise);
+      // Ensure exercises exist before adding them
+      if (selectedExercises.some((ex) => ex.name === exercise.name)) {
+        circuitGroups[exercise.circuit_id].push(exercise);
+      }
     } else {
       nonCircuitExercises.push(exercise);
     }
   });
+
+  console.log("🚀 Updated circuit groups after removal:", circuitGroups);
+
+  console.log("🚀 Updated circuit groups:", circuitGroups);
 
   return (
     <div className="CreateWorkout">
@@ -447,7 +497,14 @@ const CreateWorkout = () => {
                         <p>
                           <strong>Cues:</strong> {exercise.cues}
                         </p>
-                        <button onClick={() => handleRemoveExercise(index)}>
+                        <button
+                          onClick={() =>
+                            handleRemoveExercise(
+                              exercise.name,
+                              exercise.circuit_id
+                            )
+                          }
+                        >
                           ❌ Remove
                         </button>
                       </div>
@@ -486,7 +543,11 @@ const CreateWorkout = () => {
                     <p>
                       <strong>Cues:</strong> {group.cues}
                     </p>
-                    <button onClick={() => handleRemoveExercise(group.index)}>
+                    <button
+                      onClick={() =>
+                        handleRemoveExercise(group.name, group.circuit_id)
+                      }
+                    >
                       ❌ Remove
                     </button>
                   </div>
