@@ -30,6 +30,9 @@ const EditWorkout = () => {
     weight: "",
     cues: "",
     circuit_id: null,
+    tempo: "", // ✅ Add tempo
+    tempoLength: "", // ✅ Add tempoLength
+    notes: "", // ✅ Add notes
   });
 
   const [removedExercises, setRemovedExercises] = useState([]); // ✅ Track removed exercises
@@ -233,17 +236,35 @@ const EditWorkout = () => {
     setSelectedCircuitExercise(""); // Reset dropdown selection
   };
 
-  const groupExercisesByCircuit = () => {
-    const groupedExercises = {};
-    exercises.forEach((exercise) => {
-      const circuitKey = exercise.circuit_id || "individual";
-      if (!groupedExercises[circuitKey]) {
-        groupedExercises[circuitKey] = [];
+  // const groupExercisesByCircuit = () => {
+  //   const groupedExercises = {};
+  //   exercises.forEach((exercise) => {
+  //     const circuitKey = exercise.circuit_id || "individual";
+  //     if (!groupedExercises[circuitKey]) {
+  //       groupedExercises[circuitKey] = [];
+  //     }
+  //     groupedExercises[circuitKey].push(exercise);
+  //   });
+  //   return groupedExercises;
+  // };
+
+  // ✅ ADD: Sorting exercises before rendering
+  const sortedExercises = [...exercises].sort((a, b) => a.index - b.index);
+
+  // ✅ ADD: New circuit grouping logic to match `CreateWorkout`
+  const circuitGroups = {};
+  const nonCircuitExercises = [];
+
+  sortedExercises.forEach((exercise) => {
+    if (exercise.circuit_id) {
+      if (!circuitGroups[exercise.circuit_id]) {
+        circuitGroups[exercise.circuit_id] = [];
       }
-      groupedExercises[circuitKey].push(exercise);
-    });
-    return groupedExercises;
-  };
+      circuitGroups[exercise.circuit_id].push(exercise);
+    } else {
+      nonCircuitExercises.push(exercise);
+    }
+  });
 
   if (!exercise_doc_id) return null;
 
@@ -271,6 +292,14 @@ const EditWorkout = () => {
                   handleNewExerciseChange("name", e.target.value)
                 }
               />
+              <textarea
+                placeholder="Notes"
+                className="input_field"
+                value={newExercise.notes}
+                onChange={(e) =>
+                  handleNewExerciseChange("notes", e.target.value)
+                }
+              />
               {filteredExercises.length > 0 && (
                 <ul>
                   {filteredExercises.map((exercise, index) => (
@@ -283,6 +312,15 @@ const EditWorkout = () => {
                   ))}
                 </ul>
               )}
+
+              <input
+                type="text"
+                placeholder="Sets"
+                className="input_field"
+                onChange={(e) =>
+                  handleNewExerciseChange("sets", e.target.value)
+                }
+              />
               <input
                 type="text"
                 placeholder="Reps"
@@ -291,12 +329,27 @@ const EditWorkout = () => {
                   handleNewExerciseChange("reps", e.target.value)
                 }
               />
+              <select
+                className="input_field"
+                value={newExercise.tempo}
+                onChange={(e) =>
+                  handleNewExerciseChange("tempo", e.target.value)
+                }
+              >
+                <option value="">Choose Tempo</option>
+                <option value="none">None</option>
+                <option value="eccentric">Eccentric</option>
+                <option value="concentric">Concentric</option>
+                <option value="isometric">Isometric</option>
+              </select>
+
               <input
                 type="text"
-                placeholder="Sets"
+                placeholder="Tempo Length"
                 className="input_field"
+                value={newExercise.tempoLength}
                 onChange={(e) =>
-                  handleNewExerciseChange("sets", e.target.value)
+                  handleNewExerciseChange("tempoLength", e.target.value)
                 }
               />
               <input
@@ -321,9 +374,11 @@ const EditWorkout = () => {
                 ))}
               </select>
 
-              <button onClick={handleAddExercise}>Add Exercise</button>
+              <button onClick={handleAddExercise} id="button">
+                Add Exercise
+              </button>
             </div>
-            {Object.entries(groupExercisesByCircuit()).map(
+            {/* {Object.entries(groupExercisesByCircuit()).map(
               ([circuitId, circuitExercises], idx) => (
                 <div
                   key={idx}
@@ -333,10 +388,15 @@ const EditWorkout = () => {
                     padding: "10px",
                     marginBottom: "10px",
                   }}
+                  // style={{
+                  //   padding: "10px",
+                  //   marginBottom: "10px",
+                  //   borderRadius: "3rem",
+                  //   background: "#FDF8F6",
+                  // }}
+                  // className="exercise_block"
                 >
-                  {circuitId !== "individual" && (
-                    <h3 style={{ color: "#007bff" }}>Circuit {idx + 1}</h3>
-                  )}
+        
 
                   {circuitExercises.map((exercise, index) => (
                     <div
@@ -437,11 +497,85 @@ const EditWorkout = () => {
                   ))}
                 </div>
               )
+            )} */}
+            {[...Object.values(circuitGroups), ...nonCircuitExercises].map(
+              (group, idx) =>
+                Array.isArray(group) ? (
+                  <div
+                    key={idx}
+                    className="exercise_block"
+                    style={{
+                      padding: "10px",
+                      marginBottom: "10px",
+                      borderRadius: "3rem",
+                      background: "#FDF8F6",
+                    }}
+                  >
+                    <h3>🔥 Circuit</h3>
+                    {group.map((exercise, index) => (
+                      <div key={index} style={{ marginBottom: "10px" }}>
+                        <h4>{exercise.name}</h4>
+                        <p>
+                          <strong>Sets:</strong> {exercise.sets}
+                        </p>
+                        <p>
+                          <strong>Reps:</strong> {exercise.reps}
+                        </p>
+                        <p>
+                          <strong>Tempo:</strong> {exercise.tempo}
+                        </p>
+                        <p>
+                          <strong>Tempo Length:</strong> {exercise.tempoLength}
+                        </p>
+                        <p>
+                          <strong>Weight:</strong> {exercise.weight} lbs
+                        </p>
+                        <button onClick={() => handleRemoveExercise(index)}>
+                          ❌ Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    key={group.index}
+                    className="exercise_block"
+                    style={{
+                      padding: "10px",
+                      marginBottom: "10px",
+                      borderRadius: "3rem",
+                      background: "#FDF8F6",
+                    }}
+                  >
+                    <h4>{group.name}</h4>
+                    <p>
+                      <strong>Sets:</strong> {group.sets}
+                    </p>
+                    <p>
+                      <strong>Reps:</strong> {group.reps}
+                    </p>
+                    <p>
+                      <strong>Tempo:</strong> {group.tempo}
+                    </p>
+                    <p>
+                      <strong>Tempo Length:</strong> {group.tempoLength}
+                    </p>
+                    <p>
+                      <strong>Weight:</strong> {group.weight} lbs
+                    </p>
+                    <button onClick={() => handleRemoveExercise(group.index)}>
+                      ❌ Remove
+                    </button>
+                  </div>
+                )
             )}
-
-            <button onClick={handleUpdate}>Save Changes</button>
+            <button onClick={handleUpdate} id="button">
+              Save Changes
+            </button>
           </form>
         )}
+        <br />
+        <br />
       </div>
     </div>
   );
