@@ -11,6 +11,8 @@ import {
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
+import "./CreateWorkout.css";
+
 const EditWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,10 +57,24 @@ const EditWorkout = () => {
           console.log("✅ Exercise details loaded:", exerciseSnap.data());
 
           const exerciseData = exerciseSnap.data();
+          // const exerciseArray = Object.entries(exerciseData).map(
+          //   ([name, details]) => ({
+          //     name,
+          //     ...details,
+          //   })
+          // );
+
           const exerciseArray = Object.entries(exerciseData).map(
             ([name, details]) => ({
               name,
-              ...details,
+              reps: details.reps || "",
+              sets: details.sets || "",
+              weight: details.weight || "",
+              cues: details.cues || "",
+              circuit_id: details.circuit_id || null,
+              tempo: details.tempo || "", // ✅ Add tempo field
+              tempoLength: details.tempoLength || "", // ✅ Add tempoLength field
+              notes: details.notes || "", // ✅ Add notes field
             })
           );
 
@@ -105,6 +121,9 @@ const EditWorkout = () => {
           weight: exercise.weight,
           cues: exercise.cues || "",
           circuit_id: exercise.circuit_id || null,
+          tempo: exercise.tempo || "", // ✅ Save tempo
+          tempoLength: exercise.tempoLength || "", // ✅ Save tempoLength
+          notes: exercise.notes || "", // ✅ Save notes
         };
       });
 
@@ -230,121 +249,225 @@ const EditWorkout = () => {
 
   return (
     <div>
-      <h2>Edit Workout</h2>
+      <div>
+        <h2>Edit Workout</h2>
 
-      {loading && <p>Loading workout details...</p>}
+        {loading && <p>Loading workout details...</p>}
 
-      {!loading && exercises.length === 0 && <p>No exercise details found.</p>}
-
-      {exercises.length > 0 && (
-        <form onSubmit={(e) => e.preventDefault()}>
-          {Object.entries(groupExercisesByCircuit()).map(
-            ([circuitId, circuitExercises], idx) => (
-              <div
-                key={idx}
-                style={{
-                  border:
-                    circuitId !== "individual" ? "2px solid #007bff" : "none",
-                  padding: "10px",
-                  marginBottom: "10px",
-                }}
-              >
-                {circuitId !== "individual" && (
-                  <h3 style={{ color: "#007bff" }}>Circuit {idx + 1}</h3>
-                )}
-
-                {circuitExercises.map((exercise, index) => (
-                  <div key={index} style={{ marginBottom: "10px" }}>
-                    <h4>{exercise.name}</h4>
-                    <label>Reps:</label>
-                    <input
-                      type="number"
-                      value={exercise.reps}
-                      onChange={(e) =>
-                        handleChange(index, "reps", e.target.value)
-                      }
-                    />
-                    <br />
-                    <label>Sets:</label>
-                    <input
-                      type="number"
-                      value={exercise.sets}
-                      onChange={(e) =>
-                        handleChange(index, "sets", e.target.value)
-                      }
-                    />
-                    <br />
-                    <label>Weight (lbs):</label>
-                    <input
-                      type="number"
-                      value={exercise.weight}
-                      onChange={(e) =>
-                        handleChange(index, "weight", e.target.value)
-                      }
-                    />
-                    <br />
-                    <p>
-                      <strong>Cues:</strong> {exercise.cues}
-                    </p>
-                    <button onClick={() => handleRemoveExercise(index)}>
-                      ❌ Remove
-                    </button>
-                    <hr />
-                  </div>
+        {!loading && exercises.length === 0 && (
+          <p>No exercise details found.</p>
+        )}
+        <br />
+        {exercises.length > 0 && (
+          <form onSubmit={(e) => e.preventDefault()}>
+            <h3>Add New Exercise</h3>
+            <input
+              type="text"
+              placeholder="Exercise Name"
+              value={newExercise.name}
+              onChange={(e) => handleNewExerciseChange("name", e.target.value)}
+            />
+            {filteredExercises.length > 0 && (
+              <ul>
+                {filteredExercises.map((exercise, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSelectExercise(exercise)}
+                  >
+                    {exercise}
+                  </li>
                 ))}
-              </div>
-            )
-          )}
+              </ul>
+            )}
+            <input
+              type="number"
+              placeholder="Reps"
+              onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Sets"
+              onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Weight (lbs)"
+              onChange={(e) =>
+                handleNewExerciseChange("weight", e.target.value)
+              }
+            />
 
-          <button onClick={handleUpdate}>Save Changes</button>
-
-          <h3>Add New Exercise</h3>
-          <input
-            type="text"
-            placeholder="Exercise Name"
-            value={newExercise.name}
-            onChange={(e) => handleNewExerciseChange("name", e.target.value)}
-          />
-          {filteredExercises.length > 0 && (
-            <ul>
-              {filteredExercises.map((exercise, index) => (
-                <li key={index} onClick={() => handleSelectExercise(exercise)}>
-                  {exercise}
-                </li>
+            <select
+              value={selectedCircuitExercise}
+              onChange={(e) => setSelectedCircuitExercise(e.target.value)}
+            >
+              <option value="">-- Link to Exercise --</option>
+              {exercises.map((exercise, index) => (
+                <option key={index} value={exercise.name}>
+                  {exercise.name}
+                </option>
               ))}
-            </ul>
-          )}
-          <input
-            type="number"
-            placeholder="Reps"
-            onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Sets"
-            onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Weight (lbs)"
-            onChange={(e) => handleNewExerciseChange("weight", e.target.value)}
-          />
+            </select>
 
-          <select
-            value={selectedCircuitExercise}
-            onChange={(e) => setSelectedCircuitExercise(e.target.value)}
-          >
-            <option value="">-- Link to Exercise --</option>
-            {exercises.map((exercise, index) => (
-              <option key={index} value={exercise.name}>
-                {exercise.name}
-              </option>
-            ))}
-          </select>
+            <button onClick={handleAddExercise}>Add Exercise</button>
 
-          <button onClick={handleAddExercise}>Add Exercise</button>
-        </form>
-      )}
+            {Object.entries(groupExercisesByCircuit()).map(
+              ([circuitId, circuitExercises], idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    border:
+                      circuitId !== "individual" ? "2px solid #007bff" : "none",
+                    padding: "10px",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {circuitId !== "individual" && (
+                    <h3 style={{ color: "#007bff" }}>Circuit {idx + 1}</h3>
+                  )}
+
+                  {circuitExercises.map((exercise, index) => (
+                    <div key={index} style={{ marginBottom: "10px" }}>
+                      <h4>{exercise.name}</h4>
+
+                      <br />
+                      <label>Notes:</label>
+                      <textarea
+                        value={exercise.notes}
+                        onChange={(e) =>
+                          handleChange(index, "notes", e.target.value)
+                        }
+                      />
+                      <br />
+                      <label>Sets:</label>
+                      <input
+                        type="number"
+                        value={exercise.sets}
+                        onChange={(e) =>
+                          handleChange(index, "sets", e.target.value)
+                        }
+                      />
+
+                      <br />
+                      <label>Reps:</label>
+                      <input
+                        type="number"
+                        value={exercise.reps}
+                        onChange={(e) =>
+                          handleChange(index, "reps", e.target.value)
+                        }
+                      />
+                      <br />
+                      {/* <label>Tempo:</label>
+                    <input
+                      type="text"
+                      value={exercise.tempo}
+                      onChange={(e) =>
+                        handleChange(index, "tempo", e.target.value)
+                      }
+                    /> */}
+
+                      <label>Tempo:</label>
+                      <select
+                        value={exercise.tempo}
+                        onChange={(e) =>
+                          handleChange(index, "tempo", e.target.value)
+                        }
+                      >
+                        <option value="">Choose Tempo</option>
+                        <option value="none">None</option>
+                        <option value="eccentric">Eccentric</option>
+                        <option value="concentric">Concentric</option>
+                        <option value="isometric">Isometric</option>
+                      </select>
+
+                      <label>Tempo Length:</label>
+                      <input
+                        type="text"
+                        value={exercise.tempoLength}
+                        onChange={(e) =>
+                          handleChange(index, "tempoLength", e.target.value)
+                        }
+                      />
+
+                      <br />
+                      <label>Weight (lbs):</label>
+                      <input
+                        type="number"
+                        value={exercise.weight}
+                        onChange={(e) =>
+                          handleChange(index, "weight", e.target.value)
+                        }
+                      />
+                      <br />
+                      <p>
+                        <strong>Cues:</strong> {exercise.cues}
+                      </p>
+                      <button onClick={() => handleRemoveExercise(index)}>
+                        ❌ Remove
+                      </button>
+                      <hr />
+                    </div>
+                  ))}
+                </div>
+              )
+            )}
+
+            <button onClick={handleUpdate}>Save Changes</button>
+            {/* 
+            <h3>Add New Exercise</h3>
+            <input
+              type="text"
+              placeholder="Exercise Name"
+              value={newExercise.name}
+              onChange={(e) => handleNewExerciseChange("name", e.target.value)}
+            />
+            {filteredExercises.length > 0 && (
+              <ul>
+                {filteredExercises.map((exercise, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSelectExercise(exercise)}
+                  >
+                    {exercise}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <input
+              type="number"
+              placeholder="Reps"
+              onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Sets"
+              onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Weight (lbs)"
+              onChange={(e) =>
+                handleNewExerciseChange("weight", e.target.value)
+              }
+            />
+
+            <select
+              value={selectedCircuitExercise}
+              onChange={(e) => setSelectedCircuitExercise(e.target.value)}
+            >
+              <option value="">-- Link to Exercise --</option>
+              {exercises.map((exercise, index) => (
+                <option key={index} value={exercise.name}>
+                  {exercise.name}
+                </option>
+              ))}
+            </select>
+
+            <button onClick={handleAddExercise}>Add Exercise</button> */}
+          </form>
+        )}
+      </div>
     </div>
   );
 };
