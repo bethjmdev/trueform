@@ -142,6 +142,13 @@ const SingleWorkout = () => {
                     <p>
                       <strong>Weight:</strong> {details.weight} lbs
                     </p>
+                    {/* <br /> */}
+                    <p>
+                      <strong>Tempo:</strong>{" "}
+                      {details.tempo ? details.tempo : "No Tempo"}{" "}
+                      <strong>Tempo Length:</strong>{" "}
+                      {details.tempoLength ? details.tempoLength : "No Tempo"}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -179,6 +186,13 @@ const SingleWorkout = () => {
                 </p>
                 <p>
                   <strong>Weight:</strong> {group.weight} lbs
+                </p>
+
+                <p>
+                  <strong>Tempo:</strong>{" "}
+                  {group.tempo ? group.tempo : "No Tempo"}{" "}
+                  <strong>Tempo Length:</strong>{" "}
+                  {group.tempoLength ? group.tempoLength : "No Tempo"}
                 </p>
               </div>
             );

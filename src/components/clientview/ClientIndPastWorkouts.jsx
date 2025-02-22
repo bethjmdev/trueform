@@ -136,6 +136,10 @@ const IndClientPastWorkout = () => {
                         <strong>Reps:</strong> {details.reps}{" "}
                         <strong>Sets:</strong> {details.sets},{" "}
                         <strong>Weight:</strong> {details.weight} lbs
+                        <br />
+                        {details.tempo ? details.tempo : "No Tempo"}{" "}
+                        <strong>Tempo Length</strong>{" "}
+                        {details.tempoLength ? details.tempoLength : "No Tempo"}
                       </p>
                       <p>
                         <strong>Actual Performance...</strong>
@@ -201,6 +205,13 @@ const IndClientPastWorkout = () => {
                           <strong>Reps:</strong> {details.reps}{" "}
                           <strong>Sets:</strong> {details.sets},{" "}
                           <strong>Weight:</strong> {details.weight} lbs
+                          <br />
+                          <strong>Tempo:</strong>{" "}
+                          {details.tempo ? details.tempo : "No Tempo"}{" "}
+                          <strong>Tempo Length:</strong>{" "}
+                          {details.tempoLength
+                            ? details.tempoLength
+                            : "No Tempo"}
                         </p>
                         <p>
                           <strong>Actual Performance...</strong>

@@ -401,11 +401,17 @@ const StartWorkout = () => {
                         Click to Watch Demo
                       </a>
 
-                      <p>
-                        <strong>Reps (Planned):</strong> {details.reps}
+                      <p style={{ margin: "0" }}>Planned...</p>
+                      <p style={{ margin: "0" }}>
+                        <strong>Reps:</strong> {details.reps}{" "}
+                        <strong>Weight:</strong> {details.weight} lbs
                       </p>
-                      <p>
-                        <strong>Weight (Planned):</strong> {details.weight} lbs
+
+                      <p style={{ margin: "0" }}>
+                        <strong>Tempo :</strong>{" "}
+                        {group.tempo ? group.tempo : "No Tempo"}{" "}
+                        <strong>Tempo Length:</strong>
+                        {group.tempoLength ? group.tempoLength : "No Tempo"}
                       </p>
 
                       {/* ✅ Checkbox, Reps, and Weights for tracking progress */}
@@ -477,11 +483,16 @@ const StartWorkout = () => {
                 >
                   <h3>{group.exercise}</h3>
 
-                  <p>
-                    <strong>Reps (Planned):</strong> {group.reps}
+                  <p style={{ margin: "0" }}>Planned...</p>
+                  <p style={{ margin: "0" }}>
+                    <strong>Reps:</strong> {group.reps} <strong>Weight:</strong>{" "}
+                    {group.weight} lbs
                   </p>
-                  <p>
-                    <strong>Weight (Planned):</strong> {group.weight} lbs
+                  <p style={{ margin: "0" }}>
+                    <strong>Tempo :</strong>{" "}
+                    {group.tempo ? group.tempo : "No Tempo"}{" "}
+                    <strong>Tempo Length:</strong>
+                    {group.tempoLength ? group.tempoLength : "No Tempo"}
                   </p>
 
                   {/* ✅ Checkbox, Reps, and Weights for tracking progress */}
