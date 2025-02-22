@@ -248,8 +248,8 @@ const EditWorkout = () => {
   if (!exercise_doc_id) return null;
 
   return (
-    <div>
-      <div>
+    <div className="CreateWorkout">
+      <div className="create_workout_container">
         <h2>Edit Workout</h2>
 
         {loading && <p>Loading workout details...</p>}
@@ -260,57 +260,69 @@ const EditWorkout = () => {
         <br />
         {exercises.length > 0 && (
           <form onSubmit={(e) => e.preventDefault()}>
-            <h3>Add New Exercise</h3>
-            <input
-              type="text"
-              placeholder="Exercise Name"
-              value={newExercise.name}
-              onChange={(e) => handleNewExerciseChange("name", e.target.value)}
-            />
-            {filteredExercises.length > 0 && (
-              <ul>
-                {filteredExercises.map((exercise, index) => (
-                  <li
-                    key={index}
-                    onClick={() => handleSelectExercise(exercise)}
-                  >
-                    {exercise}
-                  </li>
+            <div className="add_exercise_container">
+              <h3>Add New Exercise</h3>
+              <input
+                type="text"
+                placeholder="Exercise Name"
+                className="input_field"
+                value={newExercise.name}
+                onChange={(e) =>
+                  handleNewExerciseChange("name", e.target.value)
+                }
+              />
+              {filteredExercises.length > 0 && (
+                <ul>
+                  {filteredExercises.map((exercise, index) => (
+                    <li
+                      key={index}
+                      onClick={() => handleSelectExercise(exercise)}
+                    >
+                      {exercise}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <input
+                type="text"
+                placeholder="Reps"
+                className="input_field"
+                onChange={(e) =>
+                  handleNewExerciseChange("reps", e.target.value)
+                }
+              />
+              <input
+                type="text"
+                placeholder="Sets"
+                className="input_field"
+                onChange={(e) =>
+                  handleNewExerciseChange("sets", e.target.value)
+                }
+              />
+              <input
+                type="text"
+                placeholder="Weight (lbs)"
+                className="input_field"
+                onChange={(e) =>
+                  handleNewExerciseChange("weight", e.target.value)
+                }
+              />
+
+              <select
+                className="input_field"
+                value={selectedCircuitExercise}
+                onChange={(e) => setSelectedCircuitExercise(e.target.value)}
+              >
+                <option value="">-- Link to Exercise --</option>
+                {exercises.map((exercise, index) => (
+                  <option key={index} value={exercise.name}>
+                    {exercise.name}
+                  </option>
                 ))}
-              </ul>
-            )}
-            <input
-              type="number"
-              placeholder="Reps"
-              onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Sets"
-              onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Weight (lbs)"
-              onChange={(e) =>
-                handleNewExerciseChange("weight", e.target.value)
-              }
-            />
+              </select>
 
-            <select
-              value={selectedCircuitExercise}
-              onChange={(e) => setSelectedCircuitExercise(e.target.value)}
-            >
-              <option value="">-- Link to Exercise --</option>
-              {exercises.map((exercise, index) => (
-                <option key={index} value={exercise.name}>
-                  {exercise.name}
-                </option>
-              ))}
-            </select>
-
-            <button onClick={handleAddExercise}>Add Exercise</button>
-
+              <button onClick={handleAddExercise}>Add Exercise</button>
+            </div>
             {Object.entries(groupExercisesByCircuit()).map(
               ([circuitId, circuitExercises], idx) => (
                 <div
@@ -327,12 +339,23 @@ const EditWorkout = () => {
                   )}
 
                   {circuitExercises.map((exercise, index) => (
-                    <div key={index} style={{ marginBottom: "10px" }}>
+                    <div
+                      key={index}
+                      className="exercise_block"
+                      style={{
+                        padding: "10px",
+                        marginBottom: "10px",
+                        borderRadius: "3rem",
+                        background: "#FDF8F6",
+                      }}
+                    >
                       <h4>{exercise.name}</h4>
 
                       <br />
                       <label>Notes:</label>
+                      <br />
                       <textarea
+                        className="input_field"
                         value={exercise.notes}
                         onChange={(e) =>
                           handleChange(index, "notes", e.target.value)
@@ -340,8 +363,10 @@ const EditWorkout = () => {
                       />
                       <br />
                       <label>Sets:</label>
+                      <br />
                       <input
-                        type="number"
+                        type="text"
+                        className="input_field"
                         value={exercise.sets}
                         onChange={(e) =>
                           handleChange(index, "sets", e.target.value)
@@ -350,25 +375,21 @@ const EditWorkout = () => {
 
                       <br />
                       <label>Reps:</label>
+                      <br />
                       <input
-                        type="number"
+                        type="text"
+                        className="input_field"
                         value={exercise.reps}
                         onChange={(e) =>
                           handleChange(index, "reps", e.target.value)
                         }
                       />
                       <br />
-                      {/* <label>Tempo:</label>
-                    <input
-                      type="text"
-                      value={exercise.tempo}
-                      onChange={(e) =>
-                        handleChange(index, "tempo", e.target.value)
-                      }
-                    /> */}
 
                       <label>Tempo:</label>
+                      <br />
                       <select
+                        className="input_field"
                         value={exercise.tempo}
                         onChange={(e) =>
                           handleChange(index, "tempo", e.target.value)
@@ -380,9 +401,11 @@ const EditWorkout = () => {
                         <option value="concentric">Concentric</option>
                         <option value="isometric">Isometric</option>
                       </select>
-
+                      <br />
                       <label>Tempo Length:</label>
+                      <br />
                       <input
+                        className="input_field"
                         type="text"
                         value={exercise.tempoLength}
                         onChange={(e) =>
@@ -392,8 +415,10 @@ const EditWorkout = () => {
 
                       <br />
                       <label>Weight (lbs):</label>
+                      <br />
                       <input
-                        type="number"
+                        className="input_field"
+                        type="text"
                         value={exercise.weight}
                         onChange={(e) =>
                           handleChange(index, "weight", e.target.value)
@@ -403,6 +428,7 @@ const EditWorkout = () => {
                       <p>
                         <strong>Cues:</strong> {exercise.cues}
                       </p>
+                      <br />
                       <button onClick={() => handleRemoveExercise(index)}>
                         ❌ Remove
                       </button>
@@ -414,57 +440,6 @@ const EditWorkout = () => {
             )}
 
             <button onClick={handleUpdate}>Save Changes</button>
-            {/* 
-            <h3>Add New Exercise</h3>
-            <input
-              type="text"
-              placeholder="Exercise Name"
-              value={newExercise.name}
-              onChange={(e) => handleNewExerciseChange("name", e.target.value)}
-            />
-            {filteredExercises.length > 0 && (
-              <ul>
-                {filteredExercises.map((exercise, index) => (
-                  <li
-                    key={index}
-                    onClick={() => handleSelectExercise(exercise)}
-                  >
-                    {exercise}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <input
-              type="number"
-              placeholder="Reps"
-              onChange={(e) => handleNewExerciseChange("reps", e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Sets"
-              onChange={(e) => handleNewExerciseChange("sets", e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Weight (lbs)"
-              onChange={(e) =>
-                handleNewExerciseChange("weight", e.target.value)
-              }
-            />
-
-            <select
-              value={selectedCircuitExercise}
-              onChange={(e) => setSelectedCircuitExercise(e.target.value)}
-            >
-              <option value="">-- Link to Exercise --</option>
-              {exercises.map((exercise, index) => (
-                <option key={index} value={exercise.name}>
-                  {exercise.name}
-                </option>
-              ))}
-            </select>
-
-            <button onClick={handleAddExercise}>Add Exercise</button> */}
           </form>
         )}
       </div>
