@@ -158,6 +158,10 @@ const ViewIndWorkout = () => {
                       <p>
                         <strong>Sets:</strong> {details.sets}{" "}
                         <strong>Reps:</strong> {details.reps}{" "}
+                        <strong>Tempo</strong>{" "}
+                        {details.tempo ? details.tempo : "No Tempo"}{" "}
+                        <strong>Tempo</strong>
+                        {details.tempoLength ? details.tempoLength : "No Tempo"}
                         <strong>Weight:</strong> {details.weight} lbs
                       </p>
                       <p>
@@ -171,6 +175,7 @@ const ViewIndWorkout = () => {
                     return (
                       <div key={details.name}>
                         <h3>{details.name}</h3>
+                        <strong>Notes</strong> {details.notes}{" "}
                         {details.videoDemo && (
                           <p>
                             <a
@@ -187,6 +192,13 @@ const ViewIndWorkout = () => {
                           <strong>Sets:</strong> {details.sets}{" "}
                           <strong>Reps:</strong> {details.reps}{" "}
                           <strong>Weight:</strong> {details.weight} lbs
+                          <br />
+                          <strong>Tempo</strong>{" "}
+                          {details.tempo ? details.tempo : "No Tempo"}{" "}
+                          <strong>Tempo</strong>{" "}
+                          {details.tempoLength
+                            ? details.tempoLength
+                            : "No Tempo"}
                         </p>
                         <p>
                           <strong>Cues:</strong> {details.cues}
