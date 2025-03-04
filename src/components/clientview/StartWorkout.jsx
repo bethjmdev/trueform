@@ -13,6 +13,7 @@ const StartWorkout = () => {
   const workoutDetails = location.state?.workoutDetails;
   const workout_name = location.state?.workout_name;
   const trainer = location.state?.trainer;
+  const notesFromTrainer = location.state?.notes;
   const [time, setTime] = useState(0);
   const [saving, setSaving] = useState(false);
   const [weights, setWeights] = useState({});
@@ -289,6 +290,7 @@ const StartWorkout = () => {
     }
   });
 
+  console.log("notesFromTrainer", notesFromTrainer);
   return (
     <div className="ViewIndWorkout">
       <div className="view_ind_workout_container">
@@ -299,6 +301,11 @@ const StartWorkout = () => {
         )}
 
         {workout_name && <h2>Workout: {workout_name}</h2>}
+        {notesFromTrainer && (
+          <p>
+            <strong>notes from your trainer:</strong> {notesFromTrainer}
+          </p>
+        )}
 
         {questionsCompleted && (
           <p>

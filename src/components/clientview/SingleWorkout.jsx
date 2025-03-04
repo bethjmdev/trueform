@@ -47,7 +47,7 @@ const SingleWorkout = () => {
   const handleStartWorkout = () => {
     console.log("🚀 Navigating with workout details:", workoutDetails);
     navigate("/start-workout", {
-      state: { workoutDetails, workout_name, trainer },
+      state: { workoutDetails, workout_name, trainer, notes },
     });
   };
 
@@ -100,7 +100,11 @@ const SingleWorkout = () => {
     <div className="ViewIndWorkout">
       <div className="view_ind_workout_container">
         {workout_name && <h2>Workout {workout_name}</h2>}
-        {notes && <p>{notes}</p>}
+        {notes && (
+          <p>
+            <strong>notes from your trainer:</strong> {notes}
+          </p>
+        )}
         {/* Start Button */}
         <button onClick={handleStartWorkout} id="button">
           Start Workout
