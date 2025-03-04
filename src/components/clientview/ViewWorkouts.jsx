@@ -65,23 +65,13 @@ const ViewWorkouts = () => {
                       exercise_doc_id: workout.exercise_doc_id,
                       workout_name: workout.workout_name,
                       trainer: workout.trainer_uid,
+                      notes: workout.notes,
                     },
                   })
                 }
               >
-                <h3
-                // onClick={() =>
-                //   navigate("/single-workout", {
-                //     state: {
-                //       exercise_doc_id: workout.exercise_doc_id,
-                //       workout_name: workout.workout_name,
-                //       trainer: workout.trainer_uid,
-                //     },
-                //   })
-                // }
-                >
-                  {workout.workout_name}
-                </h3>
+                <h3>{workout.workout_name}</h3>
+
                 {/* <p>
                   <strong>Notes:</strong> {workout.notes}
                 </p> */}

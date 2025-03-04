@@ -11,6 +11,7 @@ const SingleWorkout = () => {
   const exercise_doc_id = location.state?.exercise_doc_id;
   const workout_name = location.state?.workout_name;
   const trainer = location.state?.trainer;
+  const notes = location.state?.notes;
 
   const [workoutDetails, setWorkoutDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -93,11 +94,13 @@ const SingleWorkout = () => {
     }
   });
 
+  // console.log("groupedExercises", groupedExercises);
+  console.log("notes", notes);
   return (
     <div className="ViewIndWorkout">
       <div className="view_ind_workout_container">
         {workout_name && <h2>Workout {workout_name}</h2>}
-
+        {notes && <p>{notes}</p>}
         {/* Start Button */}
         <button onClick={handleStartWorkout} id="button">
           Start Workout
