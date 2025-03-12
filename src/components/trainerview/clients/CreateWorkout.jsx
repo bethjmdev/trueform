@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../../../utils/firebase/firebaseConfig";
-import { doc, setDoc, collection, getDocs } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs, getDoc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { getAuth } from "firebase/auth";
 import { serverTimestamp } from "firebase/firestore"; // ✅ Import this
@@ -25,6 +25,9 @@ const CreateWorkout = () => {
   const [selectedCircuitExercise, setSelectedCircuitExercise] = useState(""); // Dropdown selection
 
   const [exerciseNotFound, setExerciseNotFound] = useState(false);
+
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState("");
 
   const [newExercise, setNewExercise] = useState({
     name: "",
@@ -67,6 +70,39 @@ const CreateWorkout = () => {
     };
 
     fetchExerciseDatabase();
+  }, []);
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        console.log("📡 Fetching template workouts...");
+
+        const querySnapshot = await getDocs(
+          collection(db, "TemplateWorkoutDetails")
+        );
+        const currentUser = auth.currentUser; // Get current user
+
+        if (!currentUser) {
+          console.error("❌ No authenticated user found.");
+          return;
+        }
+
+        const filteredTemplates = querySnapshot.docs
+          .map((doc) => ({
+            workout_name: doc.data().workout_name,
+            exercise_doc_id: doc.data().exercise_doc_id,
+            trainer_uid: doc.data().trainer_uid,
+          }))
+          .filter((template) => template.trainer_uid === currentUser.uid); // ✅ Only show templates for current trainer
+
+        console.log("✅ Filtered templates:", filteredTemplates);
+        setTemplates(filteredTemplates);
+      } catch (error) {
+        console.error("❌ Error fetching templates:", error);
+      }
+    };
+
+    fetchTemplates();
   }, []);
 
   const handleNewExerciseChange = (field, value) => {
@@ -261,21 +297,6 @@ const CreateWorkout = () => {
     (a, b) => a.index - b.index
   );
 
-  // Group circuits while keeping order
-  // const circuitGroups = {};
-  // const nonCircuitExercises = [];
-
-  // sortedExercises.forEach((exercise) => {
-  //   if (exercise.circuit_id) {
-  //     if (!circuitGroups[exercise.circuit_id]) {
-  //       circuitGroups[exercise.circuit_id] = [];
-  //     }
-  //     circuitGroups[exercise.circuit_id].push(exercise);
-  //   } else {
-  //     nonCircuitExercises.push(exercise);
-  //   }
-  // });
-
   const circuitGroups = {};
   const nonCircuitExercises = [];
 
@@ -293,9 +314,48 @@ const CreateWorkout = () => {
     }
   });
 
-  console.log("🚀 Updated circuit groups after removal:", circuitGroups);
+  const handleSelectTemplate = async (templateId) => {
+    setSelectedTemplate(templateId);
 
-  console.log("🚀 Updated circuit groups:", circuitGroups);
+    if (!templateId) return;
+
+    try {
+      console.log(`📡 Fetching exercises for template: ${templateId}`);
+
+      const templateRef = doc(db, "TemplateWorkoutExercises", templateId);
+      const templateSnap = await getDoc(templateRef);
+
+      if (templateSnap.exists()) {
+        let templateExercises = Object.entries(templateSnap.data()).map(
+          ([name, details]) => ({
+            name,
+            ...details,
+          })
+        );
+
+        console.log("✅ Template exercises fetched:", templateExercises);
+
+        // Ensure unique indexes
+        let nextIndex = selectedExercises.length
+          ? Math.max(...selectedExercises.map((e) => e.index || 0)) + 1
+          : 1;
+
+        templateExercises = templateExercises.map((exercise) => ({
+          ...exercise,
+          index: nextIndex++, // Assign unique index values
+        }));
+
+        setSelectedExercises((prevExercises) => [
+          ...prevExercises,
+          ...templateExercises,
+        ]);
+      } else {
+        console.error("❌ No exercises found for this template.");
+      }
+    } catch (error) {
+      console.error("❌ Error fetching template exercises:", error);
+    }
+  };
 
   return (
     <div className="CreateWorkout">
@@ -315,6 +375,27 @@ const CreateWorkout = () => {
           onChange={(e) => setNotes(e.target.value)}
           className="input_field"
         />
+        <h3>Select a Pre Made Template</h3>
+        <select
+          className="input_field"
+          value={selectedTemplate}
+          onChange={(e) => handleSelectTemplate(e.target.value)}
+          style={{ width: "19.6rem" }}
+        >
+          <option value="">Select a Template Workout</option>
+          {templates.length > 0 ? (
+            templates.map((template) => (
+              <option
+                key={template.exercise_doc_id}
+                value={template.exercise_doc_id}
+              >
+                {template.workout_name}
+              </option>
+            ))
+          ) : (
+            <option disabled>No templates found</option>
+          )}
+        </select>
 
         <h3>Add Exercise</h3>
         <div className="add_exercise_container">
@@ -349,7 +430,10 @@ const CreateWorkout = () => {
               ? filteredExercises
               : exerciseDatabase
             ).map((exercise, index) => (
-              <option key={index} value={exercise.name}>
+              <option
+                // key={index} value={exercise.name}
+                key={`${exercise.name}-${index}`}
+              >
                 {exercise.name}
               </option>
             ))}
@@ -443,7 +527,10 @@ const CreateWorkout = () => {
           >
             <option value="">Make a circuit with...</option>
             {selectedExercises.map((exercise, index) => (
-              <option key={index} value={exercise.name}>
+              <option
+                // key={index} value={exercise.name}
+                key={`${exercise.name}-${index}`}
+              >
                 {exercise.name}
               </option>
             ))}
