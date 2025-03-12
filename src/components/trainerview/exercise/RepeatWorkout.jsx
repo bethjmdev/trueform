@@ -6,12 +6,11 @@ import { v4 as uuidv4 } from "uuid";
 import { getAuth } from "firebase/auth";
 import { serverTimestamp } from "firebase/firestore"; // ✅ Import this
 
-import "./CreateWorkout.css";
+import "../clients/CreateWorkout";
 
-const CreateWorkout = () => {
+const TemplateWorkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const client_uid = location.state?.client_uid;
   const auth = getAuth();
 
   const currentUser = auth.currentUser;
@@ -215,7 +214,7 @@ const CreateWorkout = () => {
 
     const workoutDetails = {
       workout_name: workoutName,
-      client_uid,
+      // client_uid,
       notes,
       exercise_doc_id: workoutId, // Same ID as CurrentWorkoutExercises doc
       trainer_uid,
@@ -244,14 +243,17 @@ const CreateWorkout = () => {
     }, {});
 
     try {
-      await setDoc(doc(db, "CurrentWorkoutDetails", workoutId), workoutDetails);
       await setDoc(
-        doc(db, "CurrentWorkoutExercises", workoutId),
+        doc(db, "TemplateWorkoutDetails", workoutId),
+        workoutDetails
+      );
+      await setDoc(
+        doc(db, "TemplateWorkoutExercises", workoutId),
         workoutExercises
       );
 
       console.log("✅ Workout saved!");
-      navigate("/workout-details", { state: { exercise_doc_id: workoutId } });
+      navigate("/trainer-homepage", { state: { exercise_doc_id: workoutId } });
     } catch (error) {
       console.error("❌ Error saving workout:", error);
     }
@@ -260,21 +262,6 @@ const CreateWorkout = () => {
   const sortedExercises = [...selectedExercises].sort(
     (a, b) => a.index - b.index
   );
-
-  // Group circuits while keeping order
-  // const circuitGroups = {};
-  // const nonCircuitExercises = [];
-
-  // sortedExercises.forEach((exercise) => {
-  //   if (exercise.circuit_id) {
-  //     if (!circuitGroups[exercise.circuit_id]) {
-  //       circuitGroups[exercise.circuit_id] = [];
-  //     }
-  //     circuitGroups[exercise.circuit_id].push(exercise);
-  //   } else {
-  //     nonCircuitExercises.push(exercise);
-  //   }
-  // });
 
   const circuitGroups = {};
   const nonCircuitExercises = [];
@@ -563,4 +550,4 @@ const CreateWorkout = () => {
   );
 };
 
-export default CreateWorkout;
+export default TemplateWorkout;

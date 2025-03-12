@@ -59,6 +59,9 @@ const TrainerHomePage = () => {
           <HomePageButton onClick={() => navigate("/add-exercise")}>
             Add Exercise to Database
           </HomePageButton>
+          <HomePageButton onClick={() => navigate("/template")}>
+            Create Template Workout
+          </HomePageButton>
           <HomePageButton onClick={() => navigate("/exercise-database")}>
             View Exercise Database
           </HomePageButton>

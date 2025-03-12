@@ -21,6 +21,7 @@ import ViewIndWorkout from "./components/trainerview/clients/ViewIndWorkout";
 import EditWorkout from "./components/trainerview/clients/EditWorkout";
 import PastWorkouts from "./components/trainerview/clients/PastWorkouts";
 import IndPastWorkout from "./components/trainerview/clients/IndPastWorkout";
+import TemplateWorkout from "./components/trainerview/exercise/RepeatWorkout";
 
 import ClientHomePage from "./components/clientview/ClientHomePage";
 import CreateWorkout from "./components/trainerview/clients/CreateWorkout";
@@ -100,6 +101,11 @@ const AppRouter = () => {
         <Route
           path="/create-workout"
           element={<ProtectedRoute element={<CreateWorkout />} trainerOnly />}
+        />
+
+        <Route
+          path="/template"
+          element={<ProtectedRoute element={<TemplateWorkout />} trainerOnly />}
         />
 
         <Route
