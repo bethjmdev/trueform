@@ -468,6 +468,19 @@ const StartWorkout = () => {
                           </label>
                         )
                       )}
+                      {/* Add horizontal line after each exercise except the last one */}
+                      {details !==
+                        group.exercises[group.exercises.length - 1] && (
+                        <hr
+                          style={{
+                            width: "100%",
+                            color: "black",
+                            margin: "20px 0",
+                            border: "none",
+                            borderTop: "1px solid black",
+                          }}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
