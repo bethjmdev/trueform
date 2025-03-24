@@ -29,8 +29,19 @@ const ClientPastWorkouts = () => {
           ...doc.data(),
         }));
 
-        console.log("✅ Past workouts found:", workoutList);
-        setPastWorkouts(workoutList);
+        // Sort workouts by timestamp in descending order (most recent first)
+        const sortedWorkoutList = workoutList.sort((a, b) => {
+          const timestampA = a.timestamp?.toDate
+            ? a.timestamp.toDate()
+            : new Date(0);
+          const timestampB = b.timestamp?.toDate
+            ? b.timestamp.toDate()
+            : new Date(0);
+          return timestampB - timestampA;
+        });
+
+        console.log("✅ Past workouts found:", sortedWorkoutList);
+        setPastWorkouts(sortedWorkoutList);
       } catch (error) {
         console.error("❌ Error fetching past workouts:", error);
       } finally {
