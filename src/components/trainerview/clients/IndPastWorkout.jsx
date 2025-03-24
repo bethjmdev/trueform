@@ -9,32 +9,43 @@ const IndClientPastWorkout = () => {
   const navigate = useNavigate();
   const workoutId = location.state?.workoutId;
   const [workoutDetails, setWorkoutDetails] = useState(null);
+  const [workoutStatus, setWorkoutStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!workoutId) return;
 
-    const fetchExercises = async () => {
+    const fetchWorkoutData = async () => {
       try {
-        console.log(`📡 Fetching exercises for workout ID: ${workoutId}`);
-        const workoutDoc = await getDoc(
+        console.log(`📡 Fetching workout data for ID: ${workoutId}`);
+
+        // Fetch workout status from PastWorkoutDetails
+        const statusDoc = await getDoc(
+          doc(db, "PastWorkoutDetails", workoutId)
+        );
+        if (statusDoc.exists()) {
+          console.log("✅ Workout status loaded:", statusDoc.data());
+          setWorkoutStatus(statusDoc.data());
+        }
+
+        // Fetch exercises from PastWorkoutExercises
+        const exercisesDoc = await getDoc(
           doc(db, "PastWorkoutExercises", workoutId)
         );
-
-        if (workoutDoc.exists()) {
-          console.log("✅ Workout details loaded:", workoutDoc.data());
-          setWorkoutDetails(workoutDoc.data());
+        if (exercisesDoc.exists()) {
+          console.log("✅ Workout exercises loaded:", exercisesDoc.data());
+          setWorkoutDetails(exercisesDoc.data());
         } else {
           console.error("❌ No exercises found.");
         }
       } catch (error) {
-        console.error("❌ Error fetching exercises:", error);
+        console.error("❌ Error fetching workout data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchExercises();
+    fetchWorkoutData();
   }, [workoutId]);
 
   if (loading) return <p>Loading exercises...</p>;
@@ -93,6 +104,37 @@ const IndClientPastWorkout = () => {
     <div className="ViewIndWorkout">
       <div className="view_ind_workout_container">
         <h2>Past Workout Details</h2>
+
+        {/* Pre-Workout Status Section */}
+        <div
+          className="pre-workout-status"
+          style={{
+            padding: "15px",
+            marginBottom: "20px",
+            borderRadius: "1rem",
+            background: "#FDF8F6",
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "10px",
+          }}
+        >
+          <div>
+            <strong>Sleep more than 6 hours?</strong>{" "}
+            {workoutStatus?.slept_6_hours || "Not recorded"}
+          </div>
+          <div>
+            <strong>Feeling motivated?</strong>{" "}
+            {workoutStatus?.motivated || "Not recorded"}
+          </div>
+          <div>
+            <strong>Drink enough water?</strong>{" "}
+            {workoutStatus?.hydrated || "Not recorded"}
+          </div>
+          <div>
+            <strong>Eat enough?</strong>{" "}
+            {workoutStatus?.ate_enough || "Not recorded"}
+          </div>
+        </div>
 
         {/* ✅ Render Exercises & Circuits in Order */}
         {groupedExercises.map((group) => {

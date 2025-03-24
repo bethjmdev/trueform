@@ -140,6 +140,9 @@ const SingleWorkout = () => {
                         </a>
                       </p>
                     )}
+                    <p className="cues">
+                      <strong>Cues:</strong> {details.cues}
+                    </p>
                     <p>
                       <strong>Reps:</strong> {details.reps}
                     </p>
@@ -185,6 +188,9 @@ const SingleWorkout = () => {
                     </a>
                   </p>
                 )}
+                <p className="cues">
+                  <strong>Cues:</strong> {group.cues}
+                </p>
                 <p>
                   <strong>Reps:</strong> {group.reps}
                 </p>

@@ -290,7 +290,6 @@ const StartWorkout = () => {
     }
   });
 
-  console.log("notesFromTrainer", notesFromTrainer);
   return (
     <div className="ViewIndWorkout">
       <div className="view_ind_workout_container">
@@ -394,6 +393,22 @@ const StartWorkout = () => {
                     >
                       <h3>{details.exercise}</h3>
 
+                      {/* <p style={{ margin: "0" }}>Planned...</p> */}
+                      {/* <p style={{ margin: "0" }}>
+                        <strong>Reps:</strong> {details.reps}{" "}
+                        <strong>Weight:</strong> {details.weight} lbs
+                      </p> */}
+
+                      <p className="cues">
+                        <strong>Cues:</strong> {details.cues}
+                      </p>
+                      <p style={{ margin: "0" }}>
+                        <strong>Tempo :</strong>{" "}
+                        {group.tempo ? group.tempo : "No Tempo"} <br />
+                        <strong>Tempo Length: </strong>
+                        {group.tempoLength ? group.tempoLength : "No Tempo"}
+                      </p>
+                      <br />
                       <a
                         href={details.videoDemo}
                         target="_blank"
@@ -407,19 +422,20 @@ const StartWorkout = () => {
                       >
                         Click to Watch Demo
                       </a>
-
-                      <p style={{ margin: "0" }}>Planned...</p>
-                      <p style={{ margin: "0" }}>
-                        <strong>Reps:</strong> {details.reps}{" "}
-                        <strong>Weight:</strong> {details.weight} lbs
-                      </p>
-
-                      <p style={{ margin: "0" }}>
-                        <strong>Tempo :</strong>{" "}
-                        {group.tempo ? group.tempo : "No Tempo"}{" "}
-                        <strong>Tempo Length:</strong>
-                        {group.tempoLength ? group.tempoLength : "No Tempo"}
-                      </p>
+                      <br />
+                      {/* Add labels for reps and weights */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          maxWidth: "200px",
+                        }}
+                      >
+                        {/* Space for checkbox */}
+                        <label style={{ fontSize: "1em" }}>Reps</label>
+                        <label style={{ fontSize: "1em" }}>Weight</label>
+                      </div>
 
                       {/* ✅ Checkbox, Reps, and Weights for tracking progress */}
                       {exerciseProgress[details.exercise]?.map(
@@ -429,7 +445,7 @@ const StartWorkout = () => {
                             style={{
                               display: "flex",
                               alignItems: "center",
-                              marginBottom: "5px",
+                              marginBottom: "15px",
                             }}
                           >
                             <input
@@ -503,17 +519,35 @@ const StartWorkout = () => {
                 >
                   <h3>{group.exercise}</h3>
 
-                  <p style={{ margin: "0" }}>Planned...</p>
-                  <p style={{ margin: "0" }}>
+                  {/* <p style={{ margin: "0" }}>Planned...</p> */}
+                  {/* <p style={{ margin: "0" }}>
                     <strong>Reps:</strong> {group.reps} <strong>Weight:</strong>{" "}
                     {group.weight} lbs
+                  </p> */}
+                  <p className="cues">
+                    <strong>Cues:</strong> {group.cues}
                   </p>
                   <p style={{ margin: "0" }}>
                     <strong>Tempo :</strong>{" "}
-                    {group.tempo ? group.tempo : "No Tempo"}{" "}
-                    <strong>Tempo Length:</strong>
+                    {group.tempo ? group.tempo : "No Tempo"} <br />
+                    <strong>Tempo Length: </strong>
                     {group.tempoLength ? group.tempoLength : "No Tempo"}
                   </p>
+                  <br />
+                  {/* Add labels for reps and weights */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      maxWidth: "200px",
+                      textAlign: "left",
+                    }}
+                  >
+                    {/* Space for checkbox */}
+                    <label style={{ fontSize: "1em" }}>Reps</label>
+                    <label style={{ fontSize: "1em" }}>Weight</label>
+                  </div>
 
                   {/* ✅ Checkbox, Reps, and Weights for tracking progress */}
                   {exerciseProgress[group.exercise]?.map(
@@ -523,7 +557,7 @@ const StartWorkout = () => {
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          marginBottom: "5px",
+                          marginBottom: "15px",
                         }}
                       >
                         <input

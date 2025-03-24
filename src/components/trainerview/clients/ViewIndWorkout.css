@@ -37,6 +37,15 @@
 
 .ViewIndWorkout .exercise_block {
   width: 30rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.exercise_block .cues {
+  width: 20rem;
+  margin: 0.5rem 0;
+  text-align: center;
 }
 
 #hr {
