@@ -59,6 +59,8 @@
   font-size: 1rem;
   outline: none;
   transition: border 0.3s ease;
+  color: #4a4a4a;
+  background-color: white;
 }
 
 .SignIn .sign_in_container select {
@@ -68,6 +70,15 @@
 .SignIn .sign_in_container input:focus {
   border: 1px solid #6b5fce;
   box-shadow: 0px 0px 5px rgba(107, 95, 206, 0.5);
+}
+
+.SignIn .sign_in_container input:-webkit-autofill,
+.SignIn .sign_in_container input:-webkit-autofill:hover,
+.SignIn .sign_in_container input:-webkit-autofill:focus,
+.SignIn .sign_in_container input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #4a4a4a !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .SignIn .sign_in_container p {

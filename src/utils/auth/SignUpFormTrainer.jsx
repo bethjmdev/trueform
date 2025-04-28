@@ -5,7 +5,7 @@ import { collection, doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 import MainButton from "../buttons/MainButton";
-import "./Signin.css";
+import "./SignIn.css";
 
 const SignUpFormTrainer = () => {
   const [name, setName] = useState("");

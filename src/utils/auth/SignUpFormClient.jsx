@@ -134,7 +134,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import MainButton from "../buttons/MainButton";
-import "./Signin.css";
+import "./SignIn.css";
 
 const SignUpFormClient = () => {
   const [name, setName] = useState("");

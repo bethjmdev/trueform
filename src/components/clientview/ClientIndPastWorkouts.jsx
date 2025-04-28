@@ -111,8 +111,8 @@ const IndClientPastWorkout = () => {
             marginBottom: "20px",
             borderRadius: "1rem",
             background: "#FDF8F6",
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
+            // display: "grid",
+            // gridTemplateColumns: "repeat(2, 1fr)",
             gap: "10px",
           }}
         >
